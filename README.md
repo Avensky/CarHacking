@@ -10,9 +10,7 @@ attemp1: Install 3d graphics for online experience using threejs
 
 
 ## About
-
-
-This project will create a 3-d model render of a tank along simulated gagues along the interface.
+This project will create a 3-d model render of a tank and gagues along the interface.
 
 The project runs on a Raspberry Pi and simulates a car outputting revs, speed, and fuel consumption(this is shown at a rate that is sped up for functional timing purposes) and displays via the frond end using nodejs, threejs, react, fiber, and socketcan. 
 
@@ -69,10 +67,11 @@ nvm install 18
 
 # clone the repo and initialize project
 git clone https://github.com/Avensky/CarHacking.git ~/share/CarHacking
-cd CarHacking
-npm i
+cd ~/share/CarHacking
+npm ci
 
 # set up virtual canbus
+sudo apt-get install can-utils
 sudo modprobe vcan
 sudo ip link add dev vcan0 type vcan
 sudo ip link set up vcan0
@@ -86,20 +85,18 @@ hostname -I
 
 ## Usage
 ```
-# starts server in project dir
+# in terminal 1 start server from project dir
 cd ~/share/CarHacking
 npm start 
 
-# type [Raspberry Pi IP Address]:3000/index.html in web browser
+# on your pc type [Raspberry Pi IP Address]:3000/index.html in a web browser
 192.168.0.153:3000/index.html
 
-# starts sending car data to gauges in terminal #2
+# in a terminal 2 start sending car data to gauges in terminal #1
 node car.js
 
-# to hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
+# in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
 cansend vcan0 1F4#AAAAAAAAAAAAAAAA
 ```
 ## Acknowledgement
 Project concept and execution inspired by rhysmorgan134/Can-App
-
-
