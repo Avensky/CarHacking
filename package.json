@@ -12,6 +12,6 @@
     "canvas-gauges": "^2.1.7",
     "express": "^4.18.1",
     "socket.io": "^4.5.1",
-    "socketcan": "^3.0.0"
+    "socketcan": "^4.0.4"
   }
 }
