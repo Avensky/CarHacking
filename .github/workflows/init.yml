@@ -15,7 +15,7 @@ jobs:
         node-version: 22.3.0
     - run: |
         cd backend
-        npm i
+        npm ci
         cd ../frontend
-        npm i
+        npm ci
         npm run build

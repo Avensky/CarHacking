@@ -10,7 +10,7 @@ export function Car() {
     GLTFLoader,
     process.env.PUBLIC_URL + "models/t-90m/scene.gltf"
   );
-  
+
   useEffect(() => {
     gltf.scene.scale.set(0.15, 0.15, 0.15);
     gltf.scene.position.set(0, 0.17, 0);
@@ -23,15 +23,15 @@ export function Car() {
     });
   }, [gltf]);
 
-//   useFrame((state, delta) => {
-//     let t = state.clock.getElapsedTime();
+  //   useFrame((state, delta) => {
+  //     let t = state.clock.getElapsedTime();
 
-//     let group = gltf.scene.children[0].children[0].children[0];
-//     // group.children[0].rotation.x = t * 2;
-//     // group.children[2].rotation.x = t * 2;
-//     // group.children[4].rotation.x = t * 2;
-//     // group.children[6].rotation.x = t * 2;
-//   });
+  //     let group = gltf.scene.children[0].children[0].children[0];
+  //     // group.children[0].rotation.x = t * 2;
+  //     // group.children[2].rotation.x = t * 2;
+  //     // group.children[4].rotation.x = t * 2;
+  //     // group.children[6].rotation.x = t * 2;
+  //   });
 
   return <primitive object={gltf.scene} />;
 }

@@ -15,7 +15,15 @@
   "dependencies": {
     "canvas-gauges": "^2.1.7",
     "express": "^4.18.1",
-    "socket.io": "^4.5.1",
-    "socketcan": "^4.0.4"
+    "socket.io": "^4.5.1"
+  },
+  "overrides": {
+    "os": {
+      "linux": {
+        "dependencies": {
+          "socketcan": "^4.0.4"
+        }
+      }
+    }
   }
 }

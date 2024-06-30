@@ -25,8 +25,8 @@ function CarShow() {
   return (
     <>
       {/* Allows camera to orbit around target  */}
-      <OrbitControls 
-        target={[0, 0.55, 0]} 
+      <OrbitControls
+        target={[0, 0.55, 0]}
         setPolarAngle={1.55}
         maxPolarAngle={1.65} // how far orbit vertically
         maxDistance={.9}
@@ -51,7 +51,7 @@ function CarShow() {
       </CubeCamera>
 
       {/* This light gets emitted from a single point in one direction, along a cone that increases in size the further from the light it gets. */}
-       {/* <spotLight
+      {/* <spotLight
         color={[1, 0.25, 0.7]}
         intensity={1.5}
         angle={0.6}
@@ -60,7 +60,7 @@ function CarShow() {
         castShadow
         shadow-bias={-0.0001}
       /> */}
-     
+
       {/* <spotLight
         color={[0.14, 0.5, 1]}
         intensity={2}
@@ -75,7 +75,7 @@ function CarShow() {
       {/* <Boxes /> */}
       {/* <Rings /> */}
 
-      <EffectComposer> 
+      <EffectComposer>
         {/* <DepthOfField focusDistance={0.0035} focalLength={0.01} bokehScale={3} height={480} /> */}
         {/* <Bloom        blendFunction={BlendFunction.ADD}
           intensity={1.3} // The bloom intensity.
@@ -90,8 +90,8 @@ function CarShow() {
           offset={[0.0005, 0.0012]} // color offset
         /> */}
       </EffectComposer>
-    
-    </> 
+
+    </>
   );
 }
 
