@@ -3,9 +3,9 @@ name: Init
 on:
   workflow_dispatch:
   push:
-    branches: [main]
+    branches: [Main]
   pull_request:
-    branches: [main]
+    branches: [Main]
 
 jobs:
   backend:
