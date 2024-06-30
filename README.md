@@ -100,3 +100,11 @@ cansend vcan0 1F4#AAAAAAAAAAAAAAAA
 ```
 ## Acknowledgement
 Project concept and execution inspired by rhysmorgan134/Can-App
+
+Frontend inspired by Domenicobrz/R3F-in-practice
+
+T-90M 3D model
+"T-90M (With interior) [FREE]" (https://skfb.ly/oWGUu) by DerpDude is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+Panzer II model
+"Panzer II (Pz.Kpfw. II)" (https://skfb.ly/oTOqy) by vmatthew is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).

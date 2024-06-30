@@ -3,7 +3,24 @@ var express = require('express');
 var app = express();
 var server = require('http').createServer(app);
 var io = require('socket.io')(server);
+const PORT = 5000;
+const LOCAL = "127.0.0.1";
 
+// socket io documentation sample
+
+// io.sockets.on('connection', function (socket) {
+//     socket.on('set nickname', function (name) {
+//       socket.set('nickname', name, function () {
+//         socket.emit('ready');
+//       });
+//     });
+   
+//     socket.on('msg', function () {
+//       socket.get('nickname', function (err, name) {
+//         console.log('Chat message by ', name);
+//       });
+//     });
+// });
 
 var channel = can.createRawChannel("vcan0", true);
 
@@ -13,8 +30,8 @@ carInfo.revs = 0
 
 carInfo.fuel = 0   
 
-app.use(express.static(__dirname + '/html'));
-app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
+// app.use(express.static(__dirname + '/html'));
+// app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
 
 io.on('connection', function(client) {
     console.log('client connected')
@@ -36,5 +53,31 @@ channel.addListener("onMessage", function(msg) {
 })
 
 channel.start()
+// launch
+if (process.env.NODE_ENV === 'production'){
+    // Express will serve up production assets
+    app.use(express.static('./frontend/build'))
+    app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
 
-server.listen(3000)
+    // Express will serve up the index.html file
+    const path = require('path');
+    const filepath = path.join(__dirname, './frontend/build/index.html');
+
+    app.get('*', (req, res) => {
+        res.sendFile(filepath, function(err){
+            if (err) 
+                return res.status(err.status).end();
+             else 
+                return res.status(200).end();
+        })
+    })
+}
+
+server.listen(PORT, LOCAL, (err) =>{
+    if(!err){
+        console.log('server started running on: ' + PORT);
+        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
+    } else {
+        console.log('unable to start server');}
+    }
+)
