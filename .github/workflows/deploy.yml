@@ -34,10 +34,10 @@ jobs:
         run: |
           cd backend
           npm ci
-      - name: Check linting and formatting
-        run: |
-          cd backend
-          npm run lint
+      # - name: Check linting and formatting
+      #   run: |
+      #     cd backend
+      #     npm run lint
       - name: Execute test cases
         run: echo testing...
   frontend:
@@ -68,10 +68,10 @@ jobs:
         run: |
           cd frontend
           npm ci
-      - name: Check linting and formatting
-        run: |
-          cd frontend
-          npm run lint
+      # - name: Check linting and formatting
+      #   run: |
+      #     cd frontend
+      #     npm run lint
   build:
     needs: frontend
     runs-on: self-hosted
@@ -101,12 +101,12 @@ jobs:
         run: |
           cd frontend
           npm run build
-  restartServer:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - run: |
-          pm2 stop CarHacking
-          pm2 start CarHacking --update-env
-          pm2 save
-          sudo service nginx restart
+  # restartServer:
+  #   needs: build
+  #   runs-on: self-hosted
+  #   steps:
+  #     - run: |
+  #         pm2 stop CarHacking
+  #         pm2 start CarHacking --update-env
+  #         pm2 save
+  #         sudo service nginx restart

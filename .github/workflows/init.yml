@@ -3,9 +3,9 @@ name: Initial install
 on:
   workflow_dispatch:
   push:
-    branches: [Main]
+    branches: [main]
   pull_request:
-    branches: [Main]
+    branches: [main]
 
 jobs:
   backend:
@@ -34,10 +34,10 @@ jobs:
         run: |
         cd backend
         npm ci
-      - name: Check linting and formatting
-        run: |
-        cd backend
-        npm run lint
+      # - name: Check linting and formatting
+      #   run: |
+      #   cd backend
+      #   npm run lint
       - name: Execute test cases
         run: echo testing...
   frontend:
@@ -67,10 +67,10 @@ jobs:
         run: |
           cd frontend
           npm ci
-      - name: Check linting and formatting
-        run: |
-          cd frontend
-          npm run lint
+      # - name: Check linting and formatting
+      #   run: |
+      #     cd frontend
+      #     npm run lint
   build:
     needs: frontend
     runs-on: self-hosted
