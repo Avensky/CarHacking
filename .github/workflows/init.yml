@@ -1,0 +1,21 @@
+name: Initial install
+
+on:
+  workflow_dispatch:
+
+jobs: 
+  getCode:
+    runs-on: self-hosted
+    steps:
+    - name: Get code
+      uses: actions/checkout@v4
+    - name: Use Node
+      uses: actions/setup-node@v4
+      with:
+        node-version: 22.3.0
+    - run: |
+        cd backend
+        npm i
+        cd ../frontend
+        npm i
+        npm run build
