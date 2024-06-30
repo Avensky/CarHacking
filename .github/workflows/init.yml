@@ -1,4 +1,4 @@
-name: Install
+name: Init
 
 on:
   workflow_dispatch:
@@ -77,7 +77,6 @@ jobs:
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
-
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
