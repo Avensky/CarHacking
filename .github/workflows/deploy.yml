@@ -94,7 +94,7 @@ jobs:
       - name: Install Dependencies
         run: |
           cd backend
-          npm ci
+          npm i
           cd ../frontend
           npm ci
       - name: Create production build
