@@ -1,6 +1,6 @@
 var can = require("socketcan");
-
 var channel = can.createRawChannel('vcan0', true);
+const Buffer = require('buffer');
 
 var msg = {
     'id': 500,
@@ -30,7 +30,6 @@ setInterval(() => {
         fuel = fuel - 1
     }
 
-
     if (revs > 7000) {
         revs = 1000
     }
@@ -53,12 +52,5 @@ setInterval(() => {
     channel.send(out)
 
 }, 100)
-
-
-
-
-
-
-
 
 channel.start();

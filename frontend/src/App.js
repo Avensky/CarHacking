@@ -2,24 +2,25 @@ import React, { Suspense } from "react";
 import { Canvas } from "@react-three/fiber";
 import {
   EffectComposer,
-  DepthOfField,
-  Bloom,
-  ChromaticAberration,
+  // DepthOfField,
+  // Bloom,
+  // ChromaticAberration,
 } from "@react-three/postprocessing";
-import { BlendFunction } from "postprocessing";
+// import { BlendFunction } from "postprocessing";
 import {
   CubeCamera,
   Environment,
   OrbitControls,
   PerspectiveCamera,
+
 } from "@react-three/drei";
 import "./style.css";
-import { Boxes } from "./Boxes";
+// import { Boxes } from "./Boxes";
 import { Car } from "./Car";
-import { City } from "./City";
+// import { City } from "./City";
 import { Ground } from "./Ground";
-import { FloatingGrid } from "./FloatingGrid";
-import { Rings } from "./Rings";
+// import { FloatingGrid } from "./FloatingGrid";
+// import { Rings } from "./Rings";
 
 function CarShow() {
   return (

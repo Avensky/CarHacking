@@ -24,48 +24,36 @@ if (process.env.NODE_ENV === "production") {
 //     });
 // });
 
-
 // app.use(express.static(__dirname + '/html'));
 // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
-
-
 
 // launch
 if (process.env.NODE_ENV === 'production') {
 
     io.on('connection', function (client) {
         console.log('client connected')
+        console.log(client);
     })
-
 
     var channel = can.createRawChannel("vcan0", true);
 
     var carInfo = {};
     carInfo.speed = 0
     carInfo.revs = 0
-
     carInfo.fuel = 0
-
-
 
     setInterval(() => {
         io.emit('carMessage', carInfo)
     }, 100)
 
     channel.addListener("onMessage", function (msg) {
-
-
         carInfo.revs = msg.data.readUIntBE(0, 4)
         carInfo.speed = msg.data.readUIntBE(4, 2)
-
         carInfo.fuel = msg.data.readUIntBE(6, 2)
-
         console.log(carInfo)
     })
 
     channel.start()
-
-
 
     // Express will serve up production assets
     app.use(express.static('./frontend/build'))
@@ -92,5 +80,4 @@ server.listen(PORT, LOCAL, (err) => {
     } else {
         console.log('unable to start server');
     }
-}
-)
+})
