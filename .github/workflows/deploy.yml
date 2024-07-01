@@ -33,7 +33,7 @@ jobs:
         if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           cd backend
-          npm ci
+          npm i
       # - name: Check linting and formatting
       #   run: |
       #     cd backend
