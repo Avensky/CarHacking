@@ -59,7 +59,7 @@ source ~/.bashrc
 command -v nvm
 
 # install node
-nvm install 18
+nvm install 22.3.0
 
 # To test, in Network folder of your computer type: \\[Pi IP Address]\
 
