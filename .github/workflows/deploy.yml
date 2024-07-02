@@ -16,7 +16,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22.3.0
+          node-version: 20.15.0 
       - name: Cache node modules
         id: cache-backend
         uses: actions/cache@v4
@@ -50,7 +50,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22.3.0
+          node-version: 20.15.0 
       - name: Cache node modules
         id: cache-frontend
         uses: actions/cache@v4
@@ -81,7 +81,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 22.3.0
+          node-version: 20.15.0 
       - name: Use cache node modules
         uses: actions/cache@v4
         with:
