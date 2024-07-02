@@ -7,29 +7,6 @@ if (process.env.NODE_ENV === "production") {
     console.log("using socketcan");
     var can = require("socketcan");
     var io = require('socket.io')(server);
-}
-
-// socket io documentation sample
-
-// io.sockets.on('connection', function (socket) {
-//     socket.on('set nickname', function (name) {
-//       socket.set('nickname', name, function () {
-//         socket.emit('ready');
-//       });
-//     });
-
-//     socket.on('msg', function () {
-//       socket.get('nickname', function (err, name) {
-//         console.log('Chat message by ', name);
-//       });
-//     });
-// });
-
-// app.use(express.static(__dirname + '/html'));
-// app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
-
-// launch
-if (process.env.NODE_ENV === 'production') {
 
     io.on('connection', function (client) {
         console.log('client connected')
@@ -55,6 +32,29 @@ if (process.env.NODE_ENV === 'production') {
     })
 
     channel.start()
+}
+
+// socket io documentation sample
+
+// io.sockets.on('connection', function (socket) {
+//     socket.on('set nickname', function (name) {
+//       socket.set('nickname', name, function () {
+//         socket.emit('ready');
+//       });
+//     });
+
+//     socket.on('msg', function () {
+//       socket.get('nickname', function (err, name) {
+//         console.log('Chat message by ', name);
+//       });
+//     });
+// });
+
+// app.use(express.static(__dirname + '/html'));
+// app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
+
+// launch
+if (process.env.NODE_ENV === 'production') {
 
     // Express will serve up production assets
     app.use(express.static('../frontend/build'))
