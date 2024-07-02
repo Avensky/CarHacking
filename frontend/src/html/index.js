@@ -1,5 +1,5 @@
 import io from "io";
-var socket = io.connect('192.168.0.168:3000');
+var socket = io.connect('192.168.40.167:3000');
 
 document.addEventListener("DOMContentLoaded", onDomReadyHandler())
 

@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').createServer(app);
 const PORT = 5000;
 const LOCAL = "127.0.0.1";
+
 if (process.env.NODE_ENV === "production") {
     console.log("using socketcan");
     var can = require("socketcan");
@@ -62,6 +63,7 @@ if (process.env.NODE_ENV === 'production') {
 
     // Express will serve up the index.html file
     const path = require('path');
+    console.log("__dirname", __dirname);
     const filepath = path.join(__dirname, '../frontend/build/index.html');
 
     app.get('*', (req, res) => {

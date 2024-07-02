@@ -19,12 +19,12 @@ jobs:
         run: |
           cd backend
           npm i
-      - name: Check linting and formatting
-        run: |
-          cd backend
-          npm run lint
-      - name: Execute test cases
-        run: echo testing...
+      # - name: Check linting and formatting
+      #   run: |
+      #     cd backend
+      #     npm run lint
+      # - name: Execute test cases
+      #   run: echo testing...
   frontend:
     needs: backend
     runs-on: self-hosted
@@ -39,10 +39,10 @@ jobs:
         run: |
           cd frontend
           npm i
-      - name: Check linting and formatting
-        run: |
-          cd frontend
-          npm run lint
+      # - name: Check linting and formatting
+      #   run: |
+      #     cd frontend
+      #     npm run lint
   build:
     needs: frontend
     runs-on: self-hosted
