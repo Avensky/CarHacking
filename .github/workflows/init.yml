@@ -14,7 +14,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20.15.0 
+          node-version: 18.20.3 
       - name: Install Dependencies
         run: |
           cd backend
@@ -34,7 +34,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20.15.0 
+          node-version: 18 
       - name: Install Dependencies
         run: |
           cd frontend
@@ -52,7 +52,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 20.15.0 
+          node-version: 18.20.3 
       - name: Install Dependencies
         run: |
           cd backend
