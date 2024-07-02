@@ -24,16 +24,15 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-backend-${{ env.cache-name }}-
             ${{ runner.os }}-backend-
-            ${{ runner.os }}-
+            ${{ runner.os }}-   
       - name: Install Dependencies
-        if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           cd backend
           npm i
-      # - name: Check linting and formatting
-      #   run: |
-      #   cd backend
-      #   npm run lint
+      - name: Check linting and formatting
+        run: |
+          cd backend
+          npm run lint
       - name: Execute test cases
         run: echo testing...
   frontend:
@@ -59,14 +58,13 @@ jobs:
             ${{ runner.os }}-frontend-
             ${{ runner.os }}-
       - name: Install Dependencies
-        if: steps.cache-frontend.outputs.cache-hit !='true'
         run: |
           cd frontend
           npm i
-      # - name: Check linting and formatting
-      #   run: |
-      #     cd frontend
-      #     npm run lint
+      - name: Check linting and formatting
+        run: |
+          cd frontend
+          npm run lint
   build:
     needs: frontend
     runs-on: self-hosted
