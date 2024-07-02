@@ -96,7 +96,7 @@ jobs:
           cd backend
           npm i
           cd ../frontend
-          npm ci
+          npm i
       - name: Create production build
         run: |
           cd frontend
@@ -110,3 +110,4 @@ jobs:
           pm2 start CarHacking --update-env
           pm2 save
           sudo service nginx restart
+          
