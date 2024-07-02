@@ -57,12 +57,12 @@ if (process.env.NODE_ENV === 'production') {
     channel.start()
 
     // Express will serve up production assets
-    app.use(express.static('./frontend/build'))
+    app.use(express.static('../frontend/build'))
     app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
 
     // Express will serve up the index.html file
     const path = require('path');
-    const filepath = path.join(__dirname, './frontend/build/index.html');
+    const filepath = path.join(__dirname, '../frontend/build/index.html');
 
     app.get('*', (req, res) => {
         res.sendFile(filepath, function (err) {
