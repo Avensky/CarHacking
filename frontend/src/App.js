@@ -124,6 +124,9 @@ function App() {
       setFooEvents(previous => [...previous, value]);
     }
 
+    socket.on('connection', (socket) => {
+      console.log(`user connected: ${socket.id}`)
+    });
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('foo', onFooEvent);
