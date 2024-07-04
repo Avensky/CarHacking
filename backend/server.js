@@ -68,7 +68,8 @@ const io = new Server({
         origin: "http://localhost:3000"
     }
 })
-io.listen(PORT, (err) => {
+
+server.listen(PORT, (err) => {
     if (!err) {
         console.log('server started running on: ' + PORT);
         console.log('server NODE_ENV: ' + process.env.NODE_ENV);
