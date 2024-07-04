@@ -68,7 +68,14 @@ const io = new Server({
         origin: "http://localhost:3000"
     }
 })
-io.listen(PORT);
+io.listen(PORT, (err) => {
+    if (!err) {
+        console.log('server started running on: ' + PORT);
+        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
+    } else {
+        console.log('unable to start server');
+    }
+});
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
@@ -80,12 +87,3 @@ io.on("connection", (socket) => {
         socket.to(data.room).emit("receive_message", data);
     });
 });
-
-server.listen(PORT, (err) => {
-    if (!err) {
-        console.log('server started running on: ' + PORT);
-        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
-    } else {
-        console.log('unable to start server');
-    }
-})
