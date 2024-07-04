@@ -1,27 +1,27 @@
-var express = require('express');
-var app = express();
-var server = require('http').createServer(app);
-const PORT = 5000;
-const LOCAL = "127.0.0.1";
+const express = require('express');
+const app = express();
+const server = require('http').createServer(app);
 const cors = require("cors");
+const LOCAL = "127.0.0.1";
+const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
 app.options('*', cors());
 
 if (process.env.NODE_ENV === "production") {
-    console.log("using socketcan");
-    var can = require("socketcan");
-    var io = require('socket.io')(server);
+    // console.log("using socketcan");
+    const can = require("socketcan");
+    const io = require('socket.io')(server);
 
     io.on('connection', function (client) {
         console.log('client connected')
         console.log(client);
     })
 
-    var channel = can.createRawChannel("vcan0", true);
+    const channel = can.createRawChannel("vcan0", true);
 
-    var carInfo = {};
+    const carInfo = {};
     carInfo.speed = 0
     carInfo.revs = 0
     carInfo.fuel = 0
@@ -39,22 +39,6 @@ if (process.env.NODE_ENV === "production") {
 
     channel.start()
 }
-
-// socket io documentation sample
-
-// io.sockets.on('connection', function (socket) {
-//     socket.on('set nickname', function (name) {
-//       socket.set('nickname', name, function () {
-//         socket.emit('ready');
-//       });
-//     });
-
-//     socket.on('msg', function () {
-//       socket.get('nickname', function (err, name) {
-//         console.log('Chat message by ', name);
-//       });
-//     });
-// });
 
 // app.use(express.static(__dirname + '/html'));
 // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
