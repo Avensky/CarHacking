@@ -8,7 +8,7 @@
     "lint": "eslint --fix ./*.js",
     "start": "node server.js",
     "server": "nodemon server.js",
-    "frontend": "npm run start --prefix ./frontend",
+    "frontend": "npm run start --prefix ../frontend",
     "dev": "concurrently \"npm run server\" \"npm run frontend\""
   },
   "author": "",
@@ -20,9 +20,11 @@
     "socket.io": "^4.5.1"
   },
   "devDependencies": {
+    "concurrently": "^8.2.2",
     "@eslint/js": "^9.6.0",
     "eslint": "^9.6.0",
-    "globals": "^15.7.0"
+    "globals": "^15.7.0",
+    "nodemon": "^3.1.4"
   },
   "optionalDependencies": {
     "socketcan": "^4.0.4"

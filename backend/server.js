@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 // const server = require('http').createServer(app);
 const cors = require("cors");
-const LOCAL = "127.0.0.1";
+// const LOCAL = "127.0.0.1";
 const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
@@ -58,7 +58,7 @@ if (process.env.NODE_ENV === 'production') {
 
     // Express will serve up production assets
     app.use(express.static('../frontend/build'))
-    app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
+    // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
 
     // Express will serve up the index.html file
     const path = require('path');
@@ -75,7 +75,7 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
-server.listen(PORT, LOCAL, (err) => {
+server.listen(PORT, (err) => {
     if (!err) {
         console.log('server started running on: ' + PORT);
         console.log('server NODE_ENV: ' + process.env.NODE_ENV);
