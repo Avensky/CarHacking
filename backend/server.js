@@ -9,12 +9,7 @@ const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
-const corsOptions = {
-    origin: 'http://localhost:3000',
-    credentials: true,            //access-control-allow-credentials:true
-    optionSuccessStatus: 200
-}
-app.use(cors(corsOptions));
+app.options('*', cors());
 
 if (process.env.NODE_ENV === "production") {
     // console.log("using socketcan");
@@ -73,7 +68,7 @@ const io = new Server({
         origin: "http://localhost:3000"
     }
 })
-
+io.listen(PORT);
 io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
