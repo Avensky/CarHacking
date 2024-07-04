@@ -16,7 +16,11 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.3 
+          node-version: 18.20.3
+      - name: Check linting and formatting
+        run: |
+          cd backend
+          npm run lint 
       - name: Cache node modules
         id: cache-backend
         uses: actions/cache@v4
@@ -34,10 +38,6 @@ jobs:
         run: |
           cd backend
           npm i
-      - name: Check linting and formatting
-        run: |
-          cd backend
-          npm run lint
       - name: Execute test cases
         run: echo testing...
   frontend:
@@ -46,11 +46,14 @@ jobs:
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
-
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
           node-version: 18.20.3 
+      - name: Check linting and formatting
+        run: |
+          cd frontend
+          npm run lint
       - name: Cache node modules
         id: cache-frontend
         uses: actions/cache@v4
@@ -68,10 +71,6 @@ jobs:
         run: |
           cd frontend
           npm ci
-      - name: Check linting and formatting
-        run: |
-          cd frontend
-          npm run lint
   build:
     needs: frontend
     runs-on: self-hosted

@@ -5,6 +5,10 @@ const PORT = 5000;
 const LOCAL = "127.0.0.1";
 const cors = require("cors");
 
+// set up cors to allow us to accept requests from our client
+app.use(cors());
+app.options('*', cors());
+
 if (process.env.NODE_ENV === "production") {
     console.log("using socketcan");
     var can = require("socketcan");

@@ -1,4 +1,5 @@
 import React from 'react';
+import PropTypes from 'prop-types';
 
 export function Events({ events }) {
     return (
@@ -10,4 +11,8 @@ export function Events({ events }) {
             }
         </ul>
     );
+}
+
+Events.propTypes = {
+    events: PropTypes.any
 }
