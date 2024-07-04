@@ -3,6 +3,7 @@ var app = express();
 var server = require('http').createServer(app);
 const PORT = 5000;
 const LOCAL = "127.0.0.1";
+const cors = require("cors");
 
 if (process.env.NODE_ENV === "production") {
     console.log("using socketcan");

@@ -1,16 +1,14 @@
 import React from 'react';
-import ReactDOM from 'react-dom/client';
+import { createRoot } from 'react-dom/client';
 import App from './App';
-import reportWebVitals from './reportWebVitals';
+import './style.css';
+// load interface
+import 'inter-ui'
+import { useGLTF, useTexture } from '@react-three/drei'
 
-const root = ReactDOM.createRoot(document.getElementById('root'));
-root.render(
-  <React.StrictMode>
-    <App />
-  </React.StrictMode>
-);
+useTexture.preload('/textures/heightmap_1024.png')
+useGLTF.preload('/models/track-draco.glb')
+useGLTF.preload('/models/chassis-draco.glb')
+useGLTF.preload('/models/wheel-draco.glb')
 
-// If you want to start measuring performance in your app, pass a function
-// to log results (for example: reportWebVitals(console.log))
-// or send to an analytics endpoint. Learn more: https://bit.ly/CRA-vitals
-reportWebVitals();
+createRoot(document.getElementById('root')).render(<App />);

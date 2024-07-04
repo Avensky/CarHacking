@@ -14,13 +14,20 @@ import {
   PerspectiveCamera,
 
 } from "@react-three/drei";
-import "./style.css";
+
 // import { Boxes } from "./Boxes";
 import { Car } from "./Car";
 // import { City } from "./City";
 import { Ground } from "./Ground";
 // import { FloatingGrid } from "./FloatingGrid";
 // import { Rings } from "./Rings";
+
+// Socket.io imports
+import { socket } from './socket';
+import { ConnectionState } from './components/ConnectionState.js';
+import { ConnectionManager } from './components/ConnectionManager';
+import { Events } from "./components/Events";
+import { MyForm } from './components/MyForm';
 
 function CarShow() {
   return (
@@ -97,8 +104,40 @@ function CarShow() {
 }
 
 function App() {
+
+  const [isConnected, setIsConnected] = useState(socket.connected);
+  const [fooEvents, setFooEvents] = useState([]);
+
+  useEffect(() => {
+    function onConnect() {
+      setIsConnected(true);
+    }
+
+    function onDisconnect() {
+      setIsConnected(false);
+    }
+
+    function onFooEvent(value) {
+      setFooEvents(previous => [...previous, value]);
+    }
+
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
+    socket.on('foo', onFooEvent);
+
+    return () => {
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
+      socket.off('foo', onFooEvent);
+    };
+  }, []);
+
   return (
     <Suspense fallback={null}>
+      <ConnectionState isConnected={isConnected} />
+      <Events events={fooEvents} />
+      <ConnectionManager />
+      <MyForm />
       <Canvas shadows>
         <CarShow />
       </Canvas>

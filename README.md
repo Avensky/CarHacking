@@ -59,7 +59,7 @@ source ~/.bashrc
 command -v nvm
 
 # install node
-nvm install 22.3.0
+nvm install 18
 
 # To test, in Network folder of your computer type: \\[Pi IP Address]\
 
@@ -73,6 +73,8 @@ npm ci
 # set up virtual canbus
 sudo apt-get install can-utils
 sudo modprobe vcan
+
+# use these when resetting pi on a different network
 sudo ip link add dev vcan0 type vcan
 sudo ip link set up vcan0
 
