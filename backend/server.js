@@ -1,6 +1,8 @@
 const express = require('express');
 const app = express();
-const server = require('http').createServer(app);
+const http = require('http');
+const server = http.createServer(app);
+// const server = require('http').createServer(app);
 const cors = require("cors");
 const LOCAL = "127.0.0.1";
 const PORT = 5000;
@@ -12,11 +14,18 @@ app.options('*', cors());
 if (process.env.NODE_ENV === "production") {
     // console.log("using socketcan");
     const can = require("socketcan");
-    const io = require('socket.io')(server);
+    // const io = require('socket.io')(server);
+    const Server = require('socket.io');
 
-    io.on('connection', function (client) {
+    const io = new Server(server, {
+        cors: {
+            origin: "http://localhost:3000",
+            methods: ["GET", "POST"],
+        }
+    })
+    io.on('connection', (socket) => {
         console.log('client connected')
-        console.log(client);
+        console.log(socket);
     })
 
     const channel = can.createRawChannel("vcan0", true);
@@ -31,13 +40,13 @@ if (process.env.NODE_ENV === "production") {
     }, 100)
 
     channel.addListener("onMessage", function (msg) {
-        carInfo.revs = msg.data.readUIntBE(0, 4)
-        carInfo.speed = msg.data.readUIntBE(4, 2)
-        carInfo.fuel = msg.data.readUIntBE(6, 2)
-        console.log(carInfo)
+        carInfo.revs = msg.data.readUIntBE(0, 4);
+        carInfo.speed = msg.data.readUIntBE(4, 2);
+        carInfo.fuel = msg.data.readUIntBE(6, 2);
+        console.log("car info: ", carInfo);
     })
 
-    channel.start()
+    channel.start();
 }
 
 // app.use(express.static(__dirname + '/html'));
