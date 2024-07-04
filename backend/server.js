@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 // const server = require('http').createServer(app);
 const cors = require("cors");
-// const LOCAL = "127.0.0.1";
+const LOCAL = "127.0.0.1";
 const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
@@ -65,7 +65,9 @@ const { Server } = require('socket.io');
 // const io = require('socket.io')(server);
 const io = new Server({
     cors: {
-        origin: "http://localhost:3000"
+        origin: process.env.NODE_ENV === 'production'
+            ? "http://127.0.0.1:3000"
+            : "http://localhost:3000"
     }
 })
 
