@@ -111,13 +111,16 @@ function App() {
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
+      console.log('connected');
     }
 
     function onDisconnect() {
       setIsConnected(false);
+      console.log('disconnected');
     }
 
     function onFooEvent(value) {
+      console.log('value');
       setFooEvents(previous => [...previous, value]);
     }
 
