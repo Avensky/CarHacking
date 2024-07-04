@@ -9,7 +9,12 @@ const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
-app.options('*', cors());
+const corsOptions = {
+    origin: 'http://localhost:3000',
+    credentials: true,            //access-control-allow-credentials:true
+    optionSuccessStatus: 200
+}
+app.use(cors(corsOptions));
 
 if (process.env.NODE_ENV === "production") {
     // console.log("using socketcan");
