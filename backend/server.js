@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 // const server = require('http').createServer(app);
 const cors = require("cors");
-const LOCAL = "127.0.0.1";
+// const LOCAL = "127.0.0.1";
 const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
