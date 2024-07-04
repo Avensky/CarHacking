@@ -14,21 +14,6 @@ app.options('*', cors());
 if (process.env.NODE_ENV === "production") {
     // console.log("using socketcan");
     const can = require("socketcan");
-    // const io = require('socket.io')(server);
-    const { Server } = require('socket.io');
-
-    const io = new Server({
-        server,
-        cors: {
-            origin: "http://localhost:3000",
-            methods: ["GET", "POST"],
-        }
-    })
-    io.on('connection', (socket) => {
-        console.log('client connected')
-        console.log(socket);
-    })
-
     const channel = can.createRawChannel("vcan0", true);
 
     const carInfo = {};
@@ -74,6 +59,27 @@ if (process.env.NODE_ENV === 'production') {
         })
     })
 }
+
+const { Server } = require('socket.io');
+
+// const io = require('socket.io')(server);
+const io = new Server({
+    cors: {
+        origin: "http://localhost:3000"
+    }
+})
+
+io.on("connection", (socket) => {
+    console.log(`User Connected: ${socket.id}`);
+
+    socket.on("join_room", (data) => {
+        socket.join(data);
+    });
+
+    socket.on("send_message", (data) => {
+        socket.to(data.room).emit("receive_message", data);
+    });
+});
 
 server.listen(PORT, (err) => {
     if (!err) {
