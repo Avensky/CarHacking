@@ -66,7 +66,7 @@ const { Server } = require('socket.io');
 const io = new Server({
     cors: {
         origin: process.env.NODE_ENV === 'production'
-            ? "http://127.0.0.1:3000"
+            ? "127.0.0.1:3000"
             : "http://localhost:3000"
     }
 })
