@@ -15,9 +15,10 @@ if (process.env.NODE_ENV === "production") {
     // console.log("using socketcan");
     const can = require("socketcan");
     // const io = require('socket.io')(server);
-    const Server = require('socket.io');
+    const { Server } = require('socket.io');
 
-    const io = new Server(server, {
+    const io = new Server({
+        server,
         cors: {
             origin: "http://localhost:3000",
             methods: ["GET", "POST"],
