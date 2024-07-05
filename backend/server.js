@@ -4,7 +4,7 @@ const http = require('http');
 const server = http.createServer(app);
 // const server = require('http').createServer(app);
 const cors = require("cors");
-// const LOCAL = "127.0.0.1";
+const LOCAL = "127.0.0.1";
 const PORT = 5000;
 
 // set up cors to allow us to accept requests from our client
@@ -12,7 +12,7 @@ app.use(cors());
 app.options('*', cors());
 
 if (process.env.NODE_ENV === "production") {
-    // console.log("using socketcan");
+    console.log("using socketcan");
     const can = require("socketcan");
     const channel = can.createRawChannel("vcan0", true);
 
@@ -69,15 +69,8 @@ const io = new Server({
     }
 })
 
-server.listen(PORT, (err) => {
-    if (!err) {
-        console.log('server started running on: ' + PORT);
-        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
-    } else {
-        console.log('unable to start server');
-    }
-});
-io.on("connection", (socket) => {
+
+io.off("connection").on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
     socket.on("join_room", (data) => {
@@ -87,4 +80,13 @@ io.on("connection", (socket) => {
     socket.on("send_message", (data) => {
         socket.to(data.room).emit("receive_message", data);
     });
+});
+
+server.listen(PORT, LOCAL, (err) => {
+    if (!err) {
+        console.log('server started running on: ' + PORT);
+        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
+    } else {
+        console.log('unable to start server');
+    }
 });
