@@ -71,8 +71,13 @@ server.listen(PORT, (err) => {
 
 const { Server } = require('socket.io');
 
-const io = new Server(server);
+const io = new Server(server, {
+    cors: {
+        origin: "http://localhost:3000"
+    }
+});
 
+console.log("io");
 io.on("connection", (socket) => {
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
