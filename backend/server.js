@@ -70,7 +70,7 @@ const io = new Server({
 })
 
 
-io.off("connection").on("connection", (socket) => {
+io.on("connection", (socket) => {
     console.log(`User Connected: ${socket.id}`);
 
     socket.on("join_room", (data) => {
