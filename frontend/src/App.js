@@ -16,18 +16,29 @@ import {
 } from "@react-three/drei";
 
 // import { Boxes } from "./Boxes";
-import { Car } from "./Car";
+import { Car } from "./Car.js";
 // import { City } from "./City";
-import { Ground } from "./Ground";
+import { Ground } from "./Ground.js";
 // import { FloatingGrid } from "./FloatingGrid";
 // import { Rings } from "./Rings";
 
 // Socket.io imports
-import { socket } from './socket';
+import { socket } from './socket.js';
 import { ConnectionState } from './components/ConnectionState.js';
-import { ConnectionManager } from './components/ConnectionManager';
-import { Events } from "./components/Events";
-import { MyForm } from './components/MyForm';
+import { ConnectionManager } from './components/ConnectionManager.js';
+import { Events } from "./components/Events.js";
+import { MyForm } from './components/MyForm.js';
+
+// speedometer
+import Speedometer, {
+  Background,
+  Arc,
+  Needle,
+  Progress,
+  Marks,
+  Indicator,
+} from 'react-speedometer';
+
 
 function CarShow() {
   return (
@@ -140,10 +151,25 @@ function App() {
 
   return (
     <Suspense fallback={null}>
-      <ConnectionState isConnected={isConnected} />
-      <Events events={fooEvents} />
-      <ConnectionManager />
-      <MyForm />
+      <div className="hidden">
+        <ConnectionState isConnected={isConnected} />
+        <Events events={fooEvents} />
+        <ConnectionManager />
+        <MyForm />
+      </div>
+      <div className="speedometer">
+        <Speedometer
+          value={128}
+          fontFamily='squada-one'
+        >
+          <Background />
+          <Arc />
+          <Needle />
+          <Progress />
+          <Marks />
+          <Indicator />
+        </Speedometer>
+      </div>
       <Canvas shadows>
         <CarShow />
       </Canvas>

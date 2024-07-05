@@ -1,6 +1,6 @@
 var can = require("socketcan");
+
 var channel = can.createRawChannel('vcan0', true);
-const Buffer = require('buffer');
 
 var msg = {
     'id': 500,
@@ -50,7 +50,6 @@ setInterval(() => {
     out.data = buff
 
     channel.send(out)
-
 }, 100)
 
 channel.start();
