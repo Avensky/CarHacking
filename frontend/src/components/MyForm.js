@@ -12,13 +12,14 @@ export function MyForm() {
         socket.timeout(5000).emit('create-something', value, () => {
             console.log('submit event');
             setIsLoading(false);
+            setValue('');
         });
+
     }
 
     return (
         <form onSubmit={onSubmit}>
             <input onChange={e => setValue(e.target.value)} />
-
             <button type="submit" disabled={isLoading}>Submit</button>
         </form>
     );

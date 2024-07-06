@@ -119,6 +119,7 @@ function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [fooEvents, setFooEvents] = useState([]);
   const [canEvents, setCanEvents] = useState([]);
+  const [chatEvents, setChatEvents] = useState([]);
 
   useEffect(() => {
     function onConnect() {
@@ -141,6 +142,11 @@ function App() {
       setCanEvents(previous => [...previous, value]);
     }
 
+    function onChatEvent(value) {
+      console.log('value');
+      setChatEvents(previous => [...previous, value]);
+    }
+
     socket.on('connection', (socket) => {
       console.log(`user connected: ${socket.id}`)
     });
@@ -149,6 +155,7 @@ function App() {
     socket.on('foo', onFooEvent);
     // can
     socket.on('can message', onCanEvent);
+    socket.on('create-something', onChatEvent);
 
     return () => {
       socket.off('connect', onConnect);
@@ -156,6 +163,7 @@ function App() {
       socket.off('foo', onFooEvent);
       // can
       socket.off('can message', onCanEvent);
+      socket.off('create-something', onChatEvent);
     };
   }, []);
 
@@ -165,6 +173,7 @@ function App() {
         <ConnectionState isConnected={isConnected} />
         <Events events={fooEvents} />
         <Events events={canEvents} />
+        <Events events={chatEvents} />
         <ConnectionManager />
         <MyForm />
       </div>

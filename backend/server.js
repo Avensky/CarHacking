@@ -98,4 +98,10 @@ io.on("connection", (socket) => {
     socket.on("disconnect", (reason) => {
         console.log(`disconnected due to ${reason}`);
     });
+
+    socket.on('create-something', (msg) => {
+        io.emit('create-something', msg);
+        console.log('message: ' + msg);
+    });
+
 });
