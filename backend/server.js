@@ -12,7 +12,6 @@ app.use(cors());
 app.options('*', cors());
 
 if (process.env.NODE_ENV === "production") {
-    console.log("using socketcan");
     const can = require("socketcan");
     const channel = can.createRawChannel("vcan0", true);
 
@@ -24,7 +23,7 @@ if (process.env.NODE_ENV === "production") {
     setInterval(() => {
         io.emit('carMessage', carInfo)
     }, 100)
-
+    // recieves car data from car.js script
     channel.addListener("onMessage", function (msg) {
         carInfo.revs = msg.data.readUIntBE(0, 4);
         carInfo.speed = msg.data.readUIntBE(4, 2);
@@ -79,9 +78,18 @@ const io = new Server(server, {
 
 console.log("io");
 io.on("connection", (socket) => {
+    // 1
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
+    socket.on('can message', (from, msg) => {
+        msg.channel.addListener("onMessage", function (data) {
+            console.log('listener data', data);
+        });
+        console.log('Recieved message by', from, 'sayin ', msg);
+    });
+
     socket.conn.on("upgrade", (transport) => {
+        // 2
         console.log(`transport upgraded to ${transport.name}`);
     });
 

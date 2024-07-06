@@ -1,6 +1,9 @@
-var can = require("socketcan");
-
-var channel = can.createRawChannel('vcan0', true);
+// The CAN network driver provides a generic interface to setup, 
+// configure and monitor CAN devices. To configure bit-timing 
+// parameters use the program ip
+const can = require("socketcan");
+// The virtual CAN driver (vcan)
+const channel = can.createRawChannel('vcan0', true);
 
 var msg = {
     'id': 500,

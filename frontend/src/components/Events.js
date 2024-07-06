@@ -2,6 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export function Events({ events }) {
+    console.log('events', events);
     return (
         <ul>
             {

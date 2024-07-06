@@ -12,6 +12,19 @@ canvas {
   display: none;
 }
 
+.chat {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  padding: 25px 25px 15px;
+  margin-bottom: 50px;
+  width: 350px;
+  height: 130px;
+  z-index: 2;
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.152);
+}
+
 .speedometer {
   /* background-color: black; */
   /* display: flex; */

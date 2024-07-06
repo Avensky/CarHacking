@@ -24,7 +24,6 @@ Raspbian 64 bit OS.
 
 ## Installation
 
-```
 # Flash 64 bit os raspbian
 # Connect to the internet and accept updates
 # install samba onto the Pi
@@ -32,6 +31,10 @@ sudo apt install samba samba-common-bin
 
 # set up smb.conf file
 sudo nano /etc/samba/smb.conf
+# to reload
+sudo smbd stop;
+sudo nmbd stop;
+sudo smbd start;
 
 # add the following to the bottom of the file and save changes.
 [Pishare]
@@ -47,7 +50,6 @@ Guest ok = yes
 
 # Make a user to log into the Pi (username is pi in this case) and enter a password
 sudo smbpasswd -a pi
-
 
 # install node version manager 
 curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
@@ -81,12 +83,9 @@ sudo ip link set up vcan0
 # To test, type ifconfig and look for vcan
 # Get ip adress
 hostname -I
-```
-
-
 
 ## Usage
-```
+
 # in terminal 1 start server from project dir
 cd ~/share/CarHacking
 npm start 
@@ -99,7 +98,7 @@ node car.js
 
 # in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
 cansend vcan0 1F4#AAAAAAAAAAAAAAAA
-```
+
 ## Acknowledgement
 Project concept and execution inspired by rhysmorgan134/Can-App
 
