@@ -11,29 +11,6 @@ const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
 app.use(cors());
 app.options('*', cors());
 
-if (process.env.NODE_ENV === "production") {
-    const can = require("socketcan");
-    const channel = can.createRawChannel("vcan0", true);
-
-    const carInfo = {};
-    carInfo.speed = 0
-    carInfo.revs = 0
-    carInfo.fuel = 0
-
-    setInterval(() => {
-        io.emit('carMessage', carInfo)
-    }, 100)
-    // recieves car data from car.js script
-    channel.addListener("onMessage", function (msg) {
-        carInfo.revs = msg.data.readUIntBE(0, 4);
-        carInfo.speed = msg.data.readUIntBE(4, 2);
-        carInfo.fuel = msg.data.readUIntBE(6, 2);
-        console.log("car info: ", carInfo);
-    })
-
-    channel.start();
-}
-
 // app.use(express.static(__dirname + '/html'));
 // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
 
@@ -78,6 +55,31 @@ const io = new Server(server, {
 
 console.log("io");
 io.on("connection", (socket) => {
+    if (process.env.NODE_ENV === "production") {
+
+        const can = require("socketcan");
+        const channel = can.createRawChannel("vcan0", true);
+
+        const carInfo = {};
+        carInfo.speed = 0
+        carInfo.revs = 0
+        carInfo.fuel = 0
+
+        setInterval(() => {
+            io.emit('can message', carInfo)
+        }, 100)
+
+        // recieves car data from car.js script
+        channel.addListener("onMessage", function (msg) {
+            carInfo.revs = msg.data.readUIntBE(0, 4);
+            carInfo.speed = msg.data.readUIntBE(4, 2);
+            carInfo.fuel = msg.data.readUIntBE(6, 2);
+            console.log("car info: ", carInfo);
+        })
+
+        channel.start();
+    }
+
     // 1
     console.log(`connected with transport ${socket.conn.transport.name}`);
 

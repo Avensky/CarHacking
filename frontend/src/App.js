@@ -147,13 +147,15 @@ function App() {
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('foo', onFooEvent);
-    socket.on('can', onCanEvent);
+    // can
+    socket.on('can message', onCanEvent);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       socket.off('foo', onFooEvent);
-      socket.off('can', onCanEvent);
+      // can
+      socket.off('can message', onCanEvent);
     };
   }, []);
 
