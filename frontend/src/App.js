@@ -60,7 +60,7 @@ function CarShow() {
       <color args={['#fff']} attach="background" />
 
       {/* Creates 6 cameras that render to a WebGLCubeRenderTarget. */}
-      <CubeCamera resolution={256} frames={Infinity}>
+      <CubeCamera resolution={256} frames={60}>
         {(texture) => (
           <>
             <Environment map={texture} />
@@ -118,9 +118,9 @@ function CarShow() {
 function App() {
 
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [fooEvents, setFooEvents] = useState([]);
+  // const [fooEvents, setFooEvents] = useState([]);
   const [canEvents, setCanEvents] = useState([]);
-  const [chatEvents, setChatEvents] = useState([]);
+  // const [chatEvents, setChatEvents] = useState([]);
 
   useEffect(() => {
     function onConnect() {
@@ -133,38 +133,38 @@ function App() {
       console.log('disconnected');
     }
 
-    function onFooEvent(value) {
-      console.log('value');
-      setFooEvents(previous => [...previous, value]);
-    }
+    // function onFooEvent(value) {
+    //   console.log('value');
+    //   setFooEvents(previous => [...previous, value]);
+    // }
 
     function onCanEvent(value) {
-      console.log('value');
+      // console.log('value');
       setCanEvents(value);
     }
 
-    function onChatEvent(value) {
-      console.log('value');
-      setChatEvents(previous => [...previous, value]);
-    }
+    // function onChatEvent(value) {
+    //   console.log('value');
+    //   setChatEvents(previous => [...previous, value]);
+    // }
 
     socket.on('connection', (socket) => {
       console.log(`user connected: ${socket.id}`)
     });
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    socket.on('foo', onFooEvent);
+    // socket.on('foo', onFooEvent);
     // can
     socket.on('can message', onCanEvent);
-    socket.on('create-something', onChatEvent);
+    // socket.on('create-something', onChatEvent);
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      socket.off('foo', onFooEvent);
+      // socket.off('foo', onFooEvent);
       // can
       socket.off('can message', onCanEvent);
-      socket.off('create-something', onChatEvent);
+      // socket.off('create-something', onChatEvent);
     };
   }, []);
 
@@ -172,9 +172,9 @@ function App() {
     <Suspense fallback={null}>
       <div className="chat">
         <ConnectionState isConnected={isConnected} />
-        <Events events={fooEvents} />
+        {/* <Events events={fooEvents} /> */}
         <SpeedEvents events={canEvents} />
-        <Events events={chatEvents} />
+        {/* <Events events={chatEvents} /> */}
         <ConnectionManager />
         <MyForm />
       </div>

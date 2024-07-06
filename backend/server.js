@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
 
         setInterval(() => {
             io.emit('can message', carInfo)
-        }, 1000)
+        }, 2000)
 
         // recieves car data from car.js script
         channel.addListener("onMessage", function (msg) {
@@ -98,9 +98,9 @@ io.on("connection", (socket) => {
         console.log(`disconnected due to ${reason}`);
     });
 
-    socket.on('create-something', (msg) => {
-        io.emit('create-something', msg);
-        console.log('message: ' + msg);
-    });
+    // socket.on('create-something', (msg) => {
+    //     io.emit('create-something', msg);
+    //     console.log('message: ' + msg);
+    // });
 
 });
