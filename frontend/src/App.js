@@ -140,7 +140,7 @@ function App() {
 
     function onCanEvent(value) {
       console.log('value');
-      setCanEvents(previous => [...previous, value]);
+      setCanEvents(value);
     }
 
     function onChatEvent(value) {
