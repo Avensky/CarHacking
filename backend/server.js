@@ -56,10 +56,9 @@ const io = new Server(server, {
 console.log("io");
 io.on("connection", (socket) => {
     if (process.env.NODE_ENV === "production") {
-
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
-
+        // default values
         const carInfo = {};
         carInfo.speed = 0
         carInfo.revs = 0
@@ -67,7 +66,7 @@ io.on("connection", (socket) => {
 
         setInterval(() => {
             io.emit('can message', carInfo)
-        }, 100)
+        }, 1000)
 
         // recieves car data from car.js script
         channel.addListener("onMessage", function (msg) {
@@ -83,12 +82,12 @@ io.on("connection", (socket) => {
     // 1
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
-    socket.on('can message', (from, msg) => {
-        msg.channel.addListener("onMessage", function (data) {
-            console.log('listener data', data);
-        });
-        console.log('Recieved message by', from, 'sayin ', msg);
-    });
+    // socket.on('can message', (from, msg) => {
+    //     msg.channel.addListener("onMessage", function (data) {
+    //         console.log('listener data', data);
+    //     });
+    //     console.log('Recieved message by', from, 'sayin ', msg);
+    // });
 
     socket.conn.on("upgrade", (transport) => {
         // 2
