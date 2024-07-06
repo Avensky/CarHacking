@@ -1,7 +1,7 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 
-export function Speedometer({ events }) {
+export function SpeedEvents({ events }) {
     console.log('events', events);
     return (
         <ul>
@@ -14,6 +14,6 @@ export function Speedometer({ events }) {
     );
 }
 
-Speedometer.propTypes = {
+SpeedEvents.propTypes = {
     events: PropTypes.any
 }

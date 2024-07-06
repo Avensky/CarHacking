@@ -27,7 +27,7 @@ import { socket } from './socket.js';
 import { ConnectionState } from './components/ConnectionState.js';
 import { ConnectionManager } from './components/ConnectionManager.js';
 import { Events } from "./components/Events.js";
-import { Speedometer } from "./components/Speedometer.js";
+import { SpeedEvents } from "./components/SpeedEvents.js";
 import { MyForm } from './components/MyForm.js';
 
 // speedometer
@@ -173,7 +173,7 @@ function App() {
       <div className="chat">
         <ConnectionState isConnected={isConnected} />
         <Events events={fooEvents} />
-        <Speedometer events={canEvents} />
+        <SpeedEvents events={canEvents} />
         <Events events={chatEvents} />
         <ConnectionManager />
         <MyForm />
