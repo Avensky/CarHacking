@@ -26,7 +26,7 @@ import { Ground } from "./Ground.js";
 import { socket } from './socket.js';
 import { ConnectionState } from './components/ConnectionState.js';
 import { ConnectionManager } from './components/ConnectionManager.js';
-import { Events } from "./components/Events.js";
+// import { Events } from "./components/Events.js";
 import { SpeedEvents } from "./components/SpeedEvents.js";
 import { MyForm } from './components/MyForm.js';
 
