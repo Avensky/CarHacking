@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 // speedometer
 import Speedometer, {
@@ -11,14 +11,20 @@ import Speedometer, {
 } from 'react-speedometer';
 
 export function SpeedEvents({ events }) {
-    // const [ speed, setSpeed ] = useState('')
-    console.log('events', events);
-    console.log('events', events.speed);
+    const [speed, setSpeed] = useState(events.speed)
+    console.log('speed events', events);
+    console.log('speed events', events.speed);
+
+    useEffect(() => {
+        if (speed !== events.speed) {
+            setSpeed(events.speed);
+        }
+    }, [events])
 
     return (
         <div className="speedometer">
             <Speedometer
-                value={events.speed}
+                value={speed}
                 fontFamily='squada-one'
             >
                 <Background />

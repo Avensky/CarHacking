@@ -130,8 +130,8 @@ function App() {
     // }
 
     function onCanEvent(value) {
-      setCanEvents(json.parse(value));
-      console.log('setCanEvent', json.parse(value));
+      setCanEvents(JSON.parse(value));
+      console.log('setCanEvent', JSON.parse(value));
     }
 
     // function onChatEvent(value) {
