@@ -12,30 +12,70 @@ canvas {
   display: none;
 }
 
+.wrapper {
+  position: relative;
+  bottom: 0;
+}
+
 .chat {
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 25px 25px 15px;
-  margin-bottom: 50px;
-  width: 350px;
-  height: 130px;
+  padding: 1dvw 1dvh;
+  margin-bottom: 5dvh;
+  width: 30dvw;
+  height: 20dvh;
   z-index: 2;
   user-select: none;
   background-color: rgba(0, 0, 0, 0.152);
+  user-select: none;
+  pointer-events: none;
 }
 
-.speedometer {
-  /* background-color: black; */
-  /* display: flex; */
-  /* justify-content: flex-end; */
-  /* padding: 30px; */
+.dashboard {
   position: absolute;
   bottom: 0;
-  right: 0;
-  padding: 25px 25px 15px;
-  width: auto;
-  height: auto;
+  width: 100dvw;
+  /* height: 100dvh; */
+  padding: 1dvw 1dvh;
+  box-sizing: border-box;
   z-index: 2;
+  display: flex;
+  flex-direction: column;
   user-select: none;
+  pointer-events: none;
+  align-items: end;
+  justify-content: end;
+}
+
+.top-dash {}
+
+.dash-bottom {
+  display: flex;
+  align-items: end;
+}
+
+/* fuel and temp gauge */
+.misc {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  position: relative;
+}
+
+.fuel,
+.temp {
+  position: absolute;
+}
+
+.fuel {
+  top: 0;
+}
+
+.temp {
+  bottom: 0;
 }
