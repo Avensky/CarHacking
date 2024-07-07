@@ -11,20 +11,20 @@ import Speedometer, {
 } from 'react-speedometer';
 
 export function SpeedEvents({ events }) {
-    const [speed, setSpeed] = useState(events.speed)
+    // const [speed, setSpeed] = useState(events.speed)
     console.log('speed events', events);
     console.log('speed events', events.speed);
 
-    useEffect(() => {
-        if (events.speed != speed) {
-            setSpeed(events.speed);
-        }
-    }, [events.speed])
+    // useEffect(() => {
+    //     if (events.speed != speed) {
+    //         setSpeed(events.speed);
+    //     }
+    // }, [events.speed])
 
     return (
         <div className="speedometer">
             <Speedometer
-                value={speed}
+                value={events.speed}
                 fontFamily='squada-one'
             >
                 <Background />
