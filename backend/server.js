@@ -103,4 +103,8 @@ io.on("connection", (socket) => {
     //     console.log('message: ' + msg);
     // });
 
+    // handler errors
+    socket.on('error', (err) => {
+        console.error('Socket.IO error:', err);
+    });
 });
