@@ -1,11 +1,5 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-import {
-  EffectComposer,
-  // DepthOfField,
-  // Bloom,
-  // ChromaticAberration,
-} from "@react-three/postprocessing";
 // import { BlendFunction } from "postprocessing";
 import {
   CubeCamera,
@@ -30,15 +24,12 @@ import { ConnectionManager } from './components/ConnectionManager.js';
 import { SpeedEvents } from "./components/SpeedEvents.js";
 import { MyForm } from './components/MyForm.js';
 
-// speedometer
-import Speedometer, {
-  Background,
-  Arc,
-  Needle,
-  Progress,
-  Marks,
-  Indicator,
-} from 'react-speedometer';
+// import {
+//   EffectComposer,
+//   // DepthOfField,
+//   // Bloom,
+//   // ChromaticAberration,
+// } from "@react-three/postprocessing";
 
 
 function CarShow() {
@@ -95,9 +86,9 @@ function CarShow() {
       {/* <Boxes /> */}
       {/* <Rings /> */}
 
-      <EffectComposer>
-        {/* <DepthOfField focusDistance={0.0035} focalLength={0.01} bokehScale={3} height={480} /> */}
-        {/* <Bloom        blendFunction={BlendFunction.ADD}
+      {/* <EffectComposer> */}
+      {/* <DepthOfField focusDistance={0.0035} focalLength={0.01} bokehScale={3} height={480} /> */}
+      {/* <Bloom        blendFunction={BlendFunction.ADD}
           intensity={1.3} // The bloom intensity.
           width={300} // render width
           height={300} // render height
@@ -105,11 +96,11 @@ function CarShow() {
           luminanceThreshold={0.15} // luminance threshold. Raise this value to mask out darker elements in the scene.
           luminanceSmoothing={0.025} // smoothness of the luminance threshold. Range is [0, 1]
         /> */}
-        {/* <ChromaticAberration
+      {/* <ChromaticAberration
           blendFunction={BlendFunction.NORMAL} // blend mode
           offset={[0.0005, 0.0012]} // color offset
         /> */}
-      </EffectComposer>
+      {/* </EffectComposer> */}
 
     </>
   );
@@ -139,8 +130,8 @@ function App() {
     // }
 
     function onCanEvent(value) {
-      // console.log('value');
-      setCanEvents(value);
+      setCanEvents(json.parse(value));
+      console.log('setCanEvent', json.parse(value));
     }
 
     // function onChatEvent(value) {
@@ -165,6 +156,7 @@ function App() {
       // can
       socket.off('can message', onCanEvent);
       // socket.off('create-something', onChatEvent);
+      socket.removeAllListeners('can message')
     };
   }, []);
 
@@ -173,24 +165,13 @@ function App() {
       <div className="chat">
         <ConnectionState isConnected={isConnected} />
         {/* <Events events={fooEvents} /> */}
-        <SpeedEvents events={canEvents} />
         {/* <Events events={chatEvents} /> */}
         <ConnectionManager />
         <MyForm />
       </div>
-      <div className="speedometer">
-        <Speedometer
-          value={128}
-          fontFamily='squada-one'
-        >
-          <Background />
-          <Arc />
-          <Needle />
-          <Progress />
-          <Marks />
-          <Indicator />
-        </Speedometer>
-      </div>
+
+      <SpeedEvents events={canEvents} />
+
       <Canvas shadows>
         <CarShow />
       </Canvas>
