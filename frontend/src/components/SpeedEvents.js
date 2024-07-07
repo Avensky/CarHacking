@@ -19,7 +19,7 @@ export function SpeedEvents({ events }) {
         if (speed !== events.speed) {
             setSpeed(events.speed);
         }
-    }, [events])
+    }, [events.speed])
 
     return (
         <div className="speedometer">
