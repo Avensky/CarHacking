@@ -66,7 +66,7 @@ io.on("connection", (socket) => {
 
         setInterval(() => {
             io.emit('can message', carInfo)
-        }, 3000)
+        }, 100)
 
         // recieves car data from car.js script
         channel.addListener("onMessage", function (msg) {
@@ -86,11 +86,10 @@ io.on("connection", (socket) => {
     //     msg.channel.addListener("onMessage", function (data) {
     //         console.log('listener data', data);
     //     });
-    //     console.log('Recieved message by', from, 'sayin ', msg);
     // });
 
     socket.conn.on("upgrade", (transport) => {
-        // 2
+
         console.log(`transport upgraded to ${transport.name}`);
     });
 

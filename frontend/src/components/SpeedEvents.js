@@ -154,8 +154,10 @@ export function SpeedEvents({ events }) {
                         />
                         <Progress />
                         <Marks
-                            fontSize={10}
                             baseWidth={1}
+                            step={10}
+                            fontSize={10}
+
                         />
                         <Indicator
                             // textAnchor='start'

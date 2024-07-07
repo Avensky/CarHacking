@@ -2,13 +2,13 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export function Events({ events }) {
-    console.log('events', events);
+    console.log('error event', events);
     return (
         <ul>
             {
-                events.map((event, index) =>
+                events ? events.map((event, index) =>
                     <li key={index}>{event}</li>
-                )
+                ) : null
             }
         </ul>
     );

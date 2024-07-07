@@ -2,8 +2,8 @@ html,
 body,
 #root,
 canvas {
-  width: 100%;
-  height: 100%;
+  width: 100dvw;
+  height: 100dvh;
   margin: 0;
   overflow: hidden;
 }
@@ -13,7 +13,7 @@ canvas {
 }
 
 .wrapper {
-  position: relative;
+  /* position: relative; */
   bottom: 0;
 }
 
@@ -21,10 +21,10 @@ canvas {
   position: absolute;
   bottom: 0;
   left: 0;
-  padding: 1dvw 1dvh;
-  margin-bottom: 5dvh;
-  width: 30dvw;
-  height: 20dvh;
+  padding: 1lvw 1lvh;
+  margin-bottom: 5lvh;
+  width: 30lvw;
+  height: 20lvh;
   z-index: 2;
   user-select: none;
   background-color: rgba(0, 0, 0, 0.152);
@@ -35,9 +35,9 @@ canvas {
 .dashboard {
   position: absolute;
   bottom: 0;
-  width: 100dvw;
+  width: 100lvw;
   /* height: 100dvh; */
-  padding: 1dvw 1dvh;
+  padding: 1lvw 1lvh;
   box-sizing: border-box;
   z-index: 2;
   display: flex;

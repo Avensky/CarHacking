@@ -17,11 +17,11 @@ import { Ground } from "./Ground.js";
 // import { Rings } from "./Rings";
 
 // Socket.io imports
-// import { socket } from './socket.js';
-import useSocket from "./hooks/useSocket.js";
+import { socket } from './socket.js';
+// import useSocket from "./hooks/useSocket.js";
 // import { ConnectionState } from './components/ConnectionState.js';
 // import { ConnectionManager } from './components/ConnectionManager.js';
-// import { Events } from "./components/Events.js";
+import { Events } from "./components/Events.js";
 import { SpeedEvents } from "./components/SpeedEvents.js";
 // import { MyForm } from './components/MyForm.js';
 
@@ -108,27 +108,87 @@ function CarShow() {
 
 function App() {
   // "undefined" means the URL will be computed from the `window.location` object
-  const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';
+  // const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';
 
-  const { data, error } = useSocket(URL);
-  const [socketData, setSocketData] = useState(null);
+  // const { data, error } = useSocket(URL);
+  // const [socketData, setSocketData] = useState(null);
+
+  const start = {
+    speed: 0,
+    rpms: 0,
+    fuel: 0,
+    temp: 0
+  };
+  const [error, setError] = useState(null);
+  // const [isConnected, setIsConnected] = useState(socket.connected);
+  const [canEvents, setCanEvents] = useState(start);
 
   useEffect(() => {
-    if (data) {
-      // Handle incoming socket data
-      setSocketData(data);
+    // function onConnect() {
+    //     setIsConnected(true);
+    //     console.log('connected');
+    // }
+
+    // function onDisconnect() {
+    //     setIsConnected(false);
+    //     console.log('disconnected');
+    // }
+
+    // function onFooEvent(value) {
+    //   console.log('value');
+    //   setFooEvents(previous => [...previous, value]);
+    // }
+
+    function onCanEvent(value) {
+      setCanEvents(value);
+      console.log('setCanEvent', value);
     }
-  }, [data]);
+    function onError(value) {
+      setError(value);
+      console.log('setError', value);
+    }
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+    // function onChatEvent(value) {
+    //   console.log('value');
+    //   setChatEvents(previous => [...previous, value]);
+    // }
 
-  const start = {};
-  start.speed = 0;
-  start.rpms = 0;
-  start.fuel = 0;
-  start.temp = 0;
+    // socket.on('connection', (socket) => {
+    //     console.log(`user connected: ${socket.id}`)
+    // });
+    // socket.on('connect', onConnect);
+    // socket.on('disconnect', onDisconnect);
+    // socket.on('foo', onFooEvent);
+    // can
+    // socket.on('can message', onCanEvent);
+    // socket.on('create-something', onChatEvent);
+
+    // socketRef.current = io(url);
+    // socketRef.current.on('connect', () => {
+    //     console.log('Connected to Socket.IO server');
+    // });
+
+    socket.on('can message', (message) => {
+      onCanEvent(message);
+    });
+
+    socket.on('error', (err) => {
+      onError(err);
+    });
+
+    return () => {
+      // socketRef.current.disconnect();
+      // socket.off('connect', onConnect);
+      // socket.off('disconnect', onDisconnect);
+      // socket.off('foo', onFooEvent);
+      // can
+      socket.off('can message', onCanEvent);
+      socket.off('error', setError);
+      // socket.off('create-something', onChatEvent);
+      // socket.removeAllListeners('can message')
+    };
+  }, []);
+
 
 
   return (
@@ -137,12 +197,12 @@ function App() {
         <div className="chat">
           {/* <ConnectionState isConnected={isConnected} /> */}
           {/* <Events events={fooEvents} /> */}
-          {/* <Events events={chatEvents} /> */}
+          <Events events={error} />
           {/* <ConnectionManager /> */}
           {/* <MyForm /> */}
         </div>
 
-        <SpeedEvents events={socketData || start} />
+        <SpeedEvents events={canEvents || start} />
 
         <Canvas shadows>
           <CarShow />
