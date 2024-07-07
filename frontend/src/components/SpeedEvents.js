@@ -13,7 +13,6 @@ import Speedometer, {
 
 export function SpeedEvents({ events }) {
     // const [speed, setSpeed] = useState(events.speed)
-    console.log('speed events', events);
     console.log('speed events', events.speed);
 
     // useEffect(() => {
