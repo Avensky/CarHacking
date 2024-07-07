@@ -53,6 +53,6 @@ setInterval(() => {
     out.data = buff
 
     channel.send(out)
-}, 1000)
+}, 100)
 
 channel.start();

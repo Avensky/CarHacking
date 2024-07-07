@@ -161,14 +161,14 @@ export function SpeedEvents({ events }) {
                         />
                         <Indicator
                             // textAnchor='start'
-                            x={107}
-                            y={70}
-                            fontSize={28} />
+                            x={96}
+                            y={69}
+                            fontSize={26} />
                     </Speedometer>
                 </div>
                 <div className="rpms">
                     <Speedometer
-                        value={events.rpms}
+                        value={events.rpms / 1000}
                         max={9}
                         fontFamily='squada-one'
                         // accentColor='black'
