@@ -16,7 +16,7 @@ export function SpeedEvents({ events }) {
     console.log('speed events', events.speed);
 
     useEffect(() => {
-        if (speed !== events.speed) {
+        if (events.speed != speed) {
             setSpeed(events.speed);
         }
     }, [events.speed])
