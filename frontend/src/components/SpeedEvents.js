@@ -15,7 +15,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export function SpeedEvents({ events }) {
     // const [speed, setSpeed] = useState(events.speed)
-    console.log('speed events', events.speed);
+    // console.log('speed events', events.speed);
 
     // useEffect(() => {
     //     if (events.speed != speed) {

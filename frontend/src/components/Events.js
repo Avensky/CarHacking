@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export function Events({ events }) {
-    console.log('error event', events);
+    // console.log('error event', events);
     return (
         <ul>
             {

@@ -66,14 +66,14 @@ io.on("connection", (socket) => {
 
         setInterval(() => {
             io.emit('can message', carInfo)
-        }, 3000)
+        }, 1000)
 
         // recieves car data from car.js script
         channel.addListener("onMessage", function (msg) {
             carInfo.rpms = msg.data.readUIntBE(0, 4);
             carInfo.speed = msg.data.readUIntBE(4, 2);
             carInfo.fuel = msg.data.readUIntBE(6, 2);
-            carInfo.temp = 210;
+            carInfo.temp = msg.data.readUIntBE(2, 4);
             console.log("car info: ", carInfo);
         })
 
