@@ -72,7 +72,7 @@ export function SpeedEvents({ events }) {
                                         // opacity={0.6}
                                         fill="white"
                                     >{"F"}</text> : null}
-                                    {(i === 2) ? < text
+                                    {/* {(i === 2) ? < text
                                         {...mark.textProps}
                                         textAnchor="middle"
                                         alignmentBaseline="middle"
@@ -81,7 +81,7 @@ export function SpeedEvents({ events }) {
                                         fill="white"
                                     >
                                         <FontAwesomeIcon icon="fa-solid fa-heart" />
-                                    </text> : null}
+                                    </text> : null} */}
                                     {(i === 4) ? < text
                                         {...mark.textProps}
                                         textAnchor="middle"
