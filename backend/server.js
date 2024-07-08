@@ -63,6 +63,7 @@ io.on("connection", (socket) => {
         carInfo.speed = 0
         carInfo.rpms = 0
         carInfo.fuel = 0
+        // carInfo.temp = 0
 
         setInterval(() => {
             io.emit('can message', carInfo)
@@ -73,7 +74,7 @@ io.on("connection", (socket) => {
             carInfo.rpms = msg.data.readUIntBE(0, 4);
             carInfo.speed = msg.data.readUIntBE(4, 2);
             carInfo.fuel = msg.data.readUIntBE(6, 2);
-            carInfo.temp = msg.data.readUIntBE(2, 4);
+            // carInfo.temp = msg.data.readUIntBE(2, 4);
             console.log("car info: ", carInfo);
         })
 

@@ -1,29 +1,12 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
-// import { BlendFunction } from "postprocessing";
-import {
-  CubeCamera,
-  Environment,
-  OrbitControls,
-  PerspectiveCamera,
-
-} from "@react-three/drei";
-
-// import { Boxes } from "./Boxes";
-import { Car } from "./Car.js";
-// import { City } from "./City";
-import { Ground } from "./Ground.js";
-// import { FloatingGrid } from "./FloatingGrid";
-// import { Rings } from "./Rings";
-
-// Socket.io imports
-import { socket } from './socket.js';
-// import useSocket from "./hooks/useSocket.js";
-// import { ConnectionState } from './components/ConnectionState.js';
-// import { ConnectionManager } from './components/ConnectionManager.js';
-import { Events } from "./components/Events.js";
-import { SpeedEvents } from "./components/SpeedEvents.js";
-// import { MyForm } from './components/MyForm.js';
+import { socket } from './socket';
+// import { ConnectionState } from './components/ConnectionState';
+// import { ConnectionManager } from './components/ConnectionManager';
+import { Events } from "./components/Events";
+import { SpeedEvents } from "./components/SpeedEvents";
+import { CarShow } from "./CarShow/CarShow";
+// import { MyForm } from './components/MyForm';
 
 // import {
 //   EffectComposer,
@@ -32,79 +15,7 @@ import { SpeedEvents } from "./components/SpeedEvents.js";
 //   // ChromaticAberration,
 // } from "@react-three/postprocessing";
 
-function CarShow() {
-  return (
-    <>
-      {/* Allows camera to orbit around target  */}
-      <OrbitControls
-        target={[0, 0.55, 0]}
-        setPolarAngle={1.55}
-        maxPolarAngle={1.65} // how far orbit vertically
-        maxDistance={.9}
-        minDistance={.9}
-        enablePan={false}
-      />
-      {/* This projection mode is designed to mimic the way the human eye sees.  */}
-      <PerspectiveCamera makeDefault fov={50} position={[3, 2, 5]} />
 
-      {/* background color */}
-      <color args={['#fff']} attach="background" />
-
-      {/* Creates 6 cameras that render to a WebGLCubeRenderTarget. */}
-      <CubeCamera resolution={256} frames={60}>
-        {(texture) => (
-          <>
-            <Environment map={texture} />
-            {/* <City /> */}
-            <Car />
-          </>
-        )}
-      </CubeCamera>
-
-      {/* This light gets emitted from a single point in one direction, along a cone that increases in size the further from the light it gets. */}
-      {/* <spotLight
-        color={[1, 0.25, 0.7]}
-        intensity={1.5}
-        angle={0.6}
-        penumbra={0.5}
-        position={[5, 5, 0]}
-        castShadow
-        shadow-bias={-0.0001}
-      /> */}
-
-      {/* <spotLight
-        color={[0.14, 0.5, 1]}
-        intensity={2}
-        angle={0.6}
-        penumbra={0.5}
-        position={[-5, 5, 0]}
-        castShadow
-        shadow-bias={-0.0001}
-      /> */}
-      <Ground />
-      {/* <FloatingGrid /> */}
-      {/* <Boxes /> */}
-      {/* <Rings /> */}
-
-      {/* <EffectComposer> */}
-      {/* <DepthOfField focusDistance={0.0035} focalLength={0.01} bokehScale={3} height={480} /> */}
-      {/* <Bloom        blendFunction={BlendFunction.ADD}
-          intensity={1.3} // The bloom intensity.
-          width={300} // render width
-          height={300} // render height
-          kernelSize={5} // blur kernel size
-          luminanceThreshold={0.15} // luminance threshold. Raise this value to mask out darker elements in the scene.
-          luminanceSmoothing={0.025} // smoothness of the luminance threshold. Range is [0, 1]
-        /> */}
-      {/* <ChromaticAberration
-          blendFunction={BlendFunction.NORMAL} // blend mode
-          offset={[0.0005, 0.0012]} // color offset
-        /> */}
-      {/* </EffectComposer> */}
-
-    </>
-  );
-}
 
 function App() {
   // "undefined" means the URL will be computed from the `window.location` object
@@ -193,20 +104,23 @@ function App() {
 
   return (
     <Suspense fallback={null}>
-      <div className="wrapper">
-        <div className="chat">
-          {/* <ConnectionState isConnected={isConnected} /> */}
-          {/* <Events events={fooEvents} /> */}
-          <Events events={error} />
-          {/* <ConnectionManager /> */}
-          {/* <MyForm /> */}
+      <div className='three-d-container'>
+        {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
+        <div className="wrapper">
+          <div className="chat">
+            {/* <ConnectionState isConnected={isConnected} /> */}
+            {/* <Events events={fooEvents} /> */}
+            <Events events={error} />
+            {/* <ConnectionManager /> */}
+            {/* <MyForm /> */}
+          </div>
+          <SpeedEvents events={canEvents || start} />
         </div>
-
-        <SpeedEvents events={canEvents || start} />
-
-        <Canvas shadows>
-          <CarShow />
-        </Canvas>
+        <div className='three-d'>
+          <Canvas shadows>
+            <CarShow />
+          </Canvas>
+        </div>
       </div>
     </Suspense>
   );
