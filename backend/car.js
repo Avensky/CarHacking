@@ -14,7 +14,7 @@ var speed = 0
 var revs = 0
 var up = true
 var fuel = 500
-var temp = 210
+// var temp = 210
 
 setInterval(() => {
     var out = {}
@@ -48,7 +48,7 @@ setInterval(() => {
     buff.writeUIntBE(speed, 4, 2)
     buff.writeUIntBE(fuel, 6, 2)
     // attempt to add new gauge 
-    buff.writeUIntBE(temp, 2, 4)
+    // buff.writeUIntBE(temp, 2, 4)
 
 
     console.log(buff)
