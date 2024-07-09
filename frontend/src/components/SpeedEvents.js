@@ -11,7 +11,7 @@ import Speedometer, {
     Indicator,
     DangerPath
 } from 'react-speedometer';
-import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
+// import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 
 export function SpeedEvents({ events }) {
     // const [speed, setSpeed] = useState(events.speed)
