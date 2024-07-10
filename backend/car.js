@@ -48,10 +48,10 @@ const engine = () => {
                 now.gear++;
                 now.speed += 1;
             }
-            else if (gear >= 6) {
+            else if (now.gear >= 6) {
                 // if car is in max gear inscrease speed until it reaches max
                 // speed and rpms
-                if (revs < 9000) {
+                if (now.revs < 9000) {
                     now.revs += 50;
                     now.speed += 1;
                 }
