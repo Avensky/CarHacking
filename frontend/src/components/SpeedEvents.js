@@ -6,7 +6,7 @@ import Speedometer, {
     Background,
     Arc,
     Needle,
-    // Progress,
+    Progress,
     Marks,
     Indicator,
     DangerPath
