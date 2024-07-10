@@ -23,43 +23,89 @@ const started = canData;
 
 const engine = () => {
     const now = started;
-    // if engine is on in neutral, raise them to 1000
-    if (now.gear === 0 && (now.revs <= 0 || now.revs <= 800)) {
-        now.revs += 100;
-    }
+    // while gears are engaged and there is fuel inscrease speed
+    if (now.fuel > 0 && now.gear > 0) {
+        // if engine is on in neutral, raise them to 1000
+        if (now.gear === 0 && (now.revs <= 0 || now.revs <= 800)) {
+            console.log("neutral engine under 800revs => +100revs");
+            now.revs += 100;
+        }
+        console.log("if there is fuel and gear is engaged accelerate");
+        // fluctuate rpms to increase from 2000rpms to 6000rpms as speed increases
+        // simulating gear shifting in a vehicle
 
-    // while gears are engaged inscrease speed
-    if (now.gear !== 0) {
-
-        // fluctuate rpms to increase from 2000rpms to 6000rpms
+        // continue to inscrease speed until rmps reach 6000rpms
         if (now.revs < 6000) {
+            console.log("increase speed +1, revs +200");
             now.revs += 200;
             now.speed += 1;
-        } else if (now.revs >= 6000) {
+        }
+        // whenever rpms reach high numbers its time to shift gears
+        else if (now.revs >= 6000) {
+            // if the gear is not maxed out, quickly shift gears up and drop rpms
             if (now.gear < 6) {
-                now.revs -= 4000;
+                now.revs -= 3000;
                 now.gear++;
                 now.speed += 1;
             }
+            else if (gear >= 6) {
+                // if car is in max gear inscrease speed until it reaches max
+                // speed and rpms
+                if (revs < 9000) {
+                    now.revs += 50;
+                    now.speed += 1;
+                }
+            }
         }
-    }
+        // Fuel gradually decays
+        if (now.fuel > 0) {
+            now.fuel -= 1;
+        }
 
-    // Use an index to alternate between adding and subtracting revs, simulating an engines fluctuation
-    if (now.index % 2 === 0) {
-        now.revs += 50;
-    } else {
-        now.revs -= 50;
-    }
+        // Using an index alternate between adding and subtracting revs
+        // simulating an engines fluctuation
+        if (now.index % 2 === 0) {
+            now.revs += 50;
+        } else {
+            now.revs -= 50;
+        }
 
-    // reduce fuel
-    if (now.fuel > 0) {
-        now.fuel -= 1;
     }
+    // if there is no fuel kill the engine
+    else if (now.fuel === 0) {
+        // set car in neutral
+        now.gear = 0;
+        // gradually reduce speed
+        if (now.speed > 0) {
+            if (now.speed >= 3) {
+                now.speed -= 3;
+            }
+            else if (now.speed >= 1) {
+                now.speed -= 1;
+            }
+        }
 
-    // run out of fuel
-    if (now.fuel <= 0) {
-        if (now.speed >= 0) {
-            now.speed -= 5;
+        // gradually reduce rpms
+        if (now.revs > 0) {
+            if (now.revs >= 150) {
+                now.revs -= 150;
+            }
+            else if (now.revs >= 50) {
+                console.log('revs are bigger than 50');
+                now.revs -= 50;
+            }
+            else if (now.revs >= 10) {
+                console.log('revs are bigger than 10');
+                now.revs -= 10;
+            }
+            else if (now.revs >= 5) {
+                console.log('revs are bigger than 5');
+                now.revs -= 5;
+            }
+            else if (now.revs >= 1) {
+                console.log('revs are bigger than 1');
+                now.revs -= 1;
+            }
         }
     }
 
