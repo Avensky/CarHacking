@@ -152,7 +152,7 @@ export function SpeedEvents({ events }) {
                             color='rgba(110, 6, 6, 1)'
                             circleColor='rgba(0, 0, 0, 0.60)'
                         />
-                        {/* <Progress /> */}
+                        <Progress />
                         <Marks
                             baseWidth={1}
                             step={10}

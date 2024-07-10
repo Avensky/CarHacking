@@ -10,10 +10,11 @@ var msg = {
     data: [0, 0, 0, 0, 0, 0, 0, 0]
 }
 
-var speed = 0
-var revs = 0
-var up = true
-var fuel = 500
+var start = 1;
+var speed = 0;
+var revs = 0;
+var up = true;
+var fuel = 500;
 // var temp = 210
 
 setInterval(() => {
@@ -35,13 +36,31 @@ setInterval(() => {
     }
 
     if (revs > 7000) {
-        revs = 1000
+        revs = -1000
+    }
+    if (revs < 2000) {
+        revs = +500
     }
 
-    if (fuel == 0) {                                                          /////////////////////////////////////////////////////////////
+    if (fuel == 0) {
         speed = 0
-        revs = 0
-        fuel = 0                                               ////////////////////////////////////////////////////////////
+        fuel = 0
+        if (revs >= 700) {
+            revs += 100
+        }
+        if (revs < 700) {
+            revs -= 100
+        }
+    }
+
+    if (start === 1 && speed === 0) {
+        fuel = fuel - 1
+        if (revs >= 700) {
+            revs += 100
+        }
+        if (revs < 700) {
+            revs -= 100
+        }
     }
 
     buff.writeUIntBE(revs, 0, 4)
