@@ -56,6 +56,7 @@ const io = new Server(server, {
 console.log("io");
 io.on("connection", (socket) => {
     if (process.env.NODE_ENV === "production") {
+
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
         channel.start();
@@ -189,22 +190,23 @@ io.on("connection", (socket) => {
 
             // emit data
             channel.send(out)
-
-            socket.on('can message',
-                channel.addListener("onMessage", (msg) => {
-                    const carInfo = {};
-                    carInfo.rpms = msg.data.readUIntBE(0, 4);
-                    carInfo.speed = msg.data.readUIntBE(4, 2);
-                    carInfo.fuel = msg.data.readUIntBE(6, 2);
-                    // carInfo.temp = msg.data.readUIntBE(2, 4);
-                    console.log("car info: ", carInfo);
-                    io.emit('can message', carInfo);
-                })
-            )
         }
         // run script every 1 times per second
         setInterval(engine, 1000);
-        channel.stop()
+        // channel.stop()
+
+
+        socket.on('can message',
+            channel.addListener("onMessage", (msg) => {
+                const carInfo = {};
+                carInfo.rpms = msg.data.readUIntBE(0, 4);
+                carInfo.speed = msg.data.readUIntBE(4, 2);
+                carInfo.fuel = msg.data.readUIntBE(6, 2);
+                // carInfo.temp = msg.data.readUIntBE(2, 4);
+                console.log("car info: ", carInfo);
+                io.emit('can message', carInfo);
+            })
+        )
     }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
