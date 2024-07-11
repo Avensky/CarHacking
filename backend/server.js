@@ -58,6 +58,7 @@ io.on("connection", (socket) => {
     if (process.env.NODE_ENV === "production") {
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
+        channel.start();
 
         // default values
 
@@ -79,43 +80,45 @@ io.on("connection", (socket) => {
         const engine = () => {
             const now = started;
             // while gears are engaged and there is fuel inscrease speed
-            if (now.fuel > 0 && now.gear > 0) {
-                // if engine is on in neutral, raise them to 1000
-                if (now.gear === 0 && (now.revs <= 0 || now.revs <= 800)) {
-                    console.log("neutral engine under 800revs => +100revs");
+            if (now.fuel > 0) {
+                // if engine is on in neutral, raise them to 900
+                if (now.gear === 0 && now.revs < 700) {
+                    console.log("neutral engine under 700revs");
                     now.revs += 100;
                 }
-                console.log("if there is fuel and gear is engaged accelerate");
+                else if (now.gear === 0 && (now.revs >= 700)) {
+                    console.log("neutral engine over 700revs >=");
+                    now.revs -= 100;
+                }
                 // fluctuate rpms to increase from 2000rpms to 6000rpms as speed increases
                 // simulating gear shifting in a vehicle
 
                 // continue to inscrease speed until rmps reach 6000rpms
-                if (now.revs < 6000) {
-                    console.log("increase speed +1, revs +200");
+                if (now.gear != 0 && now.revs < 6000) {
+                    console.log("in gear, increase speed +1, revs +200");
                     now.revs += 200;
-                    now.speed += 1;
+                    now.speed++;
                 }
                 // whenever rpms reach high numbers its time to shift gears
-                else if (now.revs >= 6000) {
+                else if (now.gear != 0 && now.revs >= 6000) {
                     // if the gear is not maxed out, quickly shift gears up and drop rpms
                     if (now.gear < 6) {
+                        console.log("if revs are over 6k gear++, drop revs")
                         now.revs -= 3000;
                         now.gear++;
-                        now.speed += 1;
                     }
                     else if (now.gear >= 6) {
                         // if car is in max gear inscrease speed until it reaches max
                         // speed and rpms
                         if (now.revs < 9000) {
+                            console.log("if gear is maxed out and increase revs and speed until max")
                             now.revs += 50;
-                            now.speed += 1;
+                            now.speed++;
                         }
                     }
                 }
                 // Fuel gradually decays
-                if (now.fuel > 0) {
-                    now.fuel -= 1;
-                }
+                now.fuel -= 1;
 
                 // Using an index alternate between adding and subtracting revs
                 // simulating an engines fluctuation
@@ -204,9 +207,8 @@ io.on("connection", (socket) => {
         setInterval(engine, 1000);
 
         // Reply any message
-        // channel.addListener("onMessage", channel.send(out), channel);
+        channel.addListener("onMessage", channel.send(out), channel);
 
-        channel.start();
     }
 
     // console transport name
