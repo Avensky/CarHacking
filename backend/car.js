@@ -11,12 +11,11 @@ var msg = {
 }
 
 const canData = {
-    start: 1,
     speed: 0,
     revs: 0,
     up: true,
     fuel: 500,
-    gear: 0,
+    gear: 1,
     index: 0,
 }
 const started = canData;

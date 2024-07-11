@@ -1,8 +1,8 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
 import { socket } from './socket';
-// import { ConnectionState } from './components/ConnectionState';
-// import { ConnectionManager } from './components/ConnectionManager';
+import { ConnectionState } from './components/ConnectionState';
+import { ConnectionManager } from './components/ConnectionManager';
 import { Events } from "./components/Events";
 import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
@@ -31,19 +31,19 @@ function App() {
     temp: 0
   };
   const [error, setError] = useState(null);
-  // const [isConnected, setIsConnected] = useState(socket.connected);
+  const [isConnected, setIsConnected] = useState(socket.connected);
   const [canEvents, setCanEvents] = useState(start);
 
   useEffect(() => {
-    // function onConnect() {
-    //     setIsConnected(true);
-    //     console.log('connected');
-    // }
+    function onConnect() {
+      setIsConnected(true);
+      console.log('connected');
+    }
 
-    // function onDisconnect() {
-    //     setIsConnected(false);
-    //     console.log('disconnected');
-    // }
+    function onDisconnect() {
+      setIsConnected(false);
+      console.log('disconnected');
+    }
 
     // function onFooEvent(value) {
     //   console.log('value');
@@ -67,8 +67,8 @@ function App() {
     // socket.on('connection', (socket) => {
     //     console.log(`user connected: ${socket.id}`)
     // });
-    // socket.on('connect', onConnect);
-    // socket.on('disconnect', onDisconnect);
+    socket.on('connect', onConnect);
+    socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // can
     // socket.on('can message', onCanEvent);
@@ -79,24 +79,21 @@ function App() {
     //     console.log('Connected to Socket.IO server');
     // });
 
-    socket.on('can message', (message) => {
-      onCanEvent(message);
-    });
+    // socket.on('can message', (message) => {
+    //   onCanEvent(message);
+    // });
 
     socket.on('error', (err) => {
       onError(err);
     });
 
     return () => {
-      // socketRef.current.disconnect();
-      // socket.off('connect', onConnect);
-      // socket.off('disconnect', onDisconnect);
+      socket.off('connect', onConnect);
+      socket.off('disconnect', onDisconnect);
       // socket.off('foo', onFooEvent);
-      // can
       socket.off('can message', onCanEvent);
       socket.off('error', setError);
       // socket.off('create-something', onChatEvent);
-      // socket.removeAllListeners('can message')
     };
   }, []);
 
@@ -108,10 +105,10 @@ function App() {
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
           <div className="chat">
-            {/* <ConnectionState isConnected={isConnected} /> */}
+            <ConnectionState isConnected={isConnected} />
             {/* <Events events={fooEvents} /> */}
             <Events events={error} />
-            {/* <ConnectionManager /> */}
+            <ConnectionManager />
             {/* <MyForm /> */}
           </div>
           <SpeedEvents events={canEvents || start} />
