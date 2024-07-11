@@ -46,6 +46,7 @@ server.listen(PORT, (err) => {
 });
 
 const { Server } = require('socket.io');
+const { channel } = require('diagnostics_channel');
 
 const io = new Server(server, {
     cors: {
@@ -188,10 +189,10 @@ io.on("connection", (socket) => {
             out.data = buff
 
             // emit data
-            // channel.send(out)
+            channel.send(out)
 
 
-            socket.emit('can message',
+            socket.on('can message',
                 channel.addListener("onMessage", (msg) => {
                     const carInfo = {};
                     carInfo.rpms = msg.data.readUIntBE(0, 4);
@@ -200,17 +201,15 @@ io.on("connection", (socket) => {
                     // carInfo.temp = msg.data.readUIntBE(2, 4);
                     console.log("car info: ", carInfo);
                     io.emit('can message', carInfo);
-                })
+                }, channel)
             )
         }
+
         // run script every 1 times per second
         setInterval(engine, 1000);
 
-        // Reply any message
-        channel.addListener("onMessage", channel.send(out), channel);
-
+        channel.stop()
     }
-
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
@@ -226,6 +225,9 @@ io.on("connection", (socket) => {
     //     io.emit('create-something', msg);
     //     console.log('message: ' + msg);
     // });
+    channel.start();
+    channel.stop();
+    io.emit('can message', carInfo);
 
     // handler errors
     socket.on('error', (err) => {
