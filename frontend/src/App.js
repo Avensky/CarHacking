@@ -71,17 +71,8 @@ function App() {
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // can
-    // socket.on('can message', onCanEvent);
+    socket.on('canMessage', onCanEvent);
     // socket.on('create-something', onChatEvent);
-
-    // socketRef.current = io(url);
-    // socketRef.current.on('connect', () => {
-    //     console.log('Connected to Socket.IO server');
-    // });
-
-    // socket.on('can message', (message) => {
-    //   onCanEvent(message);
-    // });
 
     socket.on('error', (err) => {
       onError(err);
@@ -91,7 +82,7 @@ function App() {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       // socket.off('foo', onFooEvent);
-      socket.off('can message', onCanEvent);
+      socket.off('canMessage', onCanEvent);
       socket.off('error', setError);
       // socket.off('create-something', onChatEvent);
     };

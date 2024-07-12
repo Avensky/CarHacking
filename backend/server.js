@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
 
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
-        channel.start();
 
         // default values
         let canData = {
@@ -73,18 +72,20 @@ io.on("connection", (socket) => {
 
         // channel.stop()
 
+        setInterval(io.emit('canMessage', canData), 1000)
 
-        socket.emit('can message',
-            channel.addListener("onMessage", (msg) => {
-                canData = {
-                    rpms: msg.data.readUIntBE(0, 4),
-                    speed: msg.data.readUIntBE(4, 2),
-                    fuel: msg.data.readUIntBE(6, 2)
-                };
-                console.log("car info: ", canData);
-                io.emit('can message', canData);
-            })
-        )
+        channel.addListener("onMessage", (msg) => {
+            canData = {
+                rpms: msg.data.readUIntBE(0, 4),
+                speed: msg.data.readUIntBE(4, 2),
+                fuel: msg.data.readUIntBE(6, 2)
+            };
+            console.log("car info: ", canData);
+
+        })
+
+
+        channel.start()
     }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
