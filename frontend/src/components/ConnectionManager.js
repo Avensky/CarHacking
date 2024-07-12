@@ -5,8 +5,8 @@ import axios from 'axios';
 export function ConnectionManager() {
 
     const base_url = process.env.NODE_ENV === "production"
-        ? "http://192.168.0.153/api/start"
-        : "http://127.0.0.1:5000/api/start"
+        ? "http://192.168.0.153:5000/api/start"
+        : "http://127.0.0.1:4000/api/start"
 
     function connect() {
         axios.get(base_url)

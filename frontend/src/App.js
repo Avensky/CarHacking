@@ -71,7 +71,7 @@ function App() {
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // recieve car data using this line
-    socket.on('carSim', onCanEvent);
+    socket.on('canMessage', onCanEvent);
     // socket.on('create-something', onChatEvent);
 
     socket.on('error', (err) => {
@@ -84,19 +84,17 @@ function App() {
       // socket.off('foo', onFooEvent);
       // disconnect from socket
       // socket.removeAllListeners('canMessage');
-      // socket.off('canMessage', onCanEvent);
+      socket.off('canMessage', onCanEvent);
       socket.off('carSim', onCanEvent);
       socket.leave('carSim');
       socket.removeAllListeners('carSim');
-      // socket.off('onMessage', onMessageEvent);
+      socket.off('onMessage');
       // socket.removeAllListeners('onMessage')
       socket.off('error', setError);
       socket.off();
       // socket.off('create-something', onChatEvent);
     };
   }, []);
-
-
 
   return (
     <Suspense fallback={null}>
