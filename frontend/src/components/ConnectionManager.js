@@ -11,7 +11,7 @@ export function ConnectionManager() {
     function connect() {
         axios.get(base_url)
             .then(response => {
-                console.log(response)
+                console.log(response.data)
             })
             .catch(error => {
                 console.log(error.response)

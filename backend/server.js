@@ -39,11 +39,14 @@ if (process.env.NODE_ENV === 'production') {
 // API CALLS
 var bodyParser = require('body-parser');
 app.use(bodyParser.json());
-const ping = (req, res) => {
+// const ping = (req, res) => {
+//     console.log("ping succesful");
+//     res.send('ping');
+// }
+app.get('/api/start', (req, res) => {
     console.log("ping succesful");
     res.send('ping');
-}
-app.get('/api/start', ping);
+});
 
 
 server.listen(PORT, (err) => {
