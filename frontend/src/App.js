@@ -90,6 +90,7 @@ function App() {
       // socket.off('onMessage', onMessageEvent);
       // socket.removeAllListeners('onMessage')
       socket.off('error', setError);
+      socket.off();
       // socket.off('create-something', onChatEvent);
     };
   }, []);
