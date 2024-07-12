@@ -28,8 +28,8 @@ canvas {
   z-index: 2;
   user-select: none;
   background-color: rgba(0, 0, 0, 0.152);
-  user-select: none;
-  pointer-events: none;
+  /* user-select: none; */
+  /* pointer-events: none; */
 }
 
 .dashboard {

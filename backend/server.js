@@ -36,6 +36,16 @@ if (process.env.NODE_ENV === 'production') {
     })
 }
 
+// API CALLS
+var bodyParser = require('body-parser');
+app.use(bodyParser.json());
+app.get('/api/start', ping);
+const ping = (req, res) => {
+    console.log("ping succesful");
+    res.send('ping');
+}
+
+
 server.listen(PORT, (err) => {
     if (!err) {
         console.log('server started running on: ' + PORT);
