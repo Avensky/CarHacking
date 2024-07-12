@@ -59,7 +59,6 @@ io.on("connection", (socket) => {
 
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
-
         // default values
         let canData = {
             speed: 0,
@@ -70,8 +69,9 @@ io.on("connection", (socket) => {
             index: 0,
         }
 
+        socket.join("carSim");
         // send data to frontend using .emit, every interval
-        setInterval(() => io.emit('canMessage', canData), 1000)
+        setInterval(() => socket.to('carSim').emit('canMessage', canData), 1000)
 
         // listen to data being sent by car.js
         channel.addListener("onMessage", (msg) => {
