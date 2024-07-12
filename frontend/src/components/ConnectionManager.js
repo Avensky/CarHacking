@@ -1,5 +1,6 @@
 import React from 'react';
 import { socket } from '../socket';
+import axios from 'axios';
 
 export function ConnectionManager() {
 
@@ -15,7 +16,6 @@ export function ConnectionManager() {
             .catch(error => {
                 console.log(error.response)
             })
-        console.log(JSON.stringify(data))
         // socket.connect();
     }
 
