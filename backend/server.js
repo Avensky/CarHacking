@@ -62,7 +62,7 @@ io.on("connection", (socket) => {
         channel.start();
 
         // default values
-        const canData = {
+        let canData = {
             speed: 0,
             revs: 0,
             up: true,
