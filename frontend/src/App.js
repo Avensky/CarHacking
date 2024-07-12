@@ -85,10 +85,11 @@ function App() {
       // disconnect from socket
       // socket.removeAllListeners('canMessage');
       socket.off('canMessage', onCanEvent);
-      socket.off('carSim', onCanEvent);
-      socket.leave('carSim');
-      socket.removeAllListeners('carSim');
-      socket.off('onMessage');
+      socket.removeAllListeners('canMessage');
+      // socket.off('carSim', onCanEvent);
+      // socket.leave('carSim');
+      // socket.removeAllListeners('carSim');
+      // socket.off('onMessage');
       // socket.removeAllListeners('onMessage')
       socket.off('error', setError);
       socket.off();
