@@ -70,7 +70,7 @@ function App() {
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
-    // can
+    // recieve car data using this line
     socket.on('canMessage', onCanEvent);
     // socket.on('create-something', onChatEvent);
 
@@ -82,7 +82,11 @@ function App() {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
       // socket.off('foo', onFooEvent);
+      // disconnect from socket
       socket.off('canMessage', onCanEvent);
+      socket.removeAllListeners('canMessage');
+      // socket.off('onMessage', onMessageEvent);
+      // socket.removeAllListeners('onMessage')
       socket.off('error', setError);
       // socket.off('create-something', onChatEvent);
     };

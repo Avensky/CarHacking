@@ -70,10 +70,10 @@ io.on("connection", (socket) => {
             index: 0,
         }
 
-        // channel.stop()
+        // send data to frontend using .emit, every interval
+        setInterval(() => io.emit('canMessage', canData), 1000)
 
-        setInterval(io.emit('canMessage', canData), 1000)
-
+        // listen to data being sent by car.js
         channel.addListener("onMessage", (msg) => {
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
@@ -81,18 +81,15 @@ io.on("connection", (socket) => {
                 fuel: msg.data.readUIntBE(6, 2)
             };
             console.log("car info: ", canData);
-
         })
-
-
         channel.start()
     }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
-    socket.conn.on("upgrade", (transport) => {
-        console.log(`transport upgraded to ${transport.name}`);
-    });
+    // socket.conn.on("upgrade", (transport) => {
+    //     console.log(`transport upgraded to ${transport.name}`);
+    // });
 
     socket.on("disconnect", (reason) => {
         console.log(`disconnected due to ${reason}`);
@@ -102,7 +99,6 @@ io.on("connection", (socket) => {
     //     io.emit('create-something', msg);
     //     console.log('message: ' + msg);
     // });
-
 
     // handler errors
     socket.on('error', (err) => {
