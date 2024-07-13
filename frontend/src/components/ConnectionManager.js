@@ -4,12 +4,8 @@ import axios from 'axios';
 
 export function ConnectionManager() {
 
-    const base_url = process.env.NODE_ENV === "production"
-        ? "http://127.0.0.1:5000/api/start"
-        : "http://127.0.0.1:4000/api/start"
-
     function connect() {
-        axios.get(base_url)
+        axios.get('/api/start')
             .then(response => {
                 console.log(response.data)
             })
