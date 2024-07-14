@@ -8,8 +8,8 @@ const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
 const path = require('path');
 const IP_ADDRESS = process.env.NODE_ENV === "production"
-    ? "192.168.0.153"
-    : "127.0.0.1"
+    ? "127.0.0.1"
+    : "192.168.0.153"
 const PORT = process.env.NODE_ENV === "production"
     ? 5000
     : 4000
