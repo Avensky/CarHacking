@@ -35,8 +35,10 @@ io.on("connection", (socket) => {
     app.get('/api/start', (req, res) => {
         console.log('api pinged backend');
         const command = `node /var/www/CarHacking/_work/CarHacking/CarHacking/backend/car.js`;
+        // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Start Car.js Engine Simulation');
+            socket.emit('canData', 'Start Car.js Engine Simulation')
             if (error) {
                 console.error(`exec error: ${error}`);
                 res.sendStatus(200).json({
@@ -65,6 +67,43 @@ io.on("connection", (socket) => {
         });
     });
 
+    // use data to submit a shell command
+    app.post('/api/cmd', (req, res) => {
+        // console.log('api pinged backend');
+        const command = req.body;
+        console.log('cmd: ', req.body);
+        // Execute shell command
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('canData', 'New Shell Command Executed')
+            if (error) {
+                console.error(`exec error: ${error}`);
+                res.sendStatus(200).json({
+                    status: 'failed',
+                    error: error
+                });
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                res.sendStatus(500).json({
+                    status: 'failed',
+                    stderr: stderr
+                });
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            res.sendStatus(200).json({
+                status: 'success',
+                message: 'Shell Command Executed Successfully',
+                stderr: stderr,
+            });
+            res.end(`Success: ${stdout}`);
+        });
+    });
+
     if (process.env.NODE_ENV === "production") {
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
@@ -79,6 +118,7 @@ io.on("connection", (socket) => {
         }
         // log data being sent by car.js
         channel.addListener("onMessage", (msg) => {
+            socket.emit('canData', msg)
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),

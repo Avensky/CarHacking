@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { socket } from '../socket';
+import axios from 'axios';
 
 export function MyForm() {
     const [value, setValue] = useState('');
@@ -9,10 +10,19 @@ export function MyForm() {
         event.preventDefault();
         setIsLoading(true);
 
-        socket.timeout(5000).emit('create-something', value, () => {
-            console.log('submit event');
-            setIsLoading(false);
-            setValue('');
+        socket.timeout(3000).emit('canData', value, () => {
+            console.log('submit command');
+            axios.post('/api/cmd', value)
+                .then(response => {
+                    setIsLoading(false);
+                    setValue('');
+                    console.log(response)
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                    setValue('');
+                    console.log(error.response)
+                })
         });
 
     }

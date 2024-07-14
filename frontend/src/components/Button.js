@@ -1,23 +1,33 @@
 import React, { useState } from 'react';
 import { socket } from '../socket';
+import axios from 'axios';
 
 export function Button() {
     // const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    function onSubmit(event) {
-        event.preventDefault();
-        setIsLoading(!isLoading);
+    function onSubmit() {
+        // event.preventDefault();
+        setIsLoading(true);
 
-        socket.timeout(5000).emit(
-            `${socket.id}`,
+        socket.emit(
+            `canData`,
             'ENGINE SIMULATION ENGAGED',
             () => {
                 console.log('submit event');
                 setIsLoading(false);
-                // setValue('');
             }
         );
+        // start engine.js script via http request
+        axios.get('/api/start')
+            .then(response => {
+                setIsLoading(false);
+                console.log(response)
+            })
+            .catch(error => {
+                setIsLoading(false);
+                console.log(error.response)
+            })
     }
     return (
         <button

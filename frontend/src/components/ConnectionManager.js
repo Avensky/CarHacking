@@ -1,18 +1,10 @@
 import React from 'react';
 import { socket } from '../socket';
-import axios from 'axios';
 
 export function ConnectionManager() {
 
     function connect() {
-        axios.get('/api/start')
-            .then(response => {
-                console.log(response)
-            })
-            .catch(error => {
-                console.log(error.response)
-            })
-        // socket.connect();
+        socket.connect();
     }
 
     function disconnect() {

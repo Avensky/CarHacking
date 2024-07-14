@@ -7,6 +7,7 @@ import { Events } from "./components/Events";
 import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
 import { Button } from "./components/Button";
+import { MyForm } from "./components/MyForm";
 
 // import { MyForm } from './components/MyForm';
 
@@ -35,6 +36,8 @@ function App() {
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
+  const [canEvents, setCanEvents] = useState(null);
+  // const [cmdEvents, setCmdEvents] = useState(null);
 
   useEffect(() => {
     function onConnect() {
@@ -62,9 +65,16 @@ function App() {
       console.log('setError', value);
     }
 
-    // function onChatEvent(value) {
-    //   console.log('value');
-    //   setChatEvents(previous => [...previous, value]);
+    function onCanEvent(value) {
+      console.log(value);
+      setCanEvents(previous => [...previous, value]);
+      // setCanEvents(value);
+    }
+
+    // function onCmdEvent(value) {
+    //   console.log(value);
+    //   // setCmdEvents(previous => [...previous, value]);
+    //   setCmdEvents(value);
     // }
 
     // socket.on('connection', (socket) => {
@@ -75,7 +85,8 @@ function App() {
     // socket.on('foo', onFooEvent);
     // recieve car data using this line
     socket.on('carSim', onCarEvent);
-    // socket.on('create-something', onChatEvent);
+    socket.on('canData', onCanEvent);
+    // socket.on('cmd', onCmdEvent);
 
     socket.on('error', (err) => {
       onError(err);
@@ -89,7 +100,7 @@ function App() {
       // socket.removeAllListeners('canMessage');
       socket.off(`carSim`, onCarEvent);
       socket.removeAllListeners(`carSim`);
-      // socket.off('carSim', onCanEvent);
+      socket.off('canData', onCanEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
       // socket.off('onMessage');
@@ -106,8 +117,9 @@ function App() {
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
           <div className="chat">
+            <MyForm />
             <ConnectionState isConnected={isConnected} />
-            {/* <Events events={fooEvents} /> */}
+            <Events events={canEvents} />
             <Events events={error} />
             <ConnectionManager />
             <Button />

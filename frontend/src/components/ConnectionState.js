@@ -2,7 +2,7 @@ import React from 'react';
 import PropTypes from 'prop-types';
 
 export function ConnectionState({ isConnected }) {
-    return <p>State: {'' + isConnected}</p>;
+    return <p>Live Socket Connection: {'' + isConnected}</p>;
 }
 
 ConnectionState.propTypes = {
