@@ -75,8 +75,8 @@ io.on("connection", (socket) => {
     // use data to submit a shell command
     app.post('/api/cmd', (req, res) => {
         // console.log('api pinged backend');
-        const command = req.body;
-        console.log('cmd: ', req.body.data);
+        console.log('cmd: ', req.body);
+        const command = req.body.data;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
@@ -123,7 +123,7 @@ io.on("connection", (socket) => {
         }
         // log data being sent by car.js
         channel.addListener("onMessage", (msg) => {
-            socket.emit('canData', msg)
+            socket.emit('canData', msg.data);
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),
