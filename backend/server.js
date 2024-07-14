@@ -2,14 +2,25 @@ const express = require('express');
 const app = express();
 const http = require('http');
 const server = http.createServer(app);
-// const server = require('http').createServer(app);
 const cors = require("cors");
 // const LOCAL = "127.0.0.1";
 const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
+const bodyParser = require('body-parser');
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
 app.options('*', cors());
+
+// API CALLS
+app.use(bodyParser.json());
+app.get('/api/start', (req, res) => {
+    console.log("ping succesful");
+    res.send(200).json({
+        status: 'success',
+        payload: 'ping'
+    });
+});
+
 
 // app.use(express.static(__dirname + '/html'));
 // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
@@ -35,21 +46,6 @@ if (process.env.NODE_ENV === 'production') {
         })
     })
 }
-
-// API CALLS
-var bodyParser = require('body-parser');
-app.use(bodyParser.json());
-// const ping = (req, res) => {
-//     console.log("ping succesful");
-//     res.send('ping');
-// }
-app.get('/api/start', (req, res) => {
-    console.log("ping succesful");
-    res.send(200).json({
-        status: 'success',
-        payload: 'ping'
-    });
-});
 
 
 server.listen(PORT, (err) => {
@@ -85,11 +81,6 @@ io.on("connection", (socket) => {
             gear: 1,
             index: 0,
         }
-        // socket.join("carSim");
-        // send data to frontend using .emit, every interval
-
-        // setInterval(() => socket.broadcast.emit('carSim', canData), 1000)
-
         // log data being sent by car.js
         channel.addListener("onMessage", (msg) => {
             canData = {
@@ -101,8 +92,9 @@ io.on("connection", (socket) => {
         })
 
         // reply any message
-        channel.addListener("onMessage", io.emit('carSim', canData));
-
+        channel.addListener("onMessage",
+            () => socket.emit('carSim', canData)
+        )
         channel.start()
     }
     // console transport name

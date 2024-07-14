@@ -10,6 +10,7 @@ var msg = {
     data: [0, 0, 0, 0, 0, 0, 0, 0]
 }
 
+// default values
 const canData = {
     speed: 0,
     revs: 0,
@@ -49,6 +50,7 @@ const engine = () => {
                 console.log("if revs are over 6k gear++, drop revs")
                 now.revs -= 3000;
                 now.gear++;
+                now.speed -= 5;
             }
             else if (now.gear >= 6) {
                 // if car is in max gear inscrease speed until it reaches max
@@ -133,7 +135,7 @@ const engine = () => {
     channel.send(out)
 }
 
-// run script every 1 times per second
-setInterval(engine, 1000);
+// run script every 10 times per second
+setInterval(engine, 100);
 
 channel.start();
