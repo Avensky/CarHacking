@@ -9,7 +9,7 @@ const { Server } = require('socket.io');
 const path = require('path');
 const IP_ADDRESS = process.env.NODE_ENV === "production"
     ? "127.0.0.1"
-    : "192.168.0.155" //developing ip
+    : "127.0.0.1" //developing ip
 const PORT = process.env.NODE_ENV === "production"
     ? 5000
     : 4000 // dev backend port
@@ -33,8 +33,8 @@ io.on("connection", (socket) => {
 
     // API CALLS
     app.get('/api/start', (req, res) => {
-        console.log('dirname', path.dirname);
-        const command = `node ${path.dirname}/car.js`;
+        console.log('api pinged backend');
+        const command = `node /var/www/CarHacking/_work/CarHacking/CarHacking/backend/car.js`;
         exec(command, (error, stdout, stderr) => {
             console.log('Start Car.js Engine Simulation');
             if (error) {
@@ -89,7 +89,7 @@ io.on("connection", (socket) => {
 
         // reply any message
         channel.addListener("onMessage",
-            () => socket.to(`${socket.id}`).emit('carSim', canData)
+            () => socket.emit('carSim', canData)
         )
         channel.start()
     }
