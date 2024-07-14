@@ -7,7 +7,7 @@ export function ConnectionManager() {
     function connect() {
         axios.get('/api/start')
             .then(response => {
-                console.log(response.data)
+                console.log(response)
             })
             .catch(error => {
                 console.log(error.response)

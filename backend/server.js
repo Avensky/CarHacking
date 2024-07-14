@@ -71,8 +71,9 @@ const io = new Server(server, {
 
 console.log("io");
 io.on("connection", (socket) => {
+    // Check the user 
+    console.log('user: ', socket.id);
     if (process.env.NODE_ENV === "production") {
-
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
         // default values
@@ -84,12 +85,12 @@ io.on("connection", (socket) => {
             gear: 1,
             index: 0,
         }
-
-        socket.join("carSim");
+        // socket.join("carSim");
         // send data to frontend using .emit, every interval
-        setInterval(() => socket.to('carSim').emit('canMessage', canData), 1000)
 
-        // listen to data being sent by car.js
+        // setInterval(() => socket.broadcast.emit('carSim', canData), 1000)
+
+        // log data being sent by car.js
         channel.addListener("onMessage", (msg) => {
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
@@ -98,6 +99,10 @@ io.on("connection", (socket) => {
             };
             console.log("car info: ", canData);
         })
+
+        // reply any message
+        channel.addListener("onMessage", io.emit('carSim', canData));
+
         channel.start()
     }
     // console transport name
