@@ -45,7 +45,10 @@ app.use(bodyParser.json());
 // }
 app.get('/api/start', (req, res) => {
     console.log("ping succesful");
-    res.send('ping');
+    res.send(200).json({
+        status: 'success',
+        payload: 'ping'
+    });
 });
 
 

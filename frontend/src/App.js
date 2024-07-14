@@ -32,7 +32,7 @@ function App() {
   };
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [canEvents, setCanEvents] = useState(start);
+  const [carEvents, setCarEvents] = useState(start);
 
   useEffect(() => {
     function onConnect() {
@@ -50,9 +50,9 @@ function App() {
     //   setFooEvents(previous => [...previous, value]);
     // }
 
-    function onCanEvent(value) {
-      setCanEvents(value);
-      console.log('setCanEvent', value);
+    function onCarEvent(value) {
+      setCarEvents(value);
+      console.log('setCarEvent', value);
     }
     function onError(value) {
       setError(value);
@@ -71,7 +71,7 @@ function App() {
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // recieve car data using this line
-    socket.on('canMessage', onCanEvent);
+    socket.on('carSim', onCarEvent);
     // socket.on('create-something', onChatEvent);
 
     socket.on('error', (err) => {
@@ -84,8 +84,8 @@ function App() {
       // socket.off('foo', onFooEvent);
       // disconnect from socket
       // socket.removeAllListeners('canMessage');
-      socket.off('canMessage', onCanEvent);
-      socket.removeAllListeners('canMessage');
+      socket.off('carSim', onCarEvent);
+      socket.removeAllListeners('carSim');
       // socket.off('carSim', onCanEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
@@ -109,7 +109,7 @@ function App() {
             <ConnectionManager />
             {/* <MyForm /> */}
           </div>
-          <SpeedEvents events={canEvents || start} />
+          <SpeedEvents events={carEvents || start} />
         </div>
         <div className='three-d'>
           <Canvas shadows>
