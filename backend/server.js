@@ -9,10 +9,10 @@ const { Server } = require('socket.io');
 const path = require('path');
 const IP_ADDRESS = process.env.NODE_ENV === "production"
     ? "127.0.0.1"
-    : "192.168.0.153"
+    : "192.168.0.155" //developing ip
 const PORT = process.env.NODE_ENV === "production"
     ? 5000
-    : 4000
+    : 4000 // dev backend port
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
@@ -122,7 +122,7 @@ if (process.env.NODE_ENV === 'production') {
     // Express will serve up the index.html file
     const filepath = path.join(__dirname, '../frontend/build/index.html');
 
-    app.get('*', (req, res) => {
+    app.get('/', (req, res) => {
         res.sendFile(filepath, function (err) {
             if (err)
                 return res.status(err.status).end();
