@@ -22,9 +22,9 @@ canvas {
   bottom: 0;
   left: 0;
   padding: 1lvw 1lvh;
-  margin-bottom: 5lvh;
+  margin: 1lvw 1lvh;
   width: 30lvw;
-  height: 20lvh;
+  /* height: 20lvh; */
   z-index: 2;
   user-select: none;
   background-color: rgba(0, 0, 0, 0.152);
@@ -91,4 +91,35 @@ canvas {
   position: relative;
   /* flex: 1 1; */
   width: 100%;
+}
+
+.start {
+  /* background-color: rgba(0, 0, 0, 0.5); */
+  background-image: url('./components/green-polygonal-background-with-binary-numbers/1921.jpg');
+  background-size: contain;
+  border-radius: 50%;
+  width: 85px;
+  height: 85px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.7rem;
+  font-weight: 900;
+  color: white;
+  text-shadow:
+    3px 3px 0 #000,
+    -3px 3px 0 #000,
+    -3px -3px 0 #000,
+    3px -3px 0 #000;
+  position: relative;
+  /* filter: brightness(90%); */
+  /* opacity: 0.95; */
+  /* border: 3px solid black; */
+}
+
+.loading {
+  /* opacity: 0.85; */
+  filter: brightness(65%);
+  border: 2px solid black;
 }

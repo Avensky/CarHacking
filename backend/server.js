@@ -7,6 +7,7 @@ const cors = require("cors");
 const { exec } = require('child_process');
 const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
+const path = require('path');
 const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
 
 // set up cors to allow us to accept requests from our client
@@ -28,9 +29,10 @@ io.on("connection", (socket) => {
 
     // API CALLS
     app.get('/api/start', (req, res) => {
-        console.log('Start Car.js Engine Simulation');
-        const command = "node car.js";
+        console.log('dirname', path.dirname);
+        const command = `node ${path.dirname}/car.js`;
         exec(command, (error, stdout, stderr) => {
+            console.log('Start Car.js Engine Simulation');
             if (error) {
                 console.error(`exec error: ${error}`);
                 res.sendStatus(200).json({
@@ -114,7 +116,6 @@ if (process.env.NODE_ENV === 'production') {
     // Serve production assets
     app.use(express.static('../frontend/build'))
     // Express will serve up the index.html file
-    const path = require('path');
     const filepath = path.join(__dirname, '../frontend/build/index.html');
 
     app.get('*', (req, res) => {

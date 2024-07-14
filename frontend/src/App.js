@@ -6,6 +6,8 @@ import { ConnectionManager } from './components/ConnectionManager';
 import { Events } from "./components/Events";
 import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
+import { Button } from "./components/Button";
+
 // import { MyForm } from './components/MyForm';
 
 // import {
@@ -85,8 +87,8 @@ function App() {
       // socket.off('foo', onFooEvent);
       // disconnect from socket
       // socket.removeAllListeners('canMessage');
-      socket.off('carSim', onCarEvent);
-      socket.removeAllListeners('carSim');
+      socket.off(`${socket.id}`, onCarEvent);
+      socket.removeAllListeners(`${socket.id}`);
       // socket.off('carSim', onCanEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
@@ -108,7 +110,7 @@ function App() {
             {/* <Events events={fooEvents} /> */}
             <Events events={error} />
             <ConnectionManager />
-            {/* <MyForm /> */}
+            <Button />
           </div>
           <SpeedEvents events={carEvents || start} />
         </div>
