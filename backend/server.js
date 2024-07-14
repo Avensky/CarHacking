@@ -29,7 +29,8 @@ io.on("connection", (socket) => {
     // API CALLS
     app.get('/api/start', (req, res) => {
         console.log('Start Car.js Engine Simulation');
-        exec('car.js', (error, stdout, stderr) => {
+        const command = "node car.js";
+        exec(command, (error, stdout, stderr) => {
             if (error) {
                 console.error(`exec error: ${error}`);
                 res.sendStatus(200).json({
