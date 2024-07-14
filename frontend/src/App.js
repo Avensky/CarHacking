@@ -117,10 +117,10 @@ function App() {
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
           <div className="chat">
-            <MyForm />
-            <ConnectionState isConnected={isConnected} />
             <Events events={canEvents} />
             <Events events={error} />
+            <MyForm />
+            <ConnectionState isConnected={isConnected} />
             <ConnectionManager />
             <Button />
           </div>

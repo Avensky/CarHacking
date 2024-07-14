@@ -123,7 +123,8 @@ io.on("connection", (socket) => {
         }
         // log data being sent by car.js
         channel.addListener("onMessage", (msg) => {
-            socket.emit('canData', msg.data);
+            console.log('canData: ', msg.data)
+            // socket.emit('canData', msg.data);
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),
