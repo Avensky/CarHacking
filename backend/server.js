@@ -4,60 +4,15 @@ const http = require('http');
 const server = http.createServer(app);
 const cors = require("cors");
 // const LOCAL = "127.0.0.1";
-const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
+const { exec } = require('child_process');
 const bodyParser = require('body-parser');
+const { Server } = require('socket.io');
+const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
 app.options('*', cors());
-
-// API CALLS
-app.use(bodyParser.json());
-app.get('/api/start', (req, res) => {
-    console.log("ping succesful");
-    res.send(200).json({
-        status: 'success',
-        payload: 'ping'
-    });
-});
-
-
-// app.use(express.static(__dirname + '/html'));
-// app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
-
-// launch
-if (process.env.NODE_ENV === 'production') {
-
-    // Express will serve up production assets
-    app.use(express.static('../frontend/build'))
-    // app.use('/scripts', express.static(__dirname + '/node_modules/canvas-gauges/'));
-
-    // Express will serve up the index.html file
-    const path = require('path');
-    console.log("__dirname", __dirname);
-    const filepath = path.join(__dirname, '../frontend/build/index.html');
-
-    app.get('*', (req, res) => {
-        res.sendFile(filepath, function (err) {
-            if (err)
-                return res.status(err.status).end();
-            else
-                return res.status(200).end();
-        })
-    })
-}
-
-
-server.listen(PORT, (err) => {
-    if (!err) {
-        console.log('server started running on: ' + PORT);
-        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
-    } else {
-        console.log('unable to start server');
-    }
-});
-
-const { Server } = require('socket.io');
+app.use(bodyParser.json()); // parse json data sent to frontend
 
 const io = new Server(server, {
     cors: {
@@ -69,6 +24,40 @@ console.log("io");
 io.on("connection", (socket) => {
     // Check the user 
     console.log('user: ', socket.id);
+    socket.join(`${socket.id}`);
+
+    // API CALLS
+    app.get('/api/start', (req, res) => {
+        console.log('Start Car.js Engine Simulation');
+        exec('car.js', (error, stdout, stderr) => {
+            if (error) {
+                console.error(`exec error: ${error}`);
+                res.sendStatus(200).json({
+                    status: 'failed',
+                    error: error
+                });
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                res.sendStatus(500).json({
+                    status: 'failed',
+                    stderr: stderr
+                });
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            res.sendStatus(200).json({
+                status: 'success',
+                message: 'Engine Started',
+                stderr: stderr,
+            });
+            res.end(`Success: ${stdout}`);
+        });
+    });
+
     if (process.env.NODE_ENV === "production") {
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
@@ -93,7 +82,7 @@ io.on("connection", (socket) => {
 
         // reply any message
         channel.addListener("onMessage",
-            () => socket.emit('carSim', canData)
+            () => socket.to(`${socket.id}`).emit('carSim', canData)
         )
         channel.start()
     }
@@ -117,4 +106,32 @@ io.on("connection", (socket) => {
     socket.on('error', (err) => {
         console.error('Socket.IO error:', err);
     });
+});
+
+// launch server in production mode
+if (process.env.NODE_ENV === 'production') {
+    // Serve production assets
+    app.use(express.static('../frontend/build'))
+    // Express will serve up the index.html file
+    const path = require('path');
+    const filepath = path.join(__dirname, '../frontend/build/index.html');
+
+    app.get('*', (req, res) => {
+        res.sendFile(filepath, function (err) {
+            if (err)
+                return res.status(err.status).end();
+            else
+                return res.status(200).end();
+        })
+    })
+}
+
+// start the server
+server.listen(PORT, (err) => {
+    if (!err) {
+        console.log('server started running on: ' + PORT);
+        console.log('server NODE_ENV: ' + process.env.NODE_ENV);
+    } else {
+        console.log('unable to start server');
+    }
 });
