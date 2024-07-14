@@ -53,6 +53,7 @@ function App() {
     function onCarEvent(value) {
       setCarEvents(value);
       console.log('setCarEvent', value);
+
     }
     function onError(value) {
       setError(value);
@@ -71,7 +72,7 @@ function App() {
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // recieve car data using this line
-    socket.on('carSim', onCarEvent);
+    socket.on(`${socket.id}`, onCarEvent);
     // socket.on('create-something', onChatEvent);
 
     socket.on('error', (err) => {
