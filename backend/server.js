@@ -17,7 +17,12 @@ const PORT = process.env.NODE_ENV === "production"
 // set up cors to allow us to accept requests from our client
 app.use(cors());
 app.options('*', cors());
+// Middleware to parse JSON bodies
+app.use(express.json());
 app.use(bodyParser.json()); // parse json data sent to frontend
+
+// Middleware to parse URL-encoded bodies
+app.use(bodyParser.urlencoded({ extended: true }));
 
 const io = new Server(server, {
     cors: {
@@ -71,7 +76,7 @@ io.on("connection", (socket) => {
     app.post('/api/cmd', (req, res) => {
         // console.log('api pinged backend');
         const command = req.body;
-        console.log('cmd: ', req.body);
+        console.log('cmd: ', req.body.data);
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');

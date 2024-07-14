@@ -12,11 +12,12 @@ export function MyForm() {
 
         socket.timeout(3000).emit('canData', value, () => {
             console.log('submit command');
-            axios.post('/api/cmd', value)
+            const object = { data: value }
+            axios.post('/api/cmd', object)
                 .then(response => {
                     setIsLoading(false);
                     setValue('');
-                    console.log(response)
+                    console.log(response.data)
                 })
                 .catch(error => {
                     setIsLoading(false);

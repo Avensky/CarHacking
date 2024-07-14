@@ -67,8 +67,8 @@ function App() {
 
     function onCanEvent(value) {
       console.log(value);
-      setCanEvents(previous => [...previous, value]);
-      // setCanEvents(value);
+      // setCanEvents(previous => [...previous, value]);
+      setCanEvents(value);
     }
 
     // function onCmdEvent(value) {
