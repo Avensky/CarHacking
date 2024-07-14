@@ -46,28 +46,28 @@ io.on("connection", (socket) => {
             socket.emit('canData', 'Start Car.js Engine Simulation')
             if (error) {
                 console.error(`exec error: ${error}`);
-                res.sendStatus(200).json({
-                    status: 'failed',
-                    error: error
-                });
+                // res.sendStatus(200).json({
+                //     status: 'failed',
+                //     error: error
+                // });
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                res.sendStatus(500).json({
-                    status: 'failed',
-                    stderr: stderr
-                });
+                // res.sendStatus(500).json({
+                //     status: 'failed',
+                //     stderr: stderr
+                // });
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            res.sendStatus(200).json({
-                status: 'success',
-                message: 'Engine Started',
-                stderr: stderr,
-            });
+            // res.sendStatus(200).json({
+            //     status: 'success',
+            //     message: 'Engine Started',
+            //     stderr: stderr,
+            // });
             res.end(`Success: ${stdout}`);
         });
     });
@@ -83,28 +83,28 @@ io.on("connection", (socket) => {
             socket.emit('canData', 'New Shell Command Executed')
             if (error) {
                 console.error(`exec error: ${error}`);
-                res.sendStatus(200).json({
-                    status: 'failed',
-                    error: error
-                });
+                // res.sendStatus(200).json({
+                //     status: 'failed',
+                //     error: error
+                // });
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                res.sendStatus(500).json({
-                    status: 'failed',
-                    stderr: stderr
-                });
+                // res.sendStatus(500).json({
+                //     status: 'failed',
+                //     stderr: stderr
+                // });
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            res.sendStatus(200).json({
-                status: 'success',
-                message: 'Shell Command Executed Successfully',
-                stderr: stderr,
-            });
+            // res.sendStatus(200).json({
+            //     status: 'success',
+            //     message: 'Shell Command Executed Successfully',
+            //     stdout: stdout,
+            // });
             res.end(`Success: ${stdout}`);
         });
     });
@@ -141,18 +141,13 @@ io.on("connection", (socket) => {
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
-    // socket.conn.on("upgrade", (transport) => {
-    //     console.log(`transport upgraded to ${transport.name}`);
-    // });
+    socket.conn.on("upgrade", (transport) => {
+        console.log(`transport upgraded to ${transport.name}`);
+    });
 
     socket.on("disconnect", (reason) => {
         console.log(`disconnected due to ${reason}`);
     });
-
-    // socket.on('create-something', (msg) => {
-    //     io.emit('create-something', msg);
-    //     console.log('message: ' + msg);
-    // });
 
     // handler errors
     socket.on('error', (err) => {

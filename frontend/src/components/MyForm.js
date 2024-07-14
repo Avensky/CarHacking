@@ -9,10 +9,10 @@ export function MyForm() {
     function onSubmit(event) {
         event.preventDefault();
         setIsLoading(true);
+        const object = { data: value }
 
-        socket.timeout(3000).emit('canData', value, () => {
+        socket.timeout(1000).emit('canData', value, () => {
             console.log('submit command');
-            const object = { data: value }
             axios.post('/api/cmd', object)
                 .then(response => {
                     setIsLoading(false);
