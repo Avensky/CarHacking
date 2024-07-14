@@ -3,12 +3,16 @@ const app = express();
 const http = require('http');
 const server = http.createServer(app);
 const cors = require("cors");
-// const LOCAL = "127.0.0.1";
 const { exec } = require('child_process');
 const bodyParser = require('body-parser');
 const { Server } = require('socket.io');
 const path = require('path');
-const PORT = process.env.NODE_ENV === "production" ? 5000 : 4000;
+const IP_ADDRESS = process.env.NODE_ENV === "production"
+    ? "192.168.0.153"
+    : "127.0.0.1"
+const PORT = process.env.NODE_ENV === "production"
+    ? 5000
+    : 4000
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());
@@ -129,7 +133,7 @@ if (process.env.NODE_ENV === 'production') {
 }
 
 // start the server
-server.listen(PORT, (err) => {
+server.listen(PORT, IP_ADDRESS, (err) => {
     if (!err) {
         console.log('server started running on: ' + PORT);
         console.log('server NODE_ENV: ' + process.env.NODE_ENV);
