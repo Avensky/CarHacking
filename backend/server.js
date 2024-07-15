@@ -160,7 +160,7 @@ io.on("connection", (socket) => {
         // reply any message
         channel.addListener("onMessage", (msg) => {
             console.log('canData: ', msg.data)
-            socket.emit('canData', msg.data);
+            socket.emit('canData', JSON.parse(msg.data.toString()));
 
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
