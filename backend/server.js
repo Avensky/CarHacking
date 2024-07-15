@@ -157,25 +157,30 @@ io.on("connection", (socket) => {
             index: 0,
         }
         // log data being sent by car.js
+        // reply any message
         channel.addListener("onMessage", (msg) => {
             console.log('canData: ', msg.data)
-            // socket.emit('canData', msg.data);
+            socket.emit('canData', msg.data);
+
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),
                 fuel: msg.data.readUIntBE(6, 2)
             };
             console.log("car info: ", canData);
+            () => socket.emit('carSim', canData)
         })
 
-        // reply any message
-        channel.addListener("onMessage",
-            () => socket.emit('carSim', canData)
-        )
         channel.start()
 
         socket.on("disconnect", (reason) => {
             console.log(`disconnected due to ${reason}`);
+            canData = {
+                speed: 0,
+                rpms: 0,
+                fuel: 0,
+            }
+            socket.emit('carSim', canData)
             channel.stop();
         });
     }
