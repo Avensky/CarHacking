@@ -59,7 +59,6 @@ function App() {
     // }
 
     function onCarSim(value) {
-      setCarEvents(value);
       // turn data back into buff for display purposes
       var buff = Buffer.alloc(8)
 
@@ -67,8 +66,9 @@ function App() {
       buff.writeUIntBE(value.speed, 4, 2)
       buff.writeUIntBE(value.fuel, 6, 2)
 
-      console.log(buff)
+      // console.log(buff)
       console.log('setCarEvent', buff);
+      setCarEvents(buff);
 
     }
     function onError(value) {
@@ -148,6 +148,7 @@ function App() {
               <MyForm />
               <div className="flex-row">
                 <Button req='get' cmd='' url='/api/start' name="Start" />
+                <Button req='get' cmd='' url='/api/stop' name="Abort" />
                 <Button req='get' cmd='' url='/api/reload' name="Reload" size="" />
                 <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
                 <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />

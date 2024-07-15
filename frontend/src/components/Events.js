@@ -6,7 +6,7 @@ export function Events({ events }) {
     const log = useState([]);
 
     useEffect(() => {
-        // console.log('Can Events', events);
+        console.log('Car Events', events);
         if (events) {
             log.push(events);
         }
