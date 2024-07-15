@@ -2,21 +2,23 @@ import React, { useEffect, useState } from 'react';
 import PropTypes from 'prop-types';
 
 export function Events({ events }) {
-    const [log, setLog] = useState(null);
+    // const [log, setLog] = useState([]);
+    const log = useState([]);
 
-    console.log('Can Events', events);
-    let index = 0;
     useEffect(() => {
+        // console.log('Can Events', events);
         if (events) {
-            setLog(...log, events)
+            log.push(events);
         }
         // eslint-disable-next-line
     }, [events])
+
+
     return (
         <ul>
             {
                 events ? log.map(event => {
-                    return <li key={index++}>{event}</li>
+                    return <li key={log.length}>{event}</li>
                 }) : null
             }
         </ul>

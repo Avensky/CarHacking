@@ -172,7 +172,7 @@ io.on("connection", (socket) => {
                 fuel: msg.data.readUIntBE(6, 2)
             };
             console.log("car info: ", canData);
-            () => socket.emit('carSim', canData)
+            socket.emit('carSim', canData)
         })
 
         channel.start()

@@ -38,7 +38,7 @@ function App() {
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
-  const [canEvents, setCanEvents] = useState(null);
+  // const [canEvents, setCanEvents] = useState(null);
   // const [cmdEvents, setCmdEvents] = useState(null);
 
   useEffect(() => {
@@ -57,9 +57,17 @@ function App() {
     //   setFooEvents(previous => [...previous, value]);
     // }
 
-    function onCarEvent(value) {
+    function onCarSim(value) {
       setCarEvents(value);
-      console.log('setCarEvent', value);
+      // turn data back into buff for display purposes
+      var buff = Buffer.alloc(8)
+
+      buff.writeUIntBE(value.revs, 0, 4)
+      buff.writeUIntBE(value.speed, 4, 2)
+      buff.writeUIntBE(value.fuel, 6, 2)
+
+      console.log(buff)
+      console.log('setCarEvent', buff);
 
     }
     function onError(value) {
@@ -67,11 +75,11 @@ function App() {
       console.log('setError', value);
     }
 
-    function onCanEvent(value) {
-      console.log(value);
-      // setCanEvents(previous => [...previous, value]);
-      setCanEvents(value);
-    }
+    // function onCanEvent(value) {
+    //   console.log(value);
+    //   // setCanEvents(previous => [...previous, value]);
+    //   setCanEvents(value);
+    // }
 
     // function onCmdEvent(value) {
     //   console.log(value);
@@ -86,8 +94,8 @@ function App() {
     socket.on('disconnect', onDisconnect);
     // socket.on('foo', onFooEvent);
     // recieve car data using this line
-    socket.on('carSim', onCarEvent);
-    socket.on('canData', onCanEvent);
+    socket.on('carSim', onCarSim);
+    // socket.on('canData', onCanEvent);
     // socket.on('cmd', onCmdEvent);
 
     socket.on('error', (err) => {
@@ -100,9 +108,9 @@ function App() {
       // socket.off('foo', onFooEvent);
       // disconnect from socket
       // socket.removeAllListeners('canMessage');
-      socket.off(`carSim`, onCarEvent);
+      socket.off(`carSim`, onCarSim);
       socket.removeAllListeners(`carSim`);
-      socket.off('canData', onCanEvent);
+      // socket.off('canData', onCanEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
       // socket.off('onMessage');
@@ -119,17 +127,19 @@ function App() {
   isConnected ? conn = 'overlay' : conn = 'overlay disconnected'
 
   let canvas;
-  isConnected
-    ? canvas = <Canvas shadows><CarShow /></Canvas>
-    : canvas = <MatrixRainingCode />
+  !isConnected
+    ? canvas = <MatrixRainingCode />
+    : canvas = null;
 
   return (
     <Suspense fallback={null}>
       <div className='three-d-container'>
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
+          {canvas}
           <div className={conn}>
-            <Events events={canEvents} />
+            <Events events={carEvents} />
+            {/* <Events events={canEvents} /> */}
             <ConnectionManager />
             <div className="chat">
               <ConnectionState isConnected={isConnected} />
@@ -146,7 +156,7 @@ function App() {
           <SpeedEvents events={carEvents || start} />
         </div>
         <div className='three-d'>
-          {canvas}
+          <Canvas shadows><CarShow /></Canvas>
         </div>
       </div>
     </Suspense>
