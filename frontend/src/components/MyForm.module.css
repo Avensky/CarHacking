@@ -1,0 +1,14 @@
+.MyForm {
+    display: flex;
+    width: 100%;
+    margin: 1lvh 0lvw;
+    box-sizing: border-box;
+}
+
+.MyForm input {
+    width: 70%;
+}
+
+.MyForm button {
+    width: 30%;
+}

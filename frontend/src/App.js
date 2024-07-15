@@ -8,6 +8,7 @@ import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
 import { Button } from "./components/Button";
 import { MyForm } from "./components/MyForm";
+import MatrixRainingCode from './components/Matrix';
 
 // import { MyForm } from './components/MyForm';
 
@@ -33,6 +34,7 @@ function App() {
     fuel: 0,
     temp: 0
   };
+
   const [error, setError] = useState(null);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
@@ -112,29 +114,38 @@ function App() {
     // eslint-disable-next-line
   }, []);
 
+  // change color if socket is disconencted
+  let conn;
+  isConnected ? conn = 'overlay' : conn = 'overlay disconnected'
+
+  let canvas;
+  isConnected
+    ? canvas = <Canvas shadows><CarShow /></Canvas>
+    : canvas = <MatrixRainingCode />
+
   return (
     <Suspense fallback={null}>
       <div className='three-d-container'>
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
-          <div className="chat">
+          <div className={conn}>
             <Events events={canEvents} />
-            <Events events={error} />
-            <MyForm />
-            <ConnectionState isConnected={isConnected} />
             <ConnectionManager />
-            <div className="flex-row">
-              <Button req='get' url='/api/start' name="Start" />
-              <Button req='get' url='/api/reload' name="Reload" size="" />
-              <Button req='get' url='/api/hack' name="Hack" size="" />
+            <div className="chat">
+              <ConnectionState isConnected={isConnected} />
+              <Events events={error} />
+              <MyForm />
+              <div className="flex-row">
+                <Button req='get' url='/api/start' name="Start" />
+                <Button req='get' url='/api/reload' name="Reload" size="" />
+                <Button req='get' url='/api/hack' name="Hack" size="" />
+              </div>
             </div>
           </div>
           <SpeedEvents events={carEvents || start} />
         </div>
         <div className='three-d'>
-          <Canvas shadows>
-            <CarShow />
-          </Canvas>
+          {canvas}
         </div>
       </div>
     </Suspense>

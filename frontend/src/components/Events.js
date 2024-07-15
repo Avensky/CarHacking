@@ -10,6 +10,7 @@ export function Events({ events }) {
         if (events) {
             setLog(...log, events)
         }
+        // eslint-disable-next-line
     }, [events])
     return (
         <ul>

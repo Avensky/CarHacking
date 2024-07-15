@@ -1,0 +1,7 @@
+.ConnectionManager {
+    display: flex;
+}
+
+.ConnectionManager button {
+    width: 100%;
+}

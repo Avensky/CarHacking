@@ -2,10 +2,11 @@ html,
 body,
 #root,
 canvas {
-  width: 100dvw;
-  height: 100dvh;
+  width: 100lvw;
+  height: 100lvh;
   margin: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 .hidden {
@@ -18,16 +19,14 @@ canvas {
 }
 
 .chat {
-  position: absolute;
-  bottom: 0;
-  left: 0;
+  /* position: absolute; */
+  /* bottom: 0; */
+  /* left: 0; */
   padding: 1lvw 1lvh;
-  margin: 1lvw 1lvh;
-  width: 30lvw;
+  /* margin: 1lvw 1lvh; */
+  /* width: 30lvw; */
   /* height: 20lvh; */
   z-index: 2;
-  user-select: none;
-  background-color: rgba(0, 0, 0, 0.152);
   /* user-select: none; */
   /* pointer-events: none; */
 }
@@ -37,7 +36,7 @@ canvas {
   bottom: 0;
   width: 100lvw;
   /* height: 100dvh; */
-  padding: 1lvw 1lvh;
+  /* padding: 1lvw 1lvh; */
   box-sizing: border-box;
   z-index: 2;
   display: flex;
@@ -64,6 +63,7 @@ canvas {
   display: flex;
   flex-direction: column;
   align-items: center;
+  justify-self: center;
   position: relative;
 }
 
@@ -101,7 +101,6 @@ canvas {
   width: 85px;
   height: 85px;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   font-size: 1.4rem;
@@ -112,7 +111,7 @@ canvas {
     -3px 3px 0 #000,
     -3px -3px 0 #000,
     3px -3px 0 #000;
-  position: relative;
+  /* position: relative; */
   /* filter: brightness(90%); */
   /* opacity: 0.95; */
   /* border: 3px solid black; */
@@ -126,4 +125,23 @@ canvas {
 
 .flex-row {
   display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.overlay {
+  user-select: none;
+  background-color: rgba(0, 0, 0, 0.152);
+  min-height: 30lvh;
+  min-width: 270px;
+  width: 35lvw;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  z-index: 1000;
+  box-sizing: border-box;
+}
+
+.disconnected {
+  background-color: #560505bc;
 }

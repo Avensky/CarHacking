@@ -1,5 +1,6 @@
 import React from 'react';
 import { socket } from '../socket';
+import styles from './ConnectionManager.module.css';
 
 export function ConnectionManager() {
 
@@ -12,9 +13,9 @@ export function ConnectionManager() {
     }
 
     return (
-        <>
+        <div className={styles.ConnectionManager}>
             <button onClick={connect}>Connect</button>
             <button onClick={disconnect}>Disconnect</button>
-        </>
+        </div>
     );
 }
