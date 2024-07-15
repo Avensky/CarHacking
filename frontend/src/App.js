@@ -8,6 +8,7 @@ import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
 import { Button } from "./components/Button";
 import { MyForm } from "./components/MyForm";
+import { Buffer } from 'buffer';
 import MatrixRainingCode from './components/Matrix';
 
 // import { MyForm } from './components/MyForm';
