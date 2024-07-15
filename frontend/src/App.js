@@ -60,15 +60,15 @@ function App() {
 
     function onCarSim(value) {
       // turn data back into buff for display purposes
-      var buff = Buffer.alloc(8)
+      // var buff = Buffer.alloc(8)
 
-      buff.writeUIntBE(value.revs, 0, 4)
-      buff.writeUIntBE(value.speed, 4, 2)
-      buff.writeUIntBE(value.fuel, 6, 2)
+      // buff.writeUIntBE(value.revs, 0, 4)
+      // buff.writeUIntBE(value.speed, 4, 2)
+      // buff.writeUIntBE(value.fuel, 6, 2)
 
-      // console.log(buff)
-      console.log('setCarEvent', buff);
-      setCarEvents(buff);
+      // // console.log(buff)
+      console.log('setCarEvent', value);
+      setCarEvents(value);
 
     }
     function onError(value) {
