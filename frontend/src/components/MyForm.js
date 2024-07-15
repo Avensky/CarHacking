@@ -11,7 +11,7 @@ export function MyForm() {
         setIsLoading(true);
         const object = { data: value }
 
-        socket.timeout(1000).emit('canData', value, () => {
+        socket.emit('canData', value, () => {
             console.log('submit command');
             axios.post('/api/cmd', object)
                 .then(response => {

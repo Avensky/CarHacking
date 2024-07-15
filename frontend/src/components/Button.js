@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { socket } from '../socket';
 import axios from 'axios';
 
-export function Button() {
+export function Button(props) {
     // const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
@@ -12,14 +12,14 @@ export function Button() {
 
         socket.emit(
             `canData`,
-            'ENGINE SIMULATION ENGAGED',
+            'Command Sent to Backend',
             () => {
                 console.log('submit event');
                 setIsLoading(false);
             }
         );
         // start engine.js script via http request
-        axios.get('/api/start')
+        axios.get(props.url)
             .then(response => {
                 setIsLoading(false);
                 console.log(response)
@@ -35,7 +35,7 @@ export function Button() {
             onClick={onSubmit}
             disabled={isLoading}
         >
-            Start
+            {props.name}
         </button>
 
     );

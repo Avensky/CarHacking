@@ -67,8 +67,8 @@ function App() {
 
     function onCanEvent(value) {
       console.log(value);
-      // setCanEvents(previous => [...previous, value]);
-      setCanEvents(value);
+      setCanEvents(previous => [...previous, value]);
+      // setCanEvents(value);
     }
 
     // function onCmdEvent(value) {
@@ -122,7 +122,10 @@ function App() {
             <MyForm />
             <ConnectionState isConnected={isConnected} />
             <ConnectionManager />
-            <Button />
+            <div className="flex-row">
+              <Button req='get' url='/api/start' name="Start" />
+              <Button req='get' url='/api/reload' name="Reload" size="" />
+            </div>
           </div>
           <SpeedEvents events={carEvents || start} />
         </div>

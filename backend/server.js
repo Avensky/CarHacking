@@ -109,6 +109,41 @@ io.on("connection", (socket) => {
         });
     });
 
+    app.get('/api/reload', (req, res) => {
+        console.log('frontend wants to reload');
+        // Execute shell command
+        const command = "pm2 restart CarHacking";
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('canData', 'New Shell Command Executed')
+            if (error) {
+                console.error(`exec error: ${error}`);
+                // res.sendStatus(200).json({
+                //     status: 'failed',
+                //     error: error
+                // });
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                // res.sendStatus(500).json({
+                //     status: 'failed',
+                //     stderr: stderr
+                // });
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            // res.sendStatus(200).json({
+            //     status: 'success',
+            //     message: 'Shell Command Executed Successfully',
+            //     stdout: stdout,
+            // });
+            res.end(`Success: ${stdout}`);
+        });
+    });
+
     if (process.env.NODE_ENV === "production") {
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
@@ -138,6 +173,11 @@ io.on("connection", (socket) => {
             () => socket.emit('carSim', canData)
         )
         channel.start()
+
+        socket.on("disconnect", (reason) => {
+            console.log(`disconnected due to ${reason}`);
+            channel.stop();
+        });
     }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
