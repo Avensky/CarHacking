@@ -3,12 +3,14 @@
     width: 100%;
     margin: 1lvh 0lvw;
     box-sizing: border-box;
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .MyForm input {
-    width: 70%;
+    min-width: 60%;
 }
 
 .MyForm button {
-    width: 30%;
+    min-width: 30%;
 }

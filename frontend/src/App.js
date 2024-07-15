@@ -136,9 +136,10 @@ function App() {
               <Events events={error} />
               <MyForm />
               <div className="flex-row">
-                <Button req='get' url='/api/start' name="Start" />
-                <Button req='get' url='/api/reload' name="Reload" size="" />
-                <Button req='get' url='/api/hack' name="Hack" size="" />
+                <Button req='get' cmd='' url='/api/start' name="Start" />
+                <Button req='get' cmd='' url='/api/reload' name="Reload" size="" />
+                <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
+                <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />
               </div>
             </div>
           </div>

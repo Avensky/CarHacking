@@ -98,8 +98,8 @@ canvas {
   background-image: url('./components/green-polygonal-background-with-binary-numbers/1921.jpg');
   background-size: contain;
   border-radius: 50%;
-  width: 85px;
-  height: 85px;
+  width: 80px;
+  height: 80px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -115,6 +115,7 @@ canvas {
   /* filter: brightness(90%); */
   /* opacity: 0.95; */
   /* border: 3px solid black; */
+  /* flex: 1; */
 }
 
 .loading {
@@ -127,17 +128,18 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
+  flex-wrap: wrap
 }
 
 .overlay {
   user-select: none;
   background-color: rgba(0, 0, 0, 0.152);
   min-height: 30lvh;
-  min-width: 270px;
+  /* min-width: 270px; */
   width: 35lvw;
   position: absolute;
   bottom: 0;
-  left: 0;
+  /* left: 0; */
   z-index: 1000;
   box-sizing: border-box;
 }

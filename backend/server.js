@@ -46,28 +46,15 @@ io.on("connection", (socket) => {
             socket.emit('canData', 'Start Car.js Engine Simulation')
             if (error) {
                 console.error(`exec error: ${error}`);
-                // res.sendStatus(200).json({
-                //     status: 'failed',
-                //     error: error
-                // });
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                // res.sendStatus(500).json({
-                //     status: 'failed',
-                //     stderr: stderr
-                // });
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            // res.sendStatus(200).json({
-            //     status: 'success',
-            //     message: 'Engine Started',
-            //     stderr: stderr,
-            // });
             res.end(`Success: ${stdout}`);
         });
     });
@@ -80,31 +67,18 @@ io.on("connection", (socket) => {
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('canData', 'New Shell Command Executed')
+            socket.emit('canData', `New Shell Command Executed: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                // res.sendStatus(200).json({
-                //     status: 'failed',
-                //     error: error
-                // });
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                // res.sendStatus(500).json({
-                //     status: 'failed',
-                //     stderr: stderr
-                // });
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            // res.sendStatus(200).json({
-            //     status: 'success',
-            //     message: 'Shell Command Executed Successfully',
-            //     stdout: stdout,
-            // });
             res.end(`Success: ${stdout}`);
         });
     });
@@ -115,31 +89,61 @@ io.on("connection", (socket) => {
         const command = "pm2 restart CarHacking";
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('canData', 'New Shell Command Executed')
+            socket.emit('canData', `New Shell Command Executed: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                // res.sendStatus(200).json({
-                //     status: 'failed',
-                //     error: error
-                // });
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                // res.sendStatus(500).json({
-                //     status: 'failed',
-                //     stderr: stderr
-                // });
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            // res.sendStatus(200).json({
-            //     status: 'success',
-            //     message: 'Shell Command Executed Successfully',
-            //     stdout: stdout,
-            // });
+            res.end(`Success: ${stdout}`);
+        });
+    });
+    app.get('/api/hack', (req, res) => {
+        console.log('Can Attack Sent');
+        // Execute shell command
+        const command = "cansend vcan0 1F4#AAAAAAAAAAAAAAAA";
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('canData', `New Shell Command Executed: ${command}`)
+            if (error) {
+                console.error(`exec error: ${error}`);
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            res.end(`Success: ${stdout}`);
+        });
+    });
+    app.get('/api/vcan', (req, res) => {
+        console.log('Vcan Link');
+        // Execute shell command
+        const command = `sudo ip link add dev vcan0 type vcan;
+            sudo ip link set up vcan0;`;
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('canData', `New Shell Command Executed: ${command}`)
+            if (error) {
+                console.error(`exec error: ${error}`);
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
@@ -159,8 +163,8 @@ io.on("connection", (socket) => {
         // log data being sent by car.js
         // reply any message
         channel.addListener("onMessage", (msg) => {
-            console.log('canData: ', msg.data)
-            socket.emit('canData', JSON.parse(msg.data.toString()));
+            // console.log('canData: ', msg.data)
+            // socket.emit('canData', JSON.parse(msg.data.toString()));
 
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),

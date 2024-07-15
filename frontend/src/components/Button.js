@@ -30,13 +30,13 @@ export function Button(props) {
             })
     }
     return (
-        <button
+        <div
             className={isLoading ? 'start loading' : 'start'}
             onClick={onSubmit}
             disabled={isLoading}
         >
             {props.name}
-        </button>
+        </div>
 
     );
 }
