@@ -40,7 +40,7 @@ function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
   // const [canEvents, setCanEvents] = useState(null);
-  // const [cmdEvents, setCmdEvents] = useState(null);
+  const [cmdEvents, setCmdEvents] = useState(null);
 
   useEffect(() => {
     function onConnect() {
@@ -67,7 +67,7 @@ function App() {
       // buff.writeUIntBE(value.fuel, 6, 2)
 
       // // console.log(buff)
-      console.log('setCarEvent', value);
+      // console.log('setCarEvent', value);
       setCarEvents(value);
 
     }
@@ -82,11 +82,11 @@ function App() {
     //   setCanEvents(value);
     // }
 
-    // function onCmdEvent(value) {
-    //   console.log(value);
-    //   // setCmdEvents(previous => [...previous, value]);
-    //   setCmdEvents(value);
-    // }
+    function onCmdEvent(value) {
+      console.log(value);
+      // setCmdEvents(previous => [...previous, value]);
+      setCmdEvents(value);
+    }
 
     // socket.on('connection', (socket) => {
     //     console.log(`user connected: ${socket.id}`)
@@ -97,7 +97,7 @@ function App() {
     // recieve car data using this line
     socket.on('carSim', onCarSim);
     // socket.on('canData', onCanEvent);
-    // socket.on('cmd', onCmdEvent);
+    socket.on('cmd', onCmdEvent);
 
     socket.on('error', (err) => {
       onError(err);
@@ -112,6 +112,7 @@ function App() {
       socket.off(`carSim`, onCarSim);
       socket.removeAllListeners(`carSim`);
       // socket.off('canData', onCanEvent);
+      socket.off('cmd', onCmdEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
       // socket.off('onMessage');
@@ -142,7 +143,7 @@ function App() {
             <div className={conn}>
               {isConnected === true
                 ? <>
-                  <Events events={carEvents} />
+                  <Events events={cmdEvents} />
                   {/* <Events events={canEvents} /> */}
                   <Events events={error} />
                 </>
@@ -158,7 +159,7 @@ function App() {
                     <div className="flex-row">
                       <Button req='get' cmd='' url='/api/start' name="Start" />
                       <Button req='get' cmd='' url='/api/stop' name="Abort" />
-                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" />
+                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
                       <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
                       <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />
                     </div>

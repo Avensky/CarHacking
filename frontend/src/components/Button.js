@@ -1,28 +1,22 @@
 import React, { useState } from 'react';
-import { socket } from '../socket';
+// import { socket } from '../socket';
 import axios from 'axios';
 
 export function Button(props) {
     // const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    const reload = () => window.location.reload();
     function onSubmit() {
-        // event.preventDefault();
         setIsLoading(true);
-
-        socket.emit(
-            `canData`,
-            'Command Sent to Backend',
-            () => {
-                console.log('submit event');
-                setIsLoading(false);
-            }
-        );
-        // start engine.js script via http request
+        // send commands to backend via http request
         axios.get(props.url)
             .then(response => {
                 setIsLoading(false);
                 console.log(response)
+                if (props.reload) {
+                    reload()
+                }
             })
             .catch(error => {
                 setIsLoading(false);

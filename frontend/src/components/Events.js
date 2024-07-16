@@ -6,7 +6,7 @@ export function Events({ events }) {
     const log = useState([]);
 
     useEffect(() => {
-        console.log('Events', events);
+        // console.log('Events', events);
         if (events) {
             log.push(events);
         }

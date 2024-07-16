@@ -116,6 +116,7 @@ canvas {
   /* opacity: 0.95; */
   /* border: 3px solid black; */
   /* flex: 1; */
+  border: 2px solid transparent;
 }
 
 .loading {
