@@ -133,9 +133,8 @@ const engine = () => {
     out.data = buff
 
     channel.send(out)
-
-    if (now.fuel === 0, now.speed === 0, now.revs === 0) {
-        return
+    if (now.fuel === 0 && now.speed === 0 && now.revs === 0) {
+        return process.exit();
     }
 }
 

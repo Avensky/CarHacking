@@ -97,7 +97,7 @@ function App() {
     // recieve car data using this line
     socket.on('carSim', onCarSim);
     // socket.on('canData', onCanEvent);
-    socket.on('cmd', onCmdEvent);
+    socket.on('cmdData', onCmdEvent);
 
     socket.on('error', (err) => {
       onError(err);
@@ -112,7 +112,7 @@ function App() {
       socket.off(`carSim`, onCarSim);
       socket.removeAllListeners(`carSim`);
       // socket.off('canData', onCanEvent);
-      socket.off('cmd', onCmdEvent);
+      socket.off('cmdData', onCmdEvent);
       // socket.leave('carSim');
       // socket.removeAllListeners('carSim');
       // socket.off('onMessage');
@@ -158,10 +158,11 @@ function App() {
                     <MyForm />
                     <div className="flex-row">
                       <Button req='get' cmd='' url='/api/start' name="Start" />
-                      <Button req='get' cmd='' url='/api/stop' name="Abort" />
-                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
                       <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
-                      <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />
+                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
+                      <Button req='get' cmd='' url='/api/abort' name="Abort" />
+                      <Button req='get' cmd='' url='/api/vcan' name="Add VCan" size="" />
+                      <Button req='get' cmd='' url='/api/vcan' name="Setup VCan" size="" />
                     </div>
                   </>
                   : null
