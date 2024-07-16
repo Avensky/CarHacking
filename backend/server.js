@@ -165,7 +165,6 @@ io.on("connection", (socket) => {
         channel.addListener("onMessage", (msg) => {
             // console.log('canData: ', msg.data)
             // socket.emit('canData', JSON.parse(msg.data.toString()));
-
             canData = {
                 rpms: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),

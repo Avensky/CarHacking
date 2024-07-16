@@ -125,7 +125,7 @@ function App() {
 
   // change color if socket is disconencted
   let conn;
-  isConnected ? conn = 'overlay' : conn = 'overlay disconnected'
+  isConnected ? conn = '' : conn = ' disconnected'
 
   let canvas;
   !isConnected
@@ -138,20 +138,33 @@ function App() {
         {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
         <div className="wrapper">
           {canvas}
-          <div className={conn}>
-            <Events events={carEvents} />
-            {/* <Events events={canEvents} /> */}
+          <div className='overlay'>
+            <div className={conn}>
+              {isConnected === true
+                ? <>
+                  <Events events={carEvents} />
+                  {/* <Events events={canEvents} /> */}
+                  <Events events={error} />
+                </>
+                : null}
+            </div>
             <ConnectionManager />
-            <div className="chat">
+            <div className="command">
               <ConnectionState isConnected={isConnected} />
-              <Events events={error} />
-              <MyForm />
-              <div className="flex-row">
-                <Button req='get' cmd='' url='/api/start' name="Start" />
-                <Button req='get' cmd='' url='/api/stop' name="Abort" />
-                <Button req='get' cmd='' url='/api/reload' name="Reload" size="" />
-                <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
-                <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />
+              <div>
+                {isConnected === true
+                  ? <>
+                    <MyForm />
+                    <div className="flex-row">
+                      <Button req='get' cmd='' url='/api/start' name="Start" />
+                      <Button req='get' cmd='' url='/api/stop' name="Abort" />
+                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" />
+                      <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
+                      <Button req='get' cmd='' url='/api/vcan' name="VCan" size="" />
+                    </div>
+                  </>
+                  : null
+                }
               </div>
             </div>
           </div>

@@ -18,7 +18,7 @@ canvas {
   bottom: 0;
 }
 
-.chat {
+.command {
   /* position: absolute; */
   /* bottom: 0; */
   /* left: 0; */
@@ -128,12 +128,12 @@ canvas {
   display: flex;
   align-items: center;
   justify-content: center;
-  flex-wrap: wrap
+  flex-wrap: wrap;
 }
 
 .overlay {
   user-select: none;
-  background-color: rgba(0, 0, 0, 0.152);
+  /* background-color: rgba(0, 0, 0, 0.152); */
   min-height: 30lvh;
   /* min-width: 270px; */
   width: 35lvw;
@@ -146,4 +146,8 @@ canvas {
 
 .disconnected {
   background-color: #560505bc;
+}
+
+.command {
+  background-color: rgba(0, 0, 0, 0.152);
 }

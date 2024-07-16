@@ -12,20 +12,21 @@ export function MyForm() {
         setIsLoading(true);
         const object = { data: value }
 
-        socket.emit('canData', value, () => {
-            console.log('submit command');
-            axios.post('/api/cmd', object)
-                .then(response => {
-                    setIsLoading(false);
-                    setValue('');
-                    console.log(response.data)
-                })
-                .catch(error => {
-                    setIsLoading(false);
-                    setValue('');
-                    console.log(error.response)
-                })
-        });
+        // socket.emit('canData', value, () => {
+        //     console.log('submit command');
+        // });
+
+        axios.post('/api/cmd', object)
+            .then(response => {
+                setIsLoading(false);
+                setValue('');
+                console.log(response.data)
+            })
+            .catch(error => {
+                setIsLoading(false);
+                setValue('');
+                console.log(error.response)
+            })
 
     }
 
