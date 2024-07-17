@@ -84,8 +84,8 @@ function App() {
 
     function onCmdEvent(value) {
       console.log(value);
-      // setCmdEvents(previous => [...previous, value]);
-      setCmdEvents(value);
+      setCmdEvents(previous => [...previous, value]);
+      // setCmdEvents(value);
     }
 
     // socket.on('connection', (socket) => {

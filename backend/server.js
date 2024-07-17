@@ -44,6 +44,7 @@ io.on("connection", (socket) => {
         gear: 1,
         index: 0,
     }
+
     // API CALLS
     app.get('/api/start', (req, res) => {
         // console.log('api pinged backend');
@@ -69,6 +70,7 @@ io.on("connection", (socket) => {
             res.end(`Success: ${stdout}`);
         });
     });
+
     app.get('/api/abort', (req, res) => {
         // console.log('api pinged backend');
         const command = `killall node`;
@@ -142,7 +144,7 @@ io.on("connection", (socket) => {
             }
             console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `${stdout}`);
-            socket.emit('carSim', `${command}`)
+            socket.emit('carSim', canData) // zero out canData for frontend
             res.end(`Success: ${stdout}`);
         });
     });
@@ -242,12 +244,6 @@ io.on("connection", (socket) => {
 
         socket.on("disconnect", (reason) => {
             console.log(`disconnected due to ${reason}`);
-            canData = {
-                speed: 0,
-                rpms: 0,
-                fuel: 0,
-            }
-            socket.emit('carSim', canData)
             channel.stop();
         });
     }
