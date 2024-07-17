@@ -238,7 +238,7 @@ io.on("connection", (socket) => {
                 fuel: msg.data.readUIntBE(6, 2)
             };
             // console.log("car info: ", canData);
-            const res = JSON.stringify(msg.data.data)
+            const res = JSON.stringify(msg.data)
             // send data to frontend
             // maybe there is a way to only send one? and manipulate the data 
             // in the frontedn but this works. could be optimized.
