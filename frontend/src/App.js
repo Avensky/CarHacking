@@ -1,5 +1,6 @@
 import React, { Suspense, useState, useEffect } from "react";
 import { Canvas } from "@react-three/fiber";
+import { Loader } from '@react-three/drei';
 import { socket } from './socket';
 import { ConnectionState } from './components/ConnectionState';
 import { ConnectionManager } from './components/ConnectionManager';
@@ -8,11 +9,7 @@ import { SpeedEvents } from "./components/SpeedEvents";
 import { CarShow } from "./CarShow/CarShow";
 import { Button } from "./components/Button";
 import { MyForm } from "./components/MyForm";
-// import { Buffer } from 'buffer';
 import MatrixRainingCode from './components/Matrix';
-
-// import { MyForm } from './components/MyForm';
-
 // import {
 //   EffectComposer,
 //   // DepthOfField,
@@ -20,26 +17,11 @@ import MatrixRainingCode from './components/Matrix';
 //   // ChromaticAberration,
 // } from "@react-three/postprocessing";
 
-
-
 function App() {
-  // "undefined" means the URL will be computed from the `window.location` object
-  // const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:4000';
-
-  // const { data, error } = useSocket(URL);
-  // const [socketData, setSocketData] = useState(null);
-
-  const start = {
-    speed: 0,
-    rpms: 0,
-    fuel: 0,
-    temp: 0
-  };
-
-  const [error, setError] = useState(null);
+  const start = { speed: 0, rpms: 0, fuel: 0, temp: 0 };
+  // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
-  // const [canEvents, setCanEvents] = useState(null);
   const [cmdEvents, setCmdEvents] = useState([]);
 
   useEffect(() => {
@@ -47,79 +29,34 @@ function App() {
       setIsConnected(true);
       console.log('connected');
     }
-
     function onDisconnect() {
       setIsConnected(false);
       console.log('disconnected');
     }
-
-    // function onFooEvent(value) {
-    //   console.log('value');
-    //   setFooEvents(previous => [...previous, value]);
+    function onCarSim(value) { setCarEvents(value); }
+    // function onError(value) {
+    //   setError(value);
+    //   console.log('setError', value);
     // }
-
-    function onCarSim(value) {
-      // turn data back into buff for display purposes
-      // var buff = Buffer.alloc(8)
-
-      // buff.writeUIntBE(value.revs, 0, 4)
-      // buff.writeUIntBE(value.speed, 4, 2)
-      // buff.writeUIntBE(value.fuel, 6, 2)
-
-      // // console.log(buff)
-      // console.log('setCarEvent', value);
-      setCarEvents(value);
-
-    }
-    function onError(value) {
-      setError(value);
-      console.log('setError', value);
-    }
-
-    // function onCanEvent(value) {
-    //   console.log(value);
-    //   // setCanEvents(previous => [...previous, value]);
-    //   setCanEvents(value);
-    // }
-
     function onCmdEvent(value) {
       console.log(value);
       setCmdEvents(previous => [...previous, value]);
-      // setCmdEvents(value);
     }
-
-    // socket.on('connection', (socket) => {
-    //     console.log(`user connected: ${socket.id}`)
-    // });
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
-    // socket.on('foo', onFooEvent);
-    // recieve car data using this line
     socket.on('carSim', onCarSim);
-    // socket.on('canData', onCanEvent);
     socket.on('cmdData', onCmdEvent);
-
-    socket.on('error', (err) => {
-      onError(err);
-    });
+    // socket.on('error', (err) => {
+    //   onError(err);
+    // });
 
     return () => {
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      // socket.off('foo', onFooEvent);
-      // disconnect from socket
-      // socket.removeAllListeners('canMessage');
       socket.off(`carSim`, onCarSim);
       socket.removeAllListeners(`carSim`);
-      // socket.off('canData', onCanEvent);
       socket.off('cmdData', onCmdEvent);
-      // socket.leave('carSim');
-      // socket.removeAllListeners('carSim');
-      // socket.off('onMessage');
-      // socket.removeAllListeners('onMessage')
-      socket.off('error', setError);
-      // socket.off();
-      // socket.off('create-something', onChatEvent);
+      // socket.off('error', setError);
     };
     // eslint-disable-next-line
   }, []);
@@ -134,49 +71,52 @@ function App() {
     : canvas = null;
 
   return (
-    <Suspense fallback={null}>
-      <div className='three-d-container'>
-        {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
-        <div className="wrapper">
-          {canvas}
-          <div className='overlay'>
-            <div className={conn}>
+    <div className='three-d-container'>
+      {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
+      <div className="wrapper">
+        {canvas}
+        <div className='overlay'>
+          <div className={conn}>
+            {isConnected === true
+              ? <>
+                <Events events={cmdEvents} />
+                {/* <Events events={canEvents} /> */}
+                {/* <Events events={error} /> */}
+              </>
+              : null}
+          </div>
+          <ConnectionManager />
+          <div className="command">
+            <ConnectionState isConnected={isConnected} />
+            <div>
               {isConnected === true
                 ? <>
-                  <Events events={cmdEvents} />
-                  {/* <Events events={canEvents} /> */}
-                  <Events events={error} />
+                  <MyForm />
+                  <div className="flex-row">
+                    <Button req='get' cmd='' url='/api/start' name="Start" />
+                    <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
+                    <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
+                    <Button req='get' cmd='' url='/api/abort' name="Abort" />
+                    <Button req='get' cmd='' url='/api/vcanAdd' name="Add VCan" size="" />
+                    <Button req='get' cmd='' url='/api/vcanSetup' name="Setup VCan" size="" />
+                  </div>
                 </>
-                : null}
-            </div>
-            <ConnectionManager />
-            <div className="command">
-              <ConnectionState isConnected={isConnected} />
-              <div>
-                {isConnected === true
-                  ? <>
-                    <MyForm />
-                    <div className="flex-row">
-                      <Button req='get' cmd='' url='/api/start' name="Start" />
-                      <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
-                      <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
-                      <Button req='get' cmd='' url='/api/abort' name="Abort" />
-                      <Button req='get' cmd='' url='/api/vcan' name="Add VCan" size="" />
-                      <Button req='get' cmd='' url='/api/vcan' name="Setup VCan" size="" />
-                    </div>
-                  </>
-                  : null
-                }
-              </div>
+                : null
+              }
             </div>
           </div>
-          <SpeedEvents events={carEvents || start} />
         </div>
-        <div className='three-d'>
-          <Canvas shadows><CarShow /></Canvas>
-        </div>
+        <SpeedEvents events={carEvents || start} />
       </div>
-    </Suspense>
+      <div className='three-d'>
+        <Canvas shadows>
+          <Suspense fallback={null}>
+            <CarShow />
+          </Suspense>
+        </Canvas>
+        <Loader />
+      </div>
+    </div>
   );
 }
 

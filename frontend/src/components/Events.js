@@ -5,9 +5,9 @@ export function Events({ events }) {
     return (
         <ul>
             {
-                events.map((event, index) =>
+                events.length > 0 ? events.map((event, index) =>
                     <li key={index}>{event}</li>
-                )
+                ) : null
             }
         </ul>
     );
