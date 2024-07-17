@@ -1,6 +1,9 @@
 .Events {
     overflow: scroll;
     overflow-wrap: break-word;
+    user-select: all;
+    pointer-events: all;
+    height: 250px;
 }
 
 .Event {}

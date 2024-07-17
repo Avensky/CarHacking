@@ -14,14 +14,14 @@ export function Button(props) {
             .then(response => {
                 setIsLoading(false);
                 console.log(response)
-                if (props.reload) {
-                    reload()
-                }
             })
             .catch(error => {
                 setIsLoading(false);
                 console.log(error.response)
             })
+        if (props.reload === true) {
+            reload()
+        }
     }
     return (
         <div

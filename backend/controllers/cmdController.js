@@ -20,18 +20,18 @@ app.get('/api/start', (req, res) => {
         socket.emit('cmdData', `${command}`);
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         res.end(`Success: ${stdout}`);
     });
 });
@@ -44,18 +44,18 @@ app.get('/api/abort', (req, res) => {
         socket.emit('cmdData', `${command}`);
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         res.end(`Success: ${stdout}`);
     });
 });
@@ -71,18 +71,18 @@ app.post('/api/cmd', (req, res) => {
         socket.emit('cmdData', `${command}`)
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         res.end(`${stdout}`);
     });
 });
@@ -96,18 +96,18 @@ app.get('/api/reload', (req, res) => {
         socket.emit('cmdData', `${command}`)
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         socket.emit('carSim', `${command}`)
         res.end(`Success: ${stdout}`);
     });
@@ -121,18 +121,18 @@ app.get('/api/hack', (req, res) => {
         socket.emit('cmdData', `${command}`)
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`)
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`)
         res.end(`Success: ${stdout}`);
     });
 });
@@ -145,18 +145,18 @@ app.get('/api/vcanAdd', (req, res) => {
         socket.emit('cmdData', `${command}`)
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         res.end(`Success: ${stdout}`);
     });
 });
@@ -169,18 +169,18 @@ app.get('/api/vcanSetup', (req, res) => {
         socket.emit('cmdData', `${command}`)
         if (error) {
             console.error(`exec error: ${error}`);
-            socket.emit('cmdData', `${error}`);
+            socket.emit('cmdData', `[cmdData][error]: ${error}`);
             res.end(`Error: ${error.message}`);
             return;
         }
         if (stderr) {
             console.error(`stderr: ${stderr}`);
-            socket.emit('cmdData', `${stderr}`);
+            socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
             res.end(`Stderr: ${stderr}`);
             return;
         }
         console.log(`stdout: ${stdout}`);
-        socket.emit('cmdData', `${stdout}`);
+        socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
         res.end(`Success: ${stdout}`);
     });
 });
