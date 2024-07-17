@@ -40,7 +40,7 @@ function App() {
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [carEvents, setCarEvents] = useState(start);
   // const [canEvents, setCanEvents] = useState(null);
-  const [cmdEvents, setCmdEvents] = useState(null);
+  const [cmdEvents, setCmdEvents] = useState([]);
 
   useEffect(() => {
     function onConnect() {
