@@ -52,46 +52,47 @@ io.on("connection", (socket) => {
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Car.js - Engine Simulation Engaged');
-            socket.emit('cmdData', `[cmdData]: ${command}`);
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`);
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
 
     app.get('/api/abort', (req, res) => {
+        socket.emit('carSim', canData) // zero out canData for frontend
         // console.log('api pinged backend');
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Car.js - Engine Simulation Engaged');
-            socket.emit('cmdData', `[cmdData]: ${command}`);
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`);
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
@@ -107,44 +108,44 @@ io.on("connection", (socket) => {
             socket.emit('cmdData', `${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`${stdout}`);
         });
     });
 
     app.get('/api/reload', (req, res) => {
         console.log('frontend wants to reload');
+        socket.emit('carSim', canData) // zero out canData for frontend
         // Execute shell command
         const command = "pm2 restart CarHacking";
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData]: ${command}`)
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
-            socket.emit('carSim', canData) // zero out canData for frontend
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
@@ -154,16 +155,16 @@ io.on("connection", (socket) => {
         const command = "cansend vcan0 1F4#AAAAAAAAAAAAAAAA";
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData]: ${command}`)
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
@@ -178,7 +179,7 @@ io.on("connection", (socket) => {
         const command = `sudo ip link add dev vcan0 type vcan`;
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData]: ${command}`)
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
                 socket.emit('cmdData', `${error}`);
@@ -187,12 +188,12 @@ io.on("connection", (socket) => {
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
@@ -202,21 +203,21 @@ io.on("connection", (socket) => {
         const command = `sudo ip link set up vcan0;`;
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData]: ${command}`)
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData]: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
                 res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData]: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData]: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });
@@ -237,7 +238,8 @@ io.on("connection", (socket) => {
                 fuel: msg.data.readUIntBE(6, 2)
             };
             // console.log("car info: ", canData);
-            socket.emit('cmdData', `[carSim]: ${msg.data}`)
+            const res = JSON.stringify(msg.data)
+            socket.emit('cmdData', `[carSim]: ${res}`)
             socket.emit('carSim', canData)
         })
 

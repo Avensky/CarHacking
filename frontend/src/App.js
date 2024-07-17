@@ -78,11 +78,7 @@ function App() {
         <div className='overlay'>
           <div className={conn}>
             {isConnected === true
-              ? <>
-                <Events events={cmdEvents} />
-                {/* <Events events={canEvents} /> */}
-                {/* <Events events={error} /> */}
-              </>
+              ? <Events events={cmdEvents} />
               : null}
           </div>
           <ConnectionManager />
