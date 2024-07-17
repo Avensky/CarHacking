@@ -1,15 +1,16 @@
 import React from 'react';
 import PropTypes from 'prop-types';
+import styles from './Events.module.css';
 
 export function Events({ events }) {
     return (
-        <ul>
+        <div className={styles.Events}>
             {
                 events.length > 0 ? events.map((event, index) =>
-                    <li key={index}>{event}</li>
+                    <div className={styles.Event} key={index}>{event}</div>
                 ) : null
             }
-        </ul>
+        </div>
     );
 }
 

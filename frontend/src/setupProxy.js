@@ -4,7 +4,7 @@ let baseUrl
 
 process.env.NODE_ENV === "production"
   ? baseUrl = "http://localhost:5000"
-  : baseUrl = "http://192.168.0.155:4000" //dev ip
+  : baseUrl = "http://localhost:4000" //dev ip
 
 module.exports = function (app) {
   app.use(

@@ -113,11 +113,11 @@ const engine = () => {
     }
 
     // print results
-    console.log("speed = ", now.speed);
-    console.log("revs  = ", now.revs);
-    console.log("gear  = ", now.gear);
-    console.log("fuel  = ", now.fuel);
-    console.log("------------------");
+    // console.log("------------------");
+    // console.log("speed = ", now.speed);
+    // console.log("revs  = ", now.revs);
+    // console.log("gear  = ", now.gear);
+    // console.log("fuel  = ", now.fuel);
     now.index++;
 
     // send data

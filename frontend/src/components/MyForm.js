@@ -19,12 +19,12 @@ export function MyForm() {
         axios.post('/api/cmd', object)
             .then(response => {
                 setIsLoading(false);
-                setValue('');
+                // setValue('');
                 console.log(response.data)
             })
             .catch(error => {
                 setIsLoading(false);
-                setValue('');
+                // setValue('');
                 console.log(error.response)
             })
 
@@ -32,8 +32,8 @@ export function MyForm() {
 
     return (
         <form onSubmit={onSubmit} className={styles.MyForm}>
-            <input onChange={e => setValue(e.target.value)} />
-            <button type="submit" disabled={isLoading}>Submit</button>
+            <input onChange={e => setValue(e.target.value)} placeholder='$' />
+            <button type="submit" disabled={isLoading}>Enter</button>
         </form>
     );
 }
