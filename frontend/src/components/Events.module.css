@@ -1,9 +1,19 @@
 .Events {
-    overflow: scroll;
+    overflow: overlay;
+    overflow-y: scroll;
     overflow-wrap: break-word;
     user-select: all;
     pointer-events: all;
     height: 250px;
+    width: 100%;
+    padding: 1lvh 1lvw;
+    position: relative;
 }
 
-.Event {}
+.EventLog {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    display: inline-block;
+    margin-top: 100%;
+}

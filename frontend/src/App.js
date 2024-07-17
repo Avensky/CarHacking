@@ -70,6 +70,8 @@ function App() {
     ? canvas = <MatrixRainingCode />
     : canvas = null;
 
+  // functions
+  const reload = () => window.location.reload();
   return (
     <div className='three-d-container'>
       {/* <ThreeD nScale={isMobile ? 1.4 : 1.6} /> */}
@@ -91,7 +93,8 @@ function App() {
                   <div className="flex-row">
                     <Button req='get' cmd='' url='/api/start' name="Start" />
                     <Button req='get' cmd='' url='/api/hack' name="Hack" size="" />
-                    <Button req='get' cmd='' url='/api/reload' name="Reload" size="" reload={true} />
+                    <Button req='get' cmd='' url='/api/reload' name="Reload Node" size="" />
+                    <Button req='get' cmd='' onClick={() => reload} name="Refresh UI" size="" />
                     <Button req='get' cmd='' url='/api/abort' name="Abort" />
                     <Button req='get' cmd='' url='/api/vcanAdd' name="Add VCan" size="" />
                     <Button req='get' cmd='' url='/api/vcanSetup' name="Setup VCan" size="" />

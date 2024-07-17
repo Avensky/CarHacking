@@ -6,21 +6,19 @@ export function Button(props) {
     // const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
-    const reload = () => window.location.reload();
     function onSubmit() {
         setIsLoading(true);
         // send commands to backend via http request
-        axios.get(props.url)
-            .then(response => {
-                setIsLoading(false);
-                console.log(response)
-            })
-            .catch(error => {
-                setIsLoading(false);
-                console.log(error.response)
-            })
-        if (props.reload === true) {
-            reload()
+        if (props.url) {
+            axios.get(props.url)
+                .then(response => {
+                    setIsLoading(false);
+                    console.log(response)
+                })
+                .catch(error => {
+                    setIsLoading(false);
+                    console.log(error.response)
+                })
         }
     }
     return (

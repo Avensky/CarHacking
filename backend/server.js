@@ -222,36 +222,37 @@ io.on("connection", (socket) => {
         });
     });
 
-    const can = require("socketcan");
-    const channel = can.createRawChannel("vcan0", true);
-    // default values
+    if (process.env.NODE_ENV === "production") {
+        const can = require("socketcan");
+        const channel = can.createRawChannel("vcan0", true);
+        // default values
 
-    // log data being sent by car.js
-    // reply any message
-    channel.addListener("onMessage", (msg) => {
-        // console.log('canData: ', msg.data)
-        // socket.emit('canData', JSON.parse(msg.data.toString()));
-        canData = {
-            rpms: msg.data.readUIntBE(0, 4),
-            speed: msg.data.readUIntBE(4, 2),
-            fuel: msg.data.readUIntBE(6, 2)
-        };
-        // console.log("car info: ", canData);
-        const res = JSON.stringify(msg.data.data)
-        // send data to frontend
-        // maybe there is a way to only send one? and manipulate the data 
-        // in the frontedn but this works. could be optimized.
-        socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
-        socket.emit('carSim', canData) //send data to app
-    })
+        // log data being sent by car.js
+        // reply any message
+        channel.addListener("onMessage", (msg) => {
+            // console.log('canData: ', msg.data)
+            // socket.emit('canData', JSON.parse(msg.data.toString()));
+            canData = {
+                rpms: msg.data.readUIntBE(0, 4),
+                speed: msg.data.readUIntBE(4, 2),
+                fuel: msg.data.readUIntBE(6, 2)
+            };
+            // console.log("car info: ", canData);
+            const res = JSON.stringify(msg.data.data)
+            // send data to frontend
+            // maybe there is a way to only send one? and manipulate the data 
+            // in the frontedn but this works. could be optimized.
+            socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
+            socket.emit('carSim', canData) //send data to app
+        })
 
-    channel.start()
+        channel.start()
 
-    socket.on("disconnect", (reason) => {
-        console.log(`disconnected due to ${reason}`);
-        channel.stop();
-    });
-
+        socket.on("disconnect", (reason) => {
+            console.log(`disconnected due to ${reason}`);
+            channel.stop();
+        });
+    }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
 

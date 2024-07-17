@@ -122,8 +122,10 @@ canvas {
 
 .loading {
   /* opacity: 0.85; */
-  filter: brightness(65%);
+  filter: brightness(45%);
   border: 2px solid black;
+  pointer-events: none;
+  user-select: none;
 }
 
 .flex-row {
