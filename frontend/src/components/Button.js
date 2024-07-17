@@ -6,6 +6,9 @@ export function Button(props) {
     // const [value, setValue] = useState('');
     const [isLoading, setIsLoading] = useState(false);
 
+    // functions
+    const reload = () => window.location.reload();
+
     function onSubmit() {
         setIsLoading(true);
         // send commands to backend via http request
@@ -19,8 +22,11 @@ export function Button(props) {
 
                     console.log(error.response)
                 })
-        } else {
-            setIsLoading(false);
+        }
+
+        else if (props.reload === true) {
+            // setIsLoading(false);
+            reload()
         }
     }
     return (

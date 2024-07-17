@@ -12,6 +12,8 @@
     overflow-y: scroll;
     overflow-wrap: break-word;
     display: flex;
+    height: 100%;
     justify-content: end;
     align-items: start;
+    flex-direction: column;
 }
