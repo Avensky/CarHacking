@@ -1,7 +1,4 @@
 .Events {
-    overflow: overlay;
-    overflow-y: scroll;
-    overflow-wrap: break-word;
     user-select: all;
     pointer-events: all;
     height: 250px;
@@ -11,9 +8,10 @@
 }
 
 .EventLog {
-    position: fixed;
-    bottom: 0;
-    width: 100%;
-    display: inline-block;
-    margin-top: 100%;
+    overflow: overlay;
+    overflow-y: scroll;
+    overflow-wrap: break-word;
+    display: flex;
+    justify-content: end;
+    align-items: start;
 }

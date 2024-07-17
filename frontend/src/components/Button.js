@@ -16,9 +16,11 @@ export function Button(props) {
                     console.log(response)
                 })
                 .catch(error => {
-                    setIsLoading(false);
+
                     console.log(error.response)
                 })
+        } else {
+            setIsLoading(false);
         }
     }
     return (
