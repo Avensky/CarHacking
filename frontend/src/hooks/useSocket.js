@@ -1,10 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
-import io from 'socket.io-client';
+import { useEffect, useRef, useState } from 'react'
+import io from 'socket.io-client'
 
 const useSocket = (url) => {
-    const socketRef = useRef(null);
-    const [data, setData] = useState(null);
-    const [error, setError] = useState(null);
+    const socketRef = useRef(null)
+    const [data, setData] = useState(null)
+    const [error, setError] = useState(null)
     // const [isConnected, setIsConnected] = useState(socket.connected);
     // const [canEvents, setCanEvents] = useState([]);
     // const [fooEvents, setFooEvents] = useState([]);
@@ -46,21 +46,21 @@ const useSocket = (url) => {
         // socket.on('can message', onCanEvent);
         // socket.on('create-something', onChatEvent);
 
-        socketRef.current = io(url);
+        socketRef.current = io(url)
         // socketRef.current.on('connect', () => {
         //     console.log('Connected to Socket.IO server');
         // });
 
         socketRef.current.on('can message', (message) => {
-            setData(message);
-        });
+            setData(message)
+        })
 
         socketRef.current.on('error', (err) => {
-            setError(err);
-        });
+            setError(err)
+        })
 
         return () => {
-            socketRef.current.disconnect();
+            socketRef.current.disconnect()
             // socket.off('connect', onConnect);
             // socket.off('disconnect', onDisconnect);
             // socket.off('foo', onFooEvent);
@@ -68,10 +68,10 @@ const useSocket = (url) => {
             // socket.off('can message', onCanEvent);
             // socket.off('create-something', onChatEvent);
             // socket.removeAllListeners('can message')
-        };
-    }, [url]);
+        }
+    }, [url])
 
-    return { data, error };
-};
+    return { data, error }
+}
 
-export default useSocket;
+export default useSocket

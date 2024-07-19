@@ -1,70 +1,133 @@
-# Getting Started with Create React App
+# ReadME
+edit: summer 2024
+task: update front-end
+attemp1: Install 3d graphics for online experience using threejs
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![Gauges screenshot](https://user-images.githubusercontent.com/79558669/180919193-4b0581e3-ed1f-457c-8e1e-63e7c2ea8a78.png)
 
-## Available Scripts
 
-In the project directory, you can run:
+![GitHub last commit](https://img.shields.io/github/last-commit/crice114/CarHacking)
 
-### `npm start`
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+## About
+This project will create a 3-d model render of a tank and gagues along the interface.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+The project runs on a Raspberry Pi and simulates a car outputting revs, speed, and fuel consumption(this is shown at a rate that is sped up for functional timing purposes) and displays via the frond end using nodejs, threejs, react, fiber, and socketcan. 
 
-### `npm test`
+When the fuel gauge reaches 0, the simulation ends and all gauges are reset.The Pi model I am using is Raspberry Pi 4 model B. 
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+The server is created using express, socket.io, socketcan and the gauges are created with the help of an existing canvas-gauge template. 
 
-### `npm run build`
+## Prerequites
+Raspberry Pi 4 model B.
+Raspbian 64 bit OS.
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+## Installation
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+# Flash 64 bit os raspbian
+# Connect to the internet and accept updates
+# install samba onto the Pi
+sudo apt install samba samba-common-bin
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+# set up smb.conf file
+sudo nano /etc/samba/smb.conf
+# to reload
+sudo smbd stop;
+sudo nmbd stop;
+sudo smbd start;
 
-### `npm run eject`
+# add the following to the bottom of the file and save changes.
+[Pishare]
+Comment = Pi shared folder
+Path = /share
+Browsable = yes
+Writable = yes
+only guest = no
+create mask = 0777
+directory mask = 0777
+Public = yes
+Guest ok = yes
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+# Make a user to log into the Pi (username is pi in this case) and enter a password
+sudo smbpasswd -a pi
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+# install node version manager 
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+# activate nvm
+source ~/.bashrc
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+# confirm installation
+command -v nvm
 
-## Learn More
+# install node
+nvm install 18
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+# To test, in Network folder of your computer type: \\[Pi IP Address]\
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+# Map the Network drive.
 
-### Code Splitting
+# clone the repo and initialize project
+git clone https://github.com/Avensky/CarHacking.git ~/share/CarHacking
+cd ~/share/CarHacking
+npm ci
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
+# set up virtual canbus
+sudo apt-get install can-utils
+sudo modprobe vcan
 
-### Analyzing the Bundle Size
+# use these when resetting pi on a different network
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
+# To test, type ifconfig and look for vcan
+# Get ip adress
+hostname -I
 
-### Making a Progressive Web App
+## Usage
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
+# in terminal 1 start server from project dir
+cd ~/share/CarHacking
+npm start 
 
-### Advanced Configuration
+# on your pc type [Raspberry Pi IP Address]:3000/index.html in a web browser
+192.168.0.153:3000/index.html
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
+# in a terminal 2 start sending car data to gauges in terminal #1
+node car.js
 
-### Deployment
+# in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
+cansend vcan0 1F4#AAAAAAAAAAAAAAAA
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
+## Acknowledgement
+Project concept and execution inspired by rhysmorgan134/Can-App
 
-### `npm run build` fails to minify
+Frontend inspired by Domenicobrz/R3F-in-practice
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+T-90M 3D model
+"T-90M (With interior) [FREE]" (https://skfb.ly/oWGUu) by DerpDude is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+Panzer II model
+"Panzer II (Pz.Kpfw. II)" (https://skfb.ly/oTOqy) by vmatthew is licensed under Creative Commons Attribution (http://creativecommons.org/licenses/by/4.0/).
+
+# Combination in a multitude of open source projects
+
+# 🏎️ @pmndrs/racing-game
+
+![img](thumbnail.webp)
+
+Live demo (current state): https://racing.pmnd.rs/
+
+This project is a showcase for the feasibility of React in gaming. Every thing is a self contained component using [react-three-fiber](https://docs.pmnd.rs/react-three-fiber) to express threejs with React semantics. If that seems strange to you read [this explanation](https://twitter.com/0xca0a/status/1282999626782650368).
+
+This project is 100% open source and community built, CC0 assets only, everyone is invited to participate. If you have a PR merged you are added to the triage team. Refer to [CONTRIBUTING.md](/CONTRIBUTING.md) for more information.
+
+```jsx
+/assets   - the blend files
+/utils    - game state store, helpers
+/models   - gltfjsx models, players, characters
+/effects  - dust, trails, skids, shaders
+/ui       - intros, heads up displays, leaderboards
+```
+
+There is a dedicated discord channel for this project here: https://discord.gg/dQW7fDmaAG

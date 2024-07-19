@@ -1,8 +1,0 @@
-.ConnectionManager {
-    display: flex;
-    flex-wrap: wrap
-}
-
-.ConnectionManager button {
-    min-width: 50%;
-}
