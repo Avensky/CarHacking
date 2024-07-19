@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "target": "ESNext",
-    "lib": ["DOM", "DOM.Iterable", "ESNext"],
+    "lib": [
+      "DOM",
+      "DOM.Iterable",
+      "ESNext"
+    ],
     "skipLibCheck": true,
     // https://esbuild.github.io/content-types/#es-module-interop
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "strict": true,
+    "strictNullChecks": false,
     "forceConsistentCasingInFileNames": true,
     "module": "ESNext",
     "moduleResolution": "Node",
@@ -14,9 +19,16 @@
     "isolatedModules": true,
     "noEmit": true,
     "jsx": "react-jsx",
-    "types": ["vite/client"],
+    "noImplicitAny": false,
+    "types": [
+      "vite/client"
+    ],
     "incremental": true,
   },
-  "include": ["./src"],
-  "exclude": ["node_modues"],
+  "include": [
+    "./src"
+  ],
+  "exclude": [
+    "node_modues"
+  ],
 }

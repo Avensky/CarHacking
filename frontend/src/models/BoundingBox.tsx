@@ -10,7 +10,7 @@ type Props = {
   width: number
 }
 
-export const BoundingBox = ({ depth, height, position: [x, y, z], width }: Props) => {
+export const BoundingBox = ({ depth, height, position: [x, y, z], width }: Props): JSX.Element => {
   const [onCollide] = useStore(({ actions: { reset } }) => [reset])
 
   const sharedProps = {

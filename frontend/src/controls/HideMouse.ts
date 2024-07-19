@@ -1,7 +1,7 @@
 import { useEffect } from 'react'
 import debounce from 'lodash-es/debounce'
 
-export function HideMouse({ delay = 3000 }) {
+export function HideMouse({ delay = 3000 }): JSX.Element {
   useEffect(() => {
     let isIdle = true
 

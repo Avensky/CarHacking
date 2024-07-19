@@ -1,4 +1,4 @@
-import { socket } from '../../../socket'
+import socket from '../../../socket'
 import styles from './ConnectionManager.module.css'
 
 export function ConnectionManager(): JSX.Element {

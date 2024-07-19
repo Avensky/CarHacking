@@ -12,7 +12,7 @@ const initialValues = {
   ...vehicleConfig,
 }
 
-export function Editor() {
+export function Editor(): JSX.Element {
   const [get, set, debug, dpr, shadows, stats] = useStore((state) => [state.get, state.set, state.debug, state.dpr, state.shadows, state.stats])
   const { back, force, front, height, maxBrake, maxSpeed, steer, width } = vehicleConfig
   const { customSlidingRotationalSpeed, frictionSlip, radius, sideAcceleration, suspensionStiffness, suspensionRestLength, useCustomSlidingRotationalSpeed } =

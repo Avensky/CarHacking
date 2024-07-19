@@ -3,7 +3,7 @@ import { keys } from '../keys'
 import { isControl, useStore } from '../store'
 import type { BindableActionName } from '../store'
 
-export function Keyboard() {
+export function Keyboard(): JSX.Element {
   const [actionInputMap, actions, binding] = useStore(({ actionInputMap, actions, binding }) => [actionInputMap, actions, binding])
 
   useEffect(() => {

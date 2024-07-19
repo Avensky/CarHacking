@@ -19,10 +19,10 @@ const layers = new Layers()
 layers.enable(levelLayer)
 
 // FROM ME
-import { socket } from './socket.js'
+import socket from './socket'
 import { Matrix } from './components/Matrix'
 import { Dashboard } from './ui/dashboard'
-import { Console } from './ui/console/Index'
+import { Console } from './ui/console/index'
 export function App(): JSX.Element {
 
   // FROM ME
