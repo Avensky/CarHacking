@@ -20,7 +20,7 @@ layers.enable(levelLayer)
 
 // FROM ME
 import { socket } from './socket.js'
-import { Matrix } from './components'
+import { Matrix } from './components/Matrix'
 import { Dashboard } from './ui/dashboard'
 import { Console } from './ui/console/Index'
 export function App(): JSX.Element {
