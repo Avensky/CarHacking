@@ -33,7 +33,7 @@ const providers: readonly {
   },
 ] as const
 
-export function Auth() {
+export function Auth(): JSX.Element {
   const signIn = async (provider: Provider) => {
     try {
       await authenticateUser(provider)
