@@ -273,9 +273,9 @@ io.on("connection", (socket) => {
 // launch server in production mode
 if (process.env.NODE_ENV === 'production') {
     // Serve production assets
-    app.use(express.static('../frontend/build'))
+    app.use(express.static('../frontend/dist'))
     // Express will serve up the index.html file
-    const filepath = path.join(__dirname, '../frontend/build/index.html');
+    const filepath = path.join(__dirname, '../frontend/dist/index.html');
 
     app.get('/', (req, res) => {
         res.sendFile(filepath, function (err) {

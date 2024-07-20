@@ -139,13 +139,19 @@ export function App(): JSX.Element {
         <ToggledMap />
         <ToggledOrbitControls />
       </Canvas>
-      <Clock />
       <ToggledEditor />
       <ToggledFinished />
       <Console isConnected={isConnected} cmdEvents={cmdEvents} />
-      <Help />
-      <Speed />
-      <Dashboard events={carEvents || start} />
+
+      {isConnected
+        ? <>
+          <Clock />
+          <Help />
+          <Speed />
+          <Dashboard events={carEvents || start} />
+        </>
+        : null
+      }
       <ToggledStats />
       <ToggledCheckpoint />
       <LeaderBoard />
