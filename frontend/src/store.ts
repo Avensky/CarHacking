@@ -95,7 +95,7 @@ export type Controls = typeof controls
 type Control = keyof Controls
 export const isControl = (v: PropertyKey): v is Control => Object.hasOwnProperty.call(controls, v)
 
-export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans, 'editor' | 'map' | 'sound'> | 'camera' | 'reset'
+export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans, 'editor' | 'map' | 'sound'> | 'camera' //| 'reset'
 
 export type ActionInputMap = Record<BindableActionName, string[]>
 
@@ -112,7 +112,7 @@ const actionInputMap: ActionInputMap = {
   left: ['arrowleft', 'a', 'q'],
   map: ['m'],
   pickcolor: ['p'],
-  reset: ['r'],
+  // reset: ['r'],
   right: ['arrowright', 'd', 'e'],
   sound: ['u'],
 }
@@ -130,7 +130,7 @@ type Actions = BooleanActions &
   ControlActions &
   TimerActions & {
     camera: () => void
-    reset: () => void
+    // reset: () => void
   }
 
 export interface IState extends BaseState {
@@ -191,18 +191,21 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
     onStart: () => {
       set({ finished: 0, start: Date.now() })
     },
-    reset: () => {
-      mutation.boost = maxBoost
+    // reset: () => {
+    //   mutation.boost = maxBoost
 
-      set((state) => {
-        state.api?.angularVelocity.set(...angularVelocity)
-        state.api?.position.set(...position)
-        state.api?.rotation.set(...rotation)
-        state.api?.velocity.set(0, 0, 0)
+    //   set((state) => {
+    //     state.api?.angularVelocity.set(...angularVelocity)
+    //     state.api?.position.set(...position)
+    //     state.api?.rotation.set(...rotation)
+    //     state.api?.velocity.set(0, 0, 0)
 
-        return { ...state, finished: 0, start: 0 }
-      })
-    },
+    //     return {
+    //       ...state,
+    //       finished: 0, start: 0
+    //     }
+    //   })
+    // },
   }
 
   return {

@@ -250,6 +250,7 @@ io.on("connection", (socket) => {
 
         socket.on("disconnect", (reason) => {
             console.log(`disconnected due to ${reason}`);
+            socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
             channel.stop();
         });
     }
@@ -258,15 +259,18 @@ io.on("connection", (socket) => {
 
     socket.conn.on("upgrade", (transport) => {
         console.log(`transport upgraded to ${transport.name}`);
+        socket.emit('cmdData', `[SocketIO]: transport upgraded to ${transport.name}`)
     });
 
     socket.on("disconnect", (reason) => {
         console.log(`disconnected due to ${reason}`);
+        socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
     });
 
     // handler errors
     socket.on('error', (err) => {
-        console.error('Socket.IO error:', err);
+        console.error(`Socket.IO error: ${err}`);
+        socket.emit('cmdData', `[SocketIO]: Socket.IO error: ${err}`)
     });
 });
 

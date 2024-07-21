@@ -12,7 +12,7 @@ import { HideMouse, Keyboard } from './controls'
 import { Cameras } from './effects'
 import { BoundingBox, Ramp, Track, Vehicle, Goal, Train, Heightmap } from './models'
 import { angularVelocity, levelLayer, position, rotation, useStore } from './store'
-import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
+import { Checkpoint, Clock, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { useToggle } from './useToggle'
 
 const layers = new Layers()
@@ -21,8 +21,7 @@ layers.enable(levelLayer)
 // FROM ME
 import socket from './socket'
 import { Matrix } from './components/Matrix'
-import { Dashboard } from './ui/dashboard'
-import { Console } from './ui/console/index'
+import { UI } from './ui/UI'
 export function App(): JSX.Element {
 
   // FROM ME
@@ -141,23 +140,20 @@ export function App(): JSX.Element {
       </Canvas>
       <ToggledEditor />
       <ToggledFinished />
-      <Console isConnected={isConnected} cmdEvents={cmdEvents} />
-
-      {isConnected
-        ? <>
-          <Clock />
-          <Help />
-          <Speed />
-          <Dashboard events={carEvents || start} />
-        </>
-        : null
-      }
       <ToggledStats />
       <ToggledCheckpoint />
       <LeaderBoard />
       <PickColor />
       <HideMouse />
       <Keyboard />
+      <UI carEvents={carEvents} cmdEvents={cmdEvents} start={start} isConnected={isConnected} />
+      {isConnected
+        ? <>
+          <Clock />
+          <Help />
+        </>
+        : null
+      }
     </Intro>
   )
 }

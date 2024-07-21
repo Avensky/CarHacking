@@ -5,12 +5,12 @@ import { Rpms } from './Rpms/Rpms'
 export function Dashboard(events: any): JSX.Element {
     return (
         <div className='dashboard'>
-            <div className='dash-top'>
-                <FuelTemp events={events} />
-            </div>
+            {/* <div className='dash-top'>
+            </div> */}
             <div className='dash-bottom'>
                 <Speed events={events} />
                 <Rpms events={events} />
+                <FuelTemp events={events} />
             </div>
         </div >
     )

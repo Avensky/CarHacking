@@ -5,11 +5,12 @@
 html,
 body,
 #root {
-  width: 100vw;
-  height: 100vh;
+  width: 100lvw;
+  height: 100lvh;
   margin: 0;
   padding: 0;
   overflow: hidden;
+  box-sizing: border-box;
 }
 
 body {
@@ -168,13 +169,20 @@ body {
 /* --------------- SPEEDOMETER --------------- */
 
 .speed {
-  position: absolute;
-  top: 190px;
-  right: -80px;
+  width: min-content;
   font-size: 2.0em;
   font-weight: 200;
   font-variant-numeric: tabular-nums;
   letter-spacing: -2px;
+  display: flex;
+  align-items: start;
+  /* justify-content: end; */
+  flex-direction: column;
+  /* margin-left: 350px; */
+  padding: 2lvh 0;
+  position: absolute;
+  right: -80px;
+  bottom: 160px;
 }
 
 .speed span {
@@ -196,15 +204,20 @@ body {
 .speed-background {
   position: absolute;
   width: 100%;
+  margin-top: 5lvh;
 }
 
 .speed-text {
-  margin-top: -30px;
+  position: relative;
+  top: 4lvh;
+  margin-top: -4lvh;
+  /* right: -89px; */
 }
 
 .boost-bar {
   position: relative;
-  top: 25px;
+  top: 6lvh;
+  /* right: -89px; */
 }
 
 .boost-bg-path {
@@ -277,7 +290,7 @@ body {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding: 3em;
+  padding: 2lvh 3lvw;
   background: rgba(0, 0, 0, 0.95);
   z-index: 100;
 }
@@ -527,31 +540,20 @@ button {
   bottom: 0;
 }
 
-.command {
-  /* position: absolute; */
-  /* bottom: 0; */
-  /* left: 0; */
-  padding: 1lvw 1lvh;
-  /* margin: 1lvw 1lvh; */
-  /* width: 30lvw; */
-  /* height: 20lvh; */
-  z-index: 2;
-  /* user-select: none; */
-  /* pointer-events: none; */
-}
-
 .dashboard {
-  position: absolute;
-  bottom: 2lvh;
-  right: 2lvw;
+  /* position: absolute; */
+  /* bottom: 2lvh; */
+  /* right: 2lvw; */
   box-sizing: border-box;
   /* z-index: 2; */
-  display: flex;
-  flex-direction: column;
   user-select: none;
   pointer-events: none;
+  padding: 1lvh 1lvw;
+  display: flex;
+  flex-direction: column;
+  /* justify-content: end; */
   align-items: end;
-  justify-content: end;
+  height: 100%;
 }
 
 .top-dash {}
@@ -609,7 +611,7 @@ button {
   background-size: contain;
   border-radius: 50%;
   width: 60px;
-  height: 60px;
+  height: 50px;
   margin: .5lvh .5lvw;
   display: flex;
   align-items: center;
@@ -649,26 +651,52 @@ button {
 
 .console {
   /* user-select: none; */
-  background-color: rgba(0, 0, 0, 0.1);
+  /* background-color: rgba(0, 0, 0, 0.3); */
   min-height: 30lvh;
+  max-height: 80lvh;
   /* min-width: 270px; */
-  width: 300px;
-  position: absolute;
-  bottom: 1lvh;
-  left: 1lvw;
+  width: 40lvw;
+  /* position: absolute; */
+  /* bottom: 1lvh; */
+  /* left: 1lvw; */
   /* z-index: 1000; */
   box-sizing: border-box;
+  padding: 1lvh 1lvw;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: end;
+  height: 100%;
 }
 
 .disconnected {
   background-color: #560505bc;
 }
 
-.command {
-  background-color: rgba(0, 0, 0, 0.152);
-}
 
 .close {
   padding: 1lvh 1lvw;
-  margin: 5lvh 0 0;
+  margin: 1lvh 0 0;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.overlay-left {
+  /* justify-content: end; */
+  /* align-items: end; */
+}
+
+.overlay-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* justify-content: end; */
+  /* align-items: end; */
 }

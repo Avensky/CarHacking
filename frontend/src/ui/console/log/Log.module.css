@@ -1,0 +1,8 @@
+.Log {
+    padding: 1lvh 0lvw;
+}
+
+.EventLog {
+    color: rgba(255, 255, 255, 0.95);
+    overflow-y: scroll;
+}

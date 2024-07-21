@@ -26,6 +26,7 @@ export function Button(props: { url: string; reload: boolean; name: string }): J
 
         else if (props.reload === true) {
             // setIsLoading(false);
+            console.log('reload')
             reload()
         }
     }

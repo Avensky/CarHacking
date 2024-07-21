@@ -1,5 +1,5 @@
 /* eslint-disable no-undef */
-const { createProxyMiddleware } = require("http-proxy-middleware");
+const { createProxyMiddleware } = require("http-proxy-middleware")
 
 let baseUrl
 
@@ -14,5 +14,5 @@ module.exports = function (app) {
       target: baseUrl,
       changeOrigin: true,
     })
-  );
+  )
 }; ``

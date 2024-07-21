@@ -1,7 +1,8 @@
 import socket from '../../../socket'
+import { ConnectionState } from '../ConnectionState/ConnectionState'
 import styles from './ConnectionManager.module.css'
 
-export function ConnectionManager(): JSX.Element {
+export function ConnectionManager(props: { isConnected: boolean }): JSX.Element {
 
     function connect() {
         socket.connect()
@@ -13,8 +14,21 @@ export function ConnectionManager(): JSX.Element {
 
     return (
         <div className={styles.ConnectionManager}>
-            <button onClick={connect}>Connect</button>
-            <button onClick={disconnect}>Disconnect</button>
+            <button
+                className={props.isConnected
+                    ? styles.Grey
+                    : styles.White
+                }
+                onClick={connect}>On</button>
+            <button
+                className={props.isConnected
+                    ? styles.White
+                    : styles.Grey
+                }
+                onClick={disconnect}
+                disabled={props.isConnected ? false : true}
+            >Off</button>
+            <ConnectionState isConnected={props.isConnected} />
         </div>
     )
 }
