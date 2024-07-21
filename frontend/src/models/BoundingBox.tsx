@@ -1,5 +1,5 @@
 import { usePlane } from '@react-three/cannon'
-import { useStore } from '../store'
+// import { useStore } from '../store'
 
 import type { Triplet } from '@react-three/cannon'
 
@@ -11,11 +11,11 @@ type Props = {
 }
 
 export const BoundingBox = ({ depth, height, position: [x, y, z], width }: Props): JSX.Element => {
-  const [onCollide] = useStore(({ actions: { reset } }) => [reset])
+  // const [onCollide] = useStore(({ actions: { reset } }) => [reset])
 
   const sharedProps = {
     isTrigger: true,
-    onCollide,
+    // onCollide,
     userData: { trigger: true },
   }
 
