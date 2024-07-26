@@ -15,17 +15,17 @@ export function Button(props: { url: string; reload: boolean; name: string }): J
         if (props.url && !props.reload) {
             axios.get(props.url)
                 .then((response: any) => {
-                    // setIsLoading(false)
+                    setIsLoading(false)
                     console.log(response)
                 })
                 .catch((error: { response: any; }) => {
-
+                    setIsLoading(false)
                     console.log(error.response)
                 })
         }
 
         else if (props.reload === true) {
-            // setIsLoading(false);
+            setIsLoading(false);
             console.log('reload')
             reload()
         }
