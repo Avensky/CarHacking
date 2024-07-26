@@ -46,6 +46,13 @@ io.on("connection", (socket) => {
     }
 
     // API CALLS
+    app.get('/api/ping', (req, res) => {
+        console.log('api pinged backend');
+        res.sendStatus(200).JSON({ status: "sucess" });
+    });
+
+
+    // API CALLS
     app.get('/api/start', (req, res) => {
         // console.log('api pinged backend');
         const command = `node /var/www/CarHacking/_work/CarHacking/CarHacking/backend/car.js`;

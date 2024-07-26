@@ -12,10 +12,10 @@ export function Button(props: { url: string; reload: boolean; name: string }): J
     function onSubmit() {
         setIsLoading(true)
         // send commands to backend via http request
-        if (props.url) {
+        if (props.url && !props.reload) {
             axios.get(props.url)
                 .then((response: any) => {
-                    setIsLoading(false)
+                    // setIsLoading(false)
                     console.log(response)
                 })
                 .catch((error: { response: any; }) => {

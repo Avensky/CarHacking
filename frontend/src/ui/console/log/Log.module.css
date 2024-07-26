@@ -1,8 +1,13 @@
 .Log {
     padding: 1lvh 0lvw;
+    overflow-y: scroll;
+    pointer-events: all;
+    user-select: all;
 }
 
 .EventLog {
     color: rgba(255, 255, 255, 0.95);
     overflow-y: scroll;
+    pointer-events: all;
+    user-select: all;
 }
