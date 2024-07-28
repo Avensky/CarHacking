@@ -11,9 +11,11 @@
     pointer-events: all;
     user-select: all;
     word-break: break-all;
+    width: 100%;
 }
 
 .Messages {
+    width: 100%;
     display: flex;
     flex-direction: column;
     overflow: auto;
