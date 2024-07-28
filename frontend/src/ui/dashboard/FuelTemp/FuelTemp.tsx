@@ -8,11 +8,11 @@ import Speedometer, {
     DangerPath
 } from 'react-speedometer'
 
-export function FuelTemp(props: { carSim: { temp: number, fuel: number } }): JSX.Element {
+export function FuelTemp(carSim: any): JSX.Element {
     return <div className="misc">
         <div className='fuel'>
             <Speedometer
-                value={props.carSim.fuel * -1}
+                value={carSim.fuel * -1}
                 width={100}
                 height={100}
                 min={-500}
@@ -85,7 +85,7 @@ export function FuelTemp(props: { carSim: { temp: number, fuel: number } }): JSX
         </div>
         <div className='temp'>
             <Speedometer
-                value={props.carSim.temp}
+                value={carSim.temp}
                 width={100}
                 height={100}
                 min={100}

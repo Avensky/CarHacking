@@ -9,9 +9,7 @@ import {
   OrbitControls, Stats
 } from '@react-three/drei'
 // import { Cameras } from './effects'
-
 // import type { DirectionalLight } from 'three'
-
 import { HideMouse, Keyboard } from './controls'
 import {
   BoundingBox, Ramp, Track,
@@ -34,12 +32,13 @@ layers.enable(levelLayer)
 import socket from './socket'
 import { Matrix } from './components/Matrix'
 import { UI } from './ui/UI'
+
 export function App(): JSX.Element {
 
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
-  const [carSim, setcarSim] = useState({ speed: 0, rpms: 0, fuel: 0, temp: 0 })
+  const [carSim, setcarSim] = useState({})
   const [cmdEvents, setCmdEvents] = useState([])
 
   useEffect(() => {

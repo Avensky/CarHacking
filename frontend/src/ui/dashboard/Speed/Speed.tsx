@@ -8,10 +8,10 @@ import Speedometer, {
     // DangerPath
 } from 'react-speedometer'
 
-export function Speed(props: { carSim: { speed: number, rpms: number, fuel: number, temp: number } }): JSX.Element {
+export function Speed(carSim: any): JSX.Element {
     return <div className="speedometer">
         <Speedometer
-            value={props.carSim.speed}
+            value={carSim.speed}
             max={160}
             fontFamily='squada-one'
             rotation={-225}
