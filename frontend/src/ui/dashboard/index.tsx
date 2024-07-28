@@ -3,9 +3,10 @@ import { Speed } from './Speed/Speed'
 import { Rpms } from './Rpms/Rpms'
 
 export function Dashboard(carSim: any): JSX.Element {
-    console.log('carSim: ', carSim.speed)
-    console.log('carSim: ', carSim.rpms)
-    console.log('carSim: ', carSim.fuel)
+    console.log('carSim: ', carSim)
+    console.log('speed: ', carSim.speed)
+    console.log('rpms: ', carSim.rpms)
+    console.log('fuel: ', carSim.fuel)
     return (
         <div className='dashboard'>
             {/* <div className='dash-top'>
