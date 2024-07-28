@@ -60,10 +60,12 @@ export function App(): JSX.Element {
         value
       )
     }
-    // function onError(value) {
-    //   setError(value);
-    //   console.log('setError', value);
-    // }
+    function onError(value) {
+      console.log(value)
+      setCmdEvents(
+        previous => [...previous, value]
+      )
+    }
     function onCmdEvent(value: any) {
       console.log(value)
       setCmdEvents(
@@ -74,9 +76,9 @@ export function App(): JSX.Element {
     socket.on('disconnect', onDisconnect)
     socket.on('carSim', onCarSim)
     socket.on('cmdData', onCmdEvent)
-    // socket.on('error', (err) => {
-    //   onError(err);
-    // });
+    socket.on('error', (err) => {
+      onError(err)
+    })
 
     return () => {
       socket.off('connect', onConnect)
@@ -84,12 +86,12 @@ export function App(): JSX.Element {
       socket.off(`carSim`, onCarSim)
       socket.removeAllListeners(`carSim`)
       socket.off('cmdData', onCmdEvent)
-      // socket.off('error', setError);
+      socket.off('error', onError)
     }
     // eslint-disable-next-line
   }, []);
 
-  let canvas
+  let canvas: any
   !isConnected
     ? canvas = <Matrix />
     : canvas = null

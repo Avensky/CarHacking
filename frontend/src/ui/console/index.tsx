@@ -20,7 +20,7 @@ export function Console(props: { isConnected: boolean, cmdEvents: any }): JSX.El
                             <Button reload={false} url='/api/reload' name="Reload Node" />
                             <Button reload={true} url='' name="Reload UI" />
                             <Button reload={false} url='/api/abort' name="Abort" />
-                            <Button reload={false} url='/api/ping' name="Ping" />
+                            {/* <Button reload={false} url='/api/ping' name="Ping" /> */}
                         </>
                         : <>
                             <Button reload={false} url='/api/reload' name="Reload Node" />

@@ -1,15 +1,20 @@
+import { useEffect, useRef } from 'react'
 import styles from './Log.module.css'
 
 export function Log(props: { events: any }): JSX.Element {
+    const logEndRef = useRef(null)
+    const scrollToBottom = () => {
+        logEndRef.current.scrollIntoView({ behavior: 'smooth' })
+    }
+    useEffect(scrollToBottom, [props.events])
     return (
         <div className={styles.Log}>
-            <div className={styles.EventLog}>
-                {
-                    props.events.length > 0 ? props.events.map((event: any, index: any) =>
-                        <div className={styles.Event} key={index}>{event}</div>
-                    ) : null
-                }
-            </div>
+            {
+                props.events.length > 0 ? props.events.map((event: any, index: any) =>
+                    <span className={styles.Event} key={index}>{event}</span>
+                ) : null
+            }
+            <div ref={logEndRef} />
         </div>
     )
 }
