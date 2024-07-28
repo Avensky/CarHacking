@@ -8,10 +8,10 @@ import Speedometer, {
     DangerPath
 } from 'react-speedometer'
 
-export function Rpms(events: any): JSX.Element {
+export function Rpms(props: { carSim: { rpms: number } }): JSX.Element {
     return <div className="rpms">
         <Speedometer
-            value={events.rpms / 1000}
+            value={props.carSim.rpms / 1000}
             max={9}
             fontFamily='squada-one'
             // accentColor='black'

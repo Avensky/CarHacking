@@ -1,7 +1,7 @@
 import { Dashboard } from './dashboard'
 import { Speed } from './Speed'
 import { Console } from './console/index'
-export function UI(props: { cmdEvents: any, start: object, carEvents: any, isConnected: boolean }): JSX.Element {
+export function UI(props: { cmdEvents: any, carSim: { speed: number, fuel: number, rmps: number }, isConnected: boolean }): JSX.Element {
     return (
         <div className='overlay'>
             <div className="overlay-left">
@@ -10,7 +10,7 @@ export function UI(props: { cmdEvents: any, start: object, carEvents: any, isCon
             {props.isConnected
                 ? <div className="overlay-right">
                     <Speed />
-                    <Dashboard events={props.carEvents || props.start} />
+                    <Dashboard carSim={props.carSim} />
 
                 </div> : null
             }

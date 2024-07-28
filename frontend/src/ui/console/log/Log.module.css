@@ -1,12 +1,20 @@
 .Log {
-    padding: 1lvh 0lvw;
+    margin: 1dvh 0dvw;
     color: rgba(255, 255, 255, 0.95);
     overflow-y: scroll;
     display: flex;
+    align-items: start;
+    justify-content: flex-end;
     flex-direction: column;
-    height: 120px;
+    max-height: 50dvh;
     margin-top: 1rem;
     pointer-events: all;
     user-select: all;
     word-break: break-all;
+}
+
+.Messages {
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
 }

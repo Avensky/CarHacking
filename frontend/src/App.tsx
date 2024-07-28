@@ -36,38 +36,33 @@ import { Matrix } from './components/Matrix'
 import { UI } from './ui/UI'
 export function App(): JSX.Element {
 
-  // FROM ME
-  const start = { speed: 0, rpms: 0, fuel: 0, temp: 0 }
-
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
-  const [carEvents, setCarEvents] = useState(start)
+  const [carSim, setcarSim] = useState({ speed: 0, rpms: 0, fuel: 0, temp: 0 })
   const [cmdEvents, setCmdEvents] = useState([])
 
   useEffect(() => {
     function onConnect() {
       setIsConnected(true)
-      console.log('connected')
+      // console.log('connected')
     }
     function onDisconnect() {
       setIsConnected(false)
-      console.log('disconnected')
+      // console.log('disconnected')
     }
     function onCarSim(value: any) {
-      console.log(value)
-      setCarEvents(
-        value
-      )
+      // console.log(value)
+      setcarSim(value)
     }
-    function onError(value) {
-      console.log(value)
+    function onError(value: any) {
+      // console.log(value)
       setCmdEvents(
         previous => [...previous, value]
       )
     }
     function onCmdEvent(value: any) {
-      console.log(value)
+      // console.log(value)
       setCmdEvents(
         previous => [...previous, value]
       )
@@ -168,7 +163,7 @@ export function App(): JSX.Element {
       <PickColor />
       <HideMouse />
       <Keyboard />
-      <UI carEvents={carEvents} cmdEvents={cmdEvents} start={start} isConnected={isConnected} />
+      <UI carSim={carSim} cmdEvents={cmdEvents} isConnected={isConnected} />
       {isConnected
         ? <>
           <Clock />

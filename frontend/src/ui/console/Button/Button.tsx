@@ -14,9 +14,9 @@ export function Button(props: { url: string; reload: boolean; name: string }): J
         // send commands to backend via http request
         if (props.url && !props.reload) {
             axios.get(props.url)
-                .then((response: any) => {
+                .then(() => {
                     setIsLoading(false)
-                    console.log(response)
+                    // console.log(response)
                 })
                 .catch((error: { response: any; }) => {
                     setIsLoading(false)
@@ -26,7 +26,7 @@ export function Button(props: { url: string; reload: boolean; name: string }): J
 
         else if (props.reload === true) {
             setIsLoading(false)
-            console.log('reload')
+            // console.log('reload')
             reload()
         }
     }
