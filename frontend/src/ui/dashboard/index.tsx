@@ -12,9 +12,9 @@ export function Dashboard(carSim: any): JSX.Element {
             {/* <div className='dash-top'>
             </div> */}
             <div className='dash-bottom'>
-                <Speed carSim={carSim} />
-                <Rpms carSim={carSim} />
-                <FuelTemp carSim={carSim} />
+                <Speed {...carSim} />
+                <Rpms {...carSim} />
+                <FuelTemp {...carSim} />
             </div>
         </div >
     )
