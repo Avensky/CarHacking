@@ -111,7 +111,7 @@ io.on("connection", (socket) => {
         const command = req.body.data;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
-            console.log('Command Executed Successfully');
+            // console.log('Command Executed Successfully');
             socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -177,54 +177,6 @@ io.on("connection", (socket) => {
             }
             console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`)
-            res.end(`Success: ${stdout}`);
-        });
-    });
-    app.get('/api/vcanAdd', (req, res) => {
-        console.log('Vcan Link Vcan');
-        // Execute shell command
-        const command = `sudo ip link add dev vcan0 type vcan`;
-        exec(command, (error, stdout, stderr) => {
-            console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
-            if (error) {
-                console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData][cmd]: ${error}`);
-                res.end(`Error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
-                res.end(`Stderr: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
-            res.end(`Success: ${stdout}`);
-        });
-    });
-    app.get('/api/vcanSetup', (req, res) => {
-        console.log('Vcan Link Setup');
-        // Execute shell command
-        const command = `sudo ip link set up vcan0;`;
-        exec(command, (error, stdout, stderr) => {
-            console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
-            if (error) {
-                console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData][error]: ${error}`);
-                res.end(`Error: ${error.message}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
-                res.end(`Stderr: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
             res.end(`Success: ${stdout}`);
         });
     });

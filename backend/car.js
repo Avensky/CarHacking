@@ -120,7 +120,7 @@ const engine = () => {
     // console.log("fuel  = ", now.fuel);
     now.index++;
 
-    // send data
+    // send data 
     var out = {}
     var buff = Buffer.alloc(8)
 
@@ -133,6 +133,8 @@ const engine = () => {
     out.data = buff
 
     channel.send(out)
+
+    //end of simulation
     if (now.fuel === 0 && now.speed === 0 && now.revs === 0) {
         return process.exit();
     }
