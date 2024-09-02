@@ -181,7 +181,7 @@ io.on("connection", (socket) => {
         });
     });
 
-    if (process.env.NODE_ENV === "production") {
+    // if (process.env.NODE_ENV === "production") {
         const can = require("socketcan");
         const channel = can.createRawChannel("vcan0", true);
         // default values
@@ -212,7 +212,7 @@ io.on("connection", (socket) => {
             socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
             channel.stop();
         });
-    }
+    // }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
 
