@@ -606,8 +606,8 @@ button {
 
 /* button */
 .start {
-  /* background-color: rgba(0, 0, 0, 0.5); */
-  background-image: url('../assets/binary-numbers/1921.jpg');
+  background-color: rgb(12, 42, 16);
+  /* background-image: url('../assets/binary-numbers/1921.jpg'); */
   background-size: contain;
   border-radius: 50%;
   width: 60px;
