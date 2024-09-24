@@ -20,7 +20,7 @@ The server is created using express, socket.io, socketcan and the gauges are cre
 
 ## Prerequites
 
-Raspberry Pi 4 model B.
+Raspberry Pi 4/5 model B.
 Raspbian 64 bit OS.
 
 ## Installation
@@ -29,41 +29,57 @@ Raspbian 64 bit OS.
 
 # Connect to the internet and accept updates
 
-# install samba onto the Pi
+# INSTRUCTIONS
 
-sudo apt install samba samba-common-bin
+## This project was developed using production assets to prevent unexpected problems, ensuring for a robust system
 
-# set up smb.conf file
+## About the Interface
 
-sudo nano /etc/samba/smb.conf
+Start Sim - engages the Car.js script from the backend, simulating an engine accelerating and shifting gears 1-6. Engine reaches top speed at 6k rpms in 6th gear. Script will run until the fuel runs out.
 
-# to reload
+Abort - kills all node processes including the Car Simulation
 
-sudo smbd stop;
-sudo nmbd stop;
-sudo smbd start;
+Reload Node - restarts the server without restarting the device
 
-# add the following to the bottom of the file and save changes.
+Reload UI - refreshes the browser
 
-[Pishare]
-Comment = Pi shared folder
-Path = /share
-Browsable = yes
-Writable = yes
-only guest = no
-create mask = 0777
-directory mask = 0777
-Public = yes
-Guest ok = yes
+Hack Car - Sends a code injection, manipulating speed and rpms
 
-# Make a user to log into the Pi (username is pi in this case) and enter a password
+Command Line - Can be used to remotely reboot the device or send commands directly from browser to pi
 
-sudo smbpasswd -a uri
-sudo smbpasswd -a pi
+# Flash Raspian os 64 bit
+
+# Set up Pi and process all updates
+
+# setup environment variables - create a file and add the variable
+
+# Go to preferences then Raspberry Pi Configuration then interfaces, and enable SSH:
+
+ssh <username>@<ipaddress>
+
+# type your password and save a key fingerprint to your list of known hosts
+
+# type yes and continue
+
+The authenticity of host '<hostname> (<hostname>)' can't be established.
+<KEY> key fingerprint is SHA256:<SHA>.
+
+This key is not known by any other names.
+Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
+
+# Create environment variables
+
+sudo nano ~/.profile
+NODE_ENV=production
+
+source ~/.profile
+echo $NODE_ENV
+
+# Setup node and npm
 
 # install node version manager
 
-curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.7/install.sh | bash
+sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
 
 # activate nvm
 
@@ -77,43 +93,249 @@ command -v nvm
 
 nvm install 18
 
-# To test, in Network folder of your computer type: \\[Pi IP Address]\
+# setup continuous integration / continuous delivery pipeline
 
-# Map the Network drive.
+# make a dir in /var/www/ -- This is necessary for nginx to recognize it as a website
 
-# clone the repo and initialize project
+sudo mkdir -p /var/www/
+sudo mkdir /var/www/CarHacking; cd /var/www/CarHacking;
 
-git clone https://github.com/Avensky/CarHacking.git ~/share/CarHacking
-cd ~/share/CarHacking
-npm ci
+<!-- sudo mkdir -p /var/www/CarHacking; cd /var/www/CarHacking; -->
+
+sudo chown -R $USER:$USER /var/www/CarHacking;
+sudo chmod -R 755 /var/www/CarHacking;
+
+# Create your own fork on the repository https://github.com/Avensky/CarHacking
+
+# On Github go to your project>settings>actions>runners>new self-hosted runner>linux>ARM64
+
+<!-- for ubuntu use the command to check architecture: uname -a -->
+
+# Use the instructions on github with sudo, skip folder creation since we already made one. The instructions should look something like this:
+
+# Download the latest runner package
+
+#sudo curl -o actions-runner-linux-arm64-2.317.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.317.0/actions-runner-linux-arm64-2.317.0.tar.gz;
+
+echo "7e8e2095d2c30bbaa3d2ef03505622b883d9cb985add6596dbe2f234ece308f3 actions-runner-linux-arm64-2.317.0.tar.gz" | shasum -a 256 -c;
+
+#sudo tar xzf ./actions-runner-linux-arm64-2.319.1.tar.gz;
+
+# configure
+
+sudo touch .env;
+sudo chown -R $USER:$USER .env;
+sudo chown -R $USER:$USER /home/uri/;
+
+./config.sh --url https://github.com/Avensky/CarHacking --token THISISJUSTASAMPLETOKEN;
+
+<!-- * ./run.sh -->
+
+## Name the runner and select defaults
+
+sudo ./svc.sh install;
+sudo ./svc.sh start;
+
+## INSTALL PM2 for persistant server
+
+npm install -g pm2
+
+<!-- sudo apt update && sudo apt install curl && sudo curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash - -->
+
+node /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js
+pm2 start /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js --name CarHacking
+pm2 startup
+
+To setup the Startup Script, copy/paste the following command:
+
+#sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v18.20.3/bin /home/pi/.nvm/versions/node/v18.20.3/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
+
+pm2 save
+
+# Install NGIX - Forwards requests to client using reverse proxy
+
+- sudo apt update;
+  sudo apt install nginx;
+- sudo ufw app list
+
+# Setup Server Block
+
+## NOTE: If you need to delete this dir and start a new one, rerun this permissions on the new build
+
+sudo chown -R $USER:$USER /var/www/CarHacking;
+sudo chmod -R 755 /var/www/CarHacking;
+
+sudo chown -R $USER:$USER /var/www/CarHacking/\_work/CarHacking/CarHacking/frontend/build
+sudo chown -R $USER:$USER /var/www/CarHacking/;
+sudo chmod -R 755 /var/www/CarHacking;
+sudo chmod -R 777 /var/www/CarHacking;
+
+- sudo nano /etc/nginx/sites-available/CarHacking
+
+# edit server_name to match your ip
+
+## restart systemctl when updating
+
+```
+server {
+  listen 80;
+  listen [::]:80;
+
+  root /var/www/CarHacking/\_work/CarHacking/CarHacking/frontend/build;
+  index index.html index.htm index.nginx-debian.html;
+
+  server_name <ipaddress>;
+
+  location / {
+    try_files $uri $uri/ =404;
+  }
+
+  location /api {
+    proxy_pass http://localhost:5000;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection 'upgrade';
+    proxy_set_header Host $host;
+    proxy_cache_bypass $http_upgrade;
+    proxy_buffers 8 16k;
+    proxy_buffer_size 32k;
+  }
+
+  location /socket.io/ {
+    proxy_pass http://localhost:5000/socket.io/;
+    proxy_http_version 1.1;
+    proxy_set_header Upgrade $http_upgrade;
+    proxy_set_header Connection "upgrade";
+    proxy_set_header Host $host;
+  }
+}
+```
+
+- sudo ln -s /etc/nginx/sites-available/CarHacking /etc/nginx/sites-enabled/
+
+- sudo nano /etc/nginx/nginx.conf
+  ...
+  http {
+  ...
+  server_names_hash_bucket_size 64;
+  ...
+  }
+  ...
+
+sudo systemctl reload nginx.service;
+sudo systemctl restart nginx;
+
+sudo nginx -t;
+sudo service nginx restart;
+sudo service nginx status;
+
+# set up virtual canbus
+
+sudo apt-get install can-utils
+sudo modprobe vcan
+
+# use these when resetting pi on a different network
+
+sudo ip link add dev vcan0 type vcan;
+sudo ip link set up vcan0;
+
+# IMPORTANT!!!
+
+# recovering from a restart requires to check runner, canbus, and nginx
+
+## reload the runner
+
+cd /var/www/CarHacking;
+sudo ./svc.sh start;
+
+<!-- ## Test and look for vcan
+ifconfig -->
+
+<!-- # on your pc type [Raspberry Pi IP Address]:3000/index.html in a web browser
+http://192.168.yur.ip -->
+<!--
+# in a terminal 2 start sending car data to gauges in terminal #1
+node car.js -->
+
+<!-- # in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
+cansend vcan0 1F4#AAAAAAAAAAAAAAAA -->
+
+# IMPORTANT!!!!!!!
+
+# Recovering from a change in IP Address
+
+## Stop the server
+
+pm2 stop 0
+
+## edit server block server_name to match your ip
+
+### to get ip
+
+`hostname -I`
+
+### edit nginx configuration and add your new ip
+
+sudo nano /etc/nginx/sites-available/CarHacking
+`#server_name <192.168.old.ip> <192.168.new.ip>;`
+
+## test the configuration and reload
+
+sudo nginx -t;
+sudo service nginx restart;
+
+<!-- ## To restore Broken pipeline remove the service
+cd /var/www/CarHacking/;
+sudo ./svc.sh uninstall; -->
+
+<!-- ## on github go to repo>settings>actions>runner>remove runner
+## to remove runner copy the command shown to you by github
+```#./config.sh remove --token JUSTANEXAMPLE4SBTGNCJMVPLGQ4CLS;``` -->
+
+<!-- ## once thats done force remove the runner on github
+## click on 'New self-hosted runner'>linux>ARM64 -->
+<!-- ```#sudo curl -o actions-runner-linux-x64-2.317.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.317.0/actions-runner-linux-x64-2.317.0.tar.gz``` -->
+<!--
+## reinstall the service
+sudo tar xzf ./actions-runner-linux-arm64-2.317.0.tar.gz -->
+
+<!-- ## install runner using new token
+sudo chmod -R 777 /var/www/CarHacking;
+```#./config.sh --url https://github.com/Avensky/CarHacking --token USEYOURNEWTOKENIVNYBD3GRTPBQ``` -->
+
+## restart the service
+
+cd /var/www/CarHacking;
+sudo ./svc.sh install;
+sudo ./svc.sh start;
+
+# set up a new canbus to reflect change in ip
+
+sudo ip link add dev vcan0 type vcan;
+sudo ip link set up vcan0;
+
+# restart server
+
+pm2 restart 0
+
+## Recovering from a restart (But Same IP)
+
+sudo ip link add dev vcan0 type vcan;
+sudo ip link set up vcan0;
+cd /var/www/CarHacking/;
+sudo ./svc.sh start;
+
+## Debugging backend short cuts
+
+node /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/car.js
+sudo nano /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js
+sudo nano /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/car.js
 
 # set up virtual canbus
 
 sudo apt-get install can-utils
 sudo modprobe vcan
 sudo /usr/sbin/modprobe vcan
-
-# use these when resetting pi on a different network
-
-sudo ip link add dev vcan0 type vcan
-sudo ip link set up vcan0
-
-# To test, type ifconfig and look for vcan
-
-# Get ip adress
-
-hostname -I
-
-## Usage
-
-# in terminal 1 start server from project dir
-
-cd ~/share/CarHacking
-npm start
-
-# on your pc type [Raspberry Pi IP Address]:3000/index.html in a web browser
-
-192.168.0.153:3000/index.html
 
 # in a terminal 2 start sending car data to gauges in terminal #1
 
