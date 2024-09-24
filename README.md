@@ -129,7 +129,7 @@ sudo chown -R $USER:$USER /home/uri/;
 
 ./config.sh --url https://github.com/Avensky/CarHacking --token THISISJUSTASAMPLETOKEN;
 
-- ./run.sh
+./run.sh
 
 ## Name the runner and select defaults
 
