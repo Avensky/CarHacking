@@ -129,7 +129,7 @@ sudo chown -R $USER:$USER /home/uri/;
 
 ./config.sh --url https://github.com/Avensky/CarHacking --token THISISJUSTASAMPLETOKEN;
 
-<!-- * ./run.sh -->
+- ./run.sh
 
 ## Name the runner and select defaults
 
@@ -222,7 +222,10 @@ server {
   }
   ...
 
+sudo systemctl status nginx.service
+sudo systemctl start nginx.service
 sudo systemctl reload nginx.service;
+sudo systemctl restart nginx.service
 sudo systemctl restart nginx;
 
 sudo nginx -t;

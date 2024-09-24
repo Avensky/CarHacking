@@ -5,7 +5,7 @@ import reactJsx from 'vite-react-jsx'
 
 export default defineConfig({
   build: {
-    chunkSizeWarningLimit: 2048,
+    // chunkSizeWarningLimit: 2048,
     rollupOptions: {
       onwarn(warning, warn) {
         if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
