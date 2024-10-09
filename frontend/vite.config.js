@@ -1,20 +1,7 @@
 import { defineConfig } from 'vite'
-import reactRefresh from '@vitejs/plugin-react-refresh'
-import reactJsx from 'vite-react-jsx'
+import react from '@vitejs/plugin-react'
 
-
+// https://vitejs.dev/config/
 export default defineConfig({
-  build: {
-    chunkSizeWarningLimit: 4056,
-    rollupOptions: {
-      onwarn(warning, warn) {
-        if (warning.code === "MODULE_LEVEL_DIRECTIVE") {
-          return
-        }
-        warn(warning)
-      },
-    },
-  },
-  plugins: [reactJsx(), reactRefresh()]
-
+  plugins: [react()],
 })
