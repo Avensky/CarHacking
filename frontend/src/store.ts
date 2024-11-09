@@ -19,7 +19,7 @@ export const maxBoost = 100 as const
 // position: vehicle starting zone [x, y, z]
 export const position = [-200, 0.75, -45] as const
 // rotate plane horizontal
-export const rotation = [0, Math.PI / 2 , 0] as const
+export const rotation = [0, Math.PI / 2, 0] as const
 
 export const vehicleConfig = {
   width: 1.7,
@@ -80,10 +80,10 @@ export const booleans = {
 type Booleans = keyof typeof booleans
 
 const exclusiveBooleans = ['help', 'leaderboard', 'pickcolor'] as const
-type ExclusiveBoolean = typeof exclusiveBooleans[number]
+type ExclusiveBoolean = (typeof exclusiveBooleans)[number]
 const isExclusiveBoolean = (v: unknown): v is ExclusiveBoolean => exclusiveBooleans.includes(v as ExclusiveBoolean)
 
-export type Camera = typeof cameras[number]
+export type Camera = (typeof cameras)[number]
 
 const controls = {
   backward: false,

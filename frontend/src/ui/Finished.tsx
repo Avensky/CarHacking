@@ -8,7 +8,7 @@ import { Auth } from './Auth'
 export const Finished = (): JSX.Element => {
   const [reset, session, time] = useStore(({ actions: { reset }, finished, session }) => [reset, session, finished])
   const [scoreId, setScoreId] = useState('')
-  const [scores, setScores] = useState([{id:"Player1"}])
+  const [scores, setScores] = useState([{ id: 'Player1' }])
   const [position, setPosition] = useState<number>(0)
 
   const isAuthenticated = session?.user?.aud === 'authenticated'

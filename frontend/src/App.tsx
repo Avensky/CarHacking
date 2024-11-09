@@ -1,11 +1,11 @@
-import { Canvas, useFrame } from '@react-three/fiber';
-import { useGLTF } from '@react-three/drei';
+import { Canvas, useFrame } from '@react-three/fiber'
+import { useGLTF } from '@react-three/drei'
 import { Suspense, useRef, useState, useEffect, forwardRef } from 'react'
-import { useBox, Physics } from '@react-three/cannon';
+import { useBox, Physics } from '@react-three/cannon'
 import type { DirectionalLight } from 'three'
-import * as THREE from 'three'; // Add this import
-import { usePlane } from '@react-three/cannon';
-import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
+import * as THREE from 'three' // Add this import
+import { usePlane } from '@react-three/cannon'
+import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei'
 
 import { angularVelocity, levelLayer, position, rotation, useStore } from './store'
 
@@ -13,7 +13,7 @@ import { Clock, Speed, Intro, Help, Editor, LeaderBoard, Finished, PickColor } f
 import { Cameras } from './effects'
 
 import { HideMouse, Keyboard } from './controls'
-import { Vehicle} from './models/index'
+import { Vehicle } from './models/index'
 import { useToggle } from './useToggle'
 // FROM ME
 import socket from './socket'
@@ -24,41 +24,33 @@ import { UI } from './ui/UI'
 function Ground() {
   const [ref] = usePlane(() => ({
     rotation: [-Math.PI / 2, 0, 0], // Rotate to be horizontal
-    position: [0, -0.1, 0]            // Position below y=0
-  }));
+    position: [0, -0.1, 0], // Position below y=0
+  }))
   // Large plane for ground
   // Green color for the ground
   return (
     <mesh ref={ref} receiveShadow>
-      <planeGeometry args={[500, 500]} />   
-      <meshStandardMaterial color="green" /> 
+      <planeGeometry args={[500, 500]} />
+      <meshStandardMaterial color="green" />
     </mesh>
-  );
+  )
 }
 
-function TiledScene({ scale = [0.0065, 0.0065, 0.0065], tileCount = 2, spacingA = 362.7, spacingB = 152.09
- }) {
-  const gltf = useGLTF('/models/ccity_building_set_1.glb');
-  
+function TiledScene({ scale = [0.0065, 0.0065, 0.0065], tileCount = 2, spacingA = 362.7, spacingB = 152.09 }) {
+  const gltf = useGLTF('/models/ccity_building_set_1.glb')
+
   return (
     <>
-      {[...Array(tileCount)].map((_, i) => (
+      {[...Array(tileCount)].map((_, i) =>
         [...Array(tileCount)].map((_, j) => (
-          <primitive 
-            key={`${i}-${j}`} 
-            object={gltf.scene.clone()} 
-            scale={scale} 
-            position={[i * spacingA, 0, j * spacingB]} 
-          />
-        ))
-      ))}
+          <primitive key={`${i}-${j}`} object={gltf.scene.clone()} scale={scale} position={[i * spacingA, 0, j * spacingB]} />
+        )),
+      )}
     </>
-  );
+  )
 }
 
-
 export function App(): JSX.Element {
-  
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
@@ -80,15 +72,11 @@ export function App(): JSX.Element {
     }
     function onError(value: any) {
       // console.log(value)
-      setCmdEvents(
-        previous => [...previous, value]
-      )
+      setCmdEvents((previous) => [...previous, value])
     }
     function onCmdEvent(value: any) {
       // console.log(value)
-      setCmdEvents(
-        previous => [...previous, value]
-      )
+      setCmdEvents((previous) => [...previous, value])
     }
     socket.on('connect', onConnect)
     socket.on('disconnect', onDisconnect)
@@ -106,17 +94,17 @@ export function App(): JSX.Element {
       socket.off('cmdData', onCmdEvent)
       socket.off('error', onError)
     }
-    // eslint-disable-next-line
-  }, []);
+  }, [])
 
   let canvas: any
-  !isConnected
-    ? canvas = <Matrix />
-    : canvas = null
-
+  if (!isConnected) {
+    canvas = <Matrix />
+  } else {
+    canvas = null
+  }
   // from game
   const [light, setLight] = useState<DirectionalLight | null>(null)
-  const gltf = useGLTF('/models/ccity_building_set_1.glb'); // Load your GLB model
+  const gltf = useGLTF('/models/ccity_building_set_1.glb') // Load your GLB model
 
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
   const { onCheckpoint, onFinish, onStart } = actions
@@ -126,12 +114,12 @@ export function App(): JSX.Element {
   const ToggledStats = useToggle(Stats, 'stats')
   return (
     <>
-        <Intro>
+      <Intro>
         <Suspense fallback={null}>
           {/* switch to Matrix upon disconnect */}
           {/* {canvas} */}
           {/* Load actual Canvas */}
-          <Canvas >
+          <Canvas>
             <fog attach="fog" args={['white', 0, 500]} />
             <Sky sunPosition={[100, 10, 100]} distance={10000} />
             <ambientLight intensity={0.09} />
@@ -146,9 +134,9 @@ export function App(): JSX.Element {
               shadow-camera-top={150}
               shadow-camera-bottom={-150}
               castShadow
-              />
+            />
             <PerspectiveCamera makeDefault={editor} fov={75} position={[0, 20, 20]} />
-            <Physics  broadphase="SAP" defaultContactMaterial={{ contactEquationRelaxation: 4, friction: 1e-3 }}>
+            <Physics broadphase="SAP" defaultContactMaterial={{ contactEquationRelaxation: 4, friction: 1e-3 }}>
               <Vehicle angularVelocity={[...angularVelocity]} position={[...position]} rotation={[...rotation]}>
                 {light && <primitive object={light.target} />}
                 <Cameras />
@@ -169,7 +157,7 @@ export function App(): JSX.Element {
           <Keyboard />
           <UI carSim={carSim} cmdEvents={cmdEvents} isConnected={isConnected} />
         </Suspense>
-          </Intro>
+      </Intro>
     </>
-  );
+  )
 }

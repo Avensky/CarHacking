@@ -1,18 +1,18 @@
-/* eslint-disable no-undef */
-const { createProxyMiddleware } = require("http-proxy-middleware")
+import { createProxyMiddleware } from 'http-proxy-middleware'
 
 let baseUrl
 
-process.env.NODE_ENV === "production"
-  ? baseUrl = "http://127.0.0.1:5000"
-  : baseUrl = "http://127.0.0.1:4000"
-
+if (process.env.NODE_ENV === 'production') {
+  baseUrl = 'http://127.0.0.1:5000'
+} else {
+  baseUrl = 'http://127.0.0.1:4000'
+}
 module.exports = function (app) {
   app.use(
-    ["/api"],
+    ['/api'],
     createProxyMiddleware({
       target: baseUrl,
       changeOrigin: true,
-    })
+    }),
   )
-}; 
+}

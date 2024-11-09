@@ -65,8 +65,4 @@ const Score = ({ name, standing, time }: ScoreProps): JSX.Element => (
   </li>
 )
 
-export const Scores = ({ scores, ...props }: ScoresProps): JSX.Element => (
-  <ul {...props}>
-    
-  </ul>
-)
+export const Scores = ({ scores, ...props }: ScoresProps): JSX.Element => <ul {...props}></ul>

@@ -41,9 +41,7 @@ export function Intro({ children }: { children: ReactNode }): JSX.Element {
           ) : (
             <div>
               Hello {session.user.user_metadata.full_name}
-              <button className="logout" >
-                Logout
-              </button>{' '}
+              <button className="logout">Logout</button>{' '}
             </div>
           )}
         </div>

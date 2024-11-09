@@ -1,4 +1,4 @@
-import { debounce } from 'lodash-es';
+import { debounce } from 'lodash-es'
 import clamp from 'lodash-es/clamp'
 import { forwardRef, useRef, useCallback, useEffect, useLayoutEffect } from 'react'
 import { useBox } from '@react-three/cannon'

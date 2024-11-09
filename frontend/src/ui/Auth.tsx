@@ -33,9 +33,7 @@ const providers: readonly {
 ] as const
 
 export function Auth() {
-  const signIn = async (provider: Provider) => {
-    
-  }
+  const signIn = async (provider: Provider) => {}
 
   return (
     <div>
