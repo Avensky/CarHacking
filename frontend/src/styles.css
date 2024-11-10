@@ -4,35 +4,33 @@
 @tailwind components;
 @tailwind utilities;
 
-#root {
-  width: 100vw;
-  height: 100vh;
-}
+
 
 body {
   margin: 0;
 }
 
-/* GLB */
-canvas {
-  width: 100vw;
-  height: 100vh;
-  display: block; /* Removes any extra space */
-}
 
 
-* {
+*, *::before, *::after {
   box-sizing: border-box;
 }
 
 html,
 body,
 #root {
-  width: 100vw;
-  height: 100vh;
+  width: 100lvw;
+  height: 100lvh;
   margin: 0;
   padding: 0;
-  overflow: hidden;
+  /* overflow: hidden; */
+  overflow: scroll;
+}
+/* GLB */
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block; /* Removes any extra space */
 }
 
 body {
@@ -192,7 +190,7 @@ body {
 /* --------------- SPEEDOMETER --------------- */
 
 .speed {
-  width: min-content;
+  /* width: min-content; */
   font-size: 2.0em;
   font-weight: 200;
   font-variant-numeric: tabular-nums;
@@ -202,10 +200,11 @@ body {
   /* justify-content: end; */
   flex-direction: column;
   /* margin-left: 350px; */
-  padding: 2lvh 0;
+  padding: 2lvh 1vw;
   position: absolute;
-  right: -80px;
+  right: 0px;
   bottom: 160px;
+  overflow: hidden;
 }
 
 .speed span {
@@ -217,6 +216,7 @@ body {
 .speed-gauge {
   position: relative;
   width: 200px;
+  top: 4.5vh;
 }
 
 .speed-foreground {
@@ -227,20 +227,17 @@ body {
 .speed-background {
   position: absolute;
   width: 100%;
-  margin-top: 5lvh;
 }
 
 .speed-text {
   position: relative;
   top: 4lvh;
   margin-top: -4lvh;
-  /* right: -89px; */
 }
 
 .boost-bar {
   position: relative;
   top: 6lvh;
-  /* right: -89px; */
 }
 
 .boost-bg-path {
@@ -307,6 +304,7 @@ body {
   position: absolute;
   top: 0;
   right: 0;
+  z-index: 101;
 }
 
 .popup-content {
@@ -396,8 +394,8 @@ button {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100svw;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -673,16 +671,10 @@ button {
 }
 
 .console {
-  /* user-select: none; */
-  /* background-color: rgba(0, 0, 0, 0.3); */
   min-height: 30lvh;
   max-height: 80lvh;
-  /* min-width: 270px; */
   width: 40lvw;
-  /* position: absolute; */
-  /* bottom: 1lvh; */
-  /* left: 1lvw; */
-  /* z-index: 1000; */
+  z-index: 1;
   box-sizing: border-box;
   padding: 1lvh 1lvw;
   display: flex;

@@ -147,6 +147,7 @@ export function App(): JSX.Element {
             <ToggledOrbitControls />
           </Canvas>
           {/* <Clock /> */}
+          <UI carSim={carSim} cmdEvents={cmdEvents} isConnected={isConnected} />
           <ToggledEditor />
           <Help />
           <Speed />
@@ -155,7 +156,6 @@ export function App(): JSX.Element {
           <PickColor />
           <HideMouse />
           <Keyboard />
-          <UI carSim={carSim} cmdEvents={cmdEvents} isConnected={isConnected} />
         </Suspense>
       </Intro>
     </>
