@@ -62,7 +62,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     editor = getState().editor
     controls = getState().controls
     speed = mutation.speed
-
+    // console.log("vehichle.tsx speed", speed);
     isBoosting = controls.boost && mutation.boost > 0
 
     if (isBoosting) {
@@ -71,8 +71,10 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
     engineValue = lerp(
       engineValue,
-      controls.forward || controls.backward ? force * (controls.forward && !controls.backward ? (isBoosting ? -1.5 : -1) : 1) : 0,
-      delta * 20,
+      controls.forward || controls.backward
+        ? force * (controls.forward && !controls.backward ? (isBoosting ? -3.5 : -1) : 1) // forward and backward force
+        : 0,
+      delta * 20, // smooth speed
     )
     steeringValue = lerp(steeringValue, controls.left || controls.right ? steer * (controls.left && !controls.right ? 1 : -1) : 0, delta * 20)
     for (i = 2; i < 4; i++) api.applyEngineForce(speed < maxSpeed ? engineValue : 0, i)

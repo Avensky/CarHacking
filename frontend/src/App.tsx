@@ -147,7 +147,7 @@ export function App(): JSX.Element {
             <ToggledOrbitControls />
           </Canvas>
           {/* <Clock /> */}
-          <UI carSim={carSim} cmdEvents={cmdEvents} isConnected={isConnected} />
+          <UI cmdEvents={cmdEvents} isConnected={isConnected} />
           <ToggledEditor />
           <Help />
           <Speed />

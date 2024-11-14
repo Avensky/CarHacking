@@ -63,7 +63,7 @@ interface ChassisGLTF extends GLTF {
 
 type MaterialMesh = Mesh<BufferGeometry, MeshStandardMaterial>
 
-const gears = 10
+const gears = 6
 const c = new Color()
 const v = new Vector3()
 
@@ -98,8 +98,8 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
       api.velocity.subscribe((velocity) => {
         const speed = v.set(...velocity).length()
         const gearPosition = speed / (maxSpeed / gears)
-        const rpmTarget = Math.max(((gearPosition % 1) + Math.log(gearPosition)) / 6, 0)
-        Object.assign(mutation, { rpmTarget, speed, velocity })
+        const rpmTarget = Math.max(((gearPosition % 1) + Math.log(gearPosition)) / 3, 0)
+        Object.assign(mutation, { rpmTarget, speed, velocity, gearPosition })
       }),
     [maxSpeed],
   )
@@ -107,6 +107,25 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
   let camera: Camera
   let controls: Controls
   useFrame((_, delta) => {
+    // Decrease fuel gradually
+    mutation.fuel = Math.max(mutation.fuel - delta * 0.75, 0) // Adjust the rate of fuel decrease (0.005 can be tuned)
+    // Get the current velocity from the physics API
+    api.velocity.subscribe((velocity) => {
+      const currentSpeed = v.set(...velocity).length()
+
+      // Calculate the reduced speed with lerp for gradual slowdown
+      const targetSpeed = Math.max(currentSpeed - delta * 50, 0) // Adjust rate of speed decrease (0.1 can be tuned)
+      const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
+
+      // Scale down the velocity vector to match the lerped speed
+      const scaledVelocity = v.clone().setLength(lerpedSpeed)
+      api.velocity.set(scaledVelocity.x, scaledVelocity.y, scaledVelocity.z)
+
+      // Update needle rotation for speedometer display
+      mutation.speed = lerpedSpeed
+      // needle.current.rotation.y = (mutation.speed / maxSpeed) * -Math.PI * 2 - 0.9
+      needle.current.rotation.y = (Math.max(mutation.speed, 0) / maxSpeed) * -Math.PI * 2 - 0.9
+    })
     camera = getState().camera
     controls = getState().controls
     brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)

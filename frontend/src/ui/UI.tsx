@@ -1,22 +1,17 @@
-import { Dashboard } from './dashboard'
+import { Dashboard } from './dashboard/Dashboard'
 import { Speed } from './Speed'
 import { Console } from './console/index'
 
-export function UI({ cmdEvents, isConnected, carSim }): JSX.Element {
-  // const start = { speed: 0, rpms: 0, fuel: 0, temp: 0 }
-
-  console.log('UI: ', carSim)
+export function UI({ cmdEvents, isConnected }): JSX.Element {
   return (
     <div className="overlay">
       <div className="overlay-left">
         <Console cmdEvents={cmdEvents} isConnected={isConnected} />
       </div>
-      {isConnected ? (
-        <div className="overlay-right">
-          <Speed />
-          <Dashboard {...carSim} />
-        </div>
-      ) : null}
+      <div className="overlay-right">
+        <Speed />
+        <Dashboard />
+      </div>
     </div>
   )
 }

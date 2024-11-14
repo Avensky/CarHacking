@@ -314,6 +314,7 @@ body {
   padding: 2vh 3vw;
   background: rgba(0, 0, 0, 0.95);
   z-index: 100;
+  overflow: scroll;
 }
 
 .popup-item {

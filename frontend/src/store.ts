@@ -27,9 +27,9 @@ export const vehicleConfig = {
   front: 1.35,
   back: -1.3,
   steer: 0.3,
-  force: 600,
+  force: 1000,
   maxBrake: 65,
-  maxSpeed: 88,
+  maxSpeed: 60,
 } as const
 
 type VehicleConfig = typeof vehicleConfig
@@ -196,7 +196,6 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
     },
     reset: () => {
       mutation.boost = maxBoost
-
       set((state) => {
         state.api?.angularVelocity.set(...angularVelocity)
         state.api?.position.set(...position)
@@ -239,6 +238,9 @@ interface Mutation {
   rpmTarget: number
   sliding: boolean
   speed: number
+  fuel: number
+  temp: number
+  gearPosition: number
   velocity: [number, number, number]
 }
 
@@ -248,6 +250,9 @@ export const mutation: Mutation = {
   rpmTarget: 0,
   sliding: false,
   speed: 0,
+  fuel: 100,
+  temp: 195,
+  gearPosition: 0,
   velocity: [0, 0, 0],
 }
 

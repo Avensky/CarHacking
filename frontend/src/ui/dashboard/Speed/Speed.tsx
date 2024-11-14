@@ -7,11 +7,27 @@ import Speedometer, {
   Indicator,
   // DangerPath
 } from 'react-speedometer'
+import { SpeedometerProps } from 'react-speedometer/dist/Speedometer'
 
-export function Speed(carSim: any): JSX.Element {
+interface SpeedProps {
+  speed: number // Expect speed as a number
+}
+
+export function Speed({ speed }: SpeedProps): JSX.Element {
+  const speedometerProps: SpeedometerProps = {
+    value: speed,
+    max: 160,
+    fontFamily: 'squada-one',
+    rotation: -225,
+    width: 120,
+    height: 120,
+    children: <Indicator />,
+  }
+
+  // Define the props type for Speed component
   return (
     <div className="speedometer">
-      <Speedometer value={carSim.speed} max={160} fontFamily="squada-one" rotation={-225} width={120} height={120}>
+      <Speedometer {...speedometerProps}>
         <Background />
         <Arc />
         <Needle color="rgba(110, 6, 6, 1)" circleColor="rgba(0, 0, 0, 0.60)" />

@@ -41,8 +41,8 @@ export function Boost(): JSX.Element {
   return (
     <div className="boost-bar">
       <svg width={189} height={55} viewBox="0 0 189 55" xmlns="http://www.w3.org/2000/svg">
-        <path className="boost-bg-path" d="M13,12 L200,12" />
-        <path className="boost-path" d="M15,12 L198,12" ref={ref} style={{ stroke, strokeDashoffset }} />
+        <path className="boost-bg-path" d="M13,12 L100,12" />
+        <path className="boost-path" d="M15,12 L98,12" ref={ref} style={{ stroke, strokeDashoffset }} />
         <text className="boost-text" x="0" y="17px">
           <tspan>N</tspan>
         </text>
