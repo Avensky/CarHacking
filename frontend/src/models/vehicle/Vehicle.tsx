@@ -71,6 +71,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     if (carSim.speed>0){
       console.log("carSim.speed: ", carSim.speed);
       controls.forward = true;
+      mutation.speed = carSim.speed;
       mutation.fuel = carSim.fuel;
       mutation.temp = carSim.temp;
       mutation.rpmTarget = carSim.rpms;
@@ -84,7 +85,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
     // Decrease fuel gradually
     mutation.fuel = Math.max(mutation.fuel - delta * 0.75, 0) // Adjust the rate of fuel decrease (0.005 can be tuned)
-    
+   
     engineValue = lerp(
       engineValue,
       (controls.forward || controls.backward) && (mutation.fuel !=0)
@@ -138,6 +139,10 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
   const ToggledAccelerateAudio = useToggle(AccelerateAudio, ['ready', 'sound'])
   const ToggledEngineAudio = useToggle(EngineAudio, ['ready', 'sound'])
+  
+  // if (mutation.fuel>0){
+  //   ToggledEngineAudio = useToggle(EngineAudio, ['ready', 'sound'])
+  // }
 
   return (
     <group>
@@ -145,7 +150,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
         <ToggledAccelerateAudio />
         <BoostAudio />
         <BrakeAudio />
-        {mutation.fuel>0 ?<ToggledEngineAudio />:null}
+        <ToggledEngineAudio />
         <HonkAudio />
         <Boost />
         {children}
