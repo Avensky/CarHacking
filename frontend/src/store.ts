@@ -250,7 +250,7 @@ export const mutation: Mutation = {
   rpmTarget: 0,
   sliding: false,
   speed: 0,
-  fuel: 0,
+  fuel: 100,
   temp: 195,
   gearPosition: 0,
   velocity: [0, 0, 0],
