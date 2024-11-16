@@ -3,7 +3,7 @@ import { useEffect, useRef } from 'react'
 
 import { mutation } from '../../store'
 
-const getSpeed = () => `${(mutation.speed * 2).toFixed()}`
+const getSpeed = () => `${(mutation.speed).toFixed()}`
 
 export const Text = (): JSX.Element => {
   const ref = useRef<HTMLSpanElement>(null)

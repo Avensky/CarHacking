@@ -12,7 +12,7 @@ const IP_ADDRESS = process.env.NODE_ENV === "production"
     : "127.0.0.1" //developing ip
 const PORT = process.env.NODE_ENV === "production"
     ? 5000
-    : 4000 // dev backend port
+    : 4091 // dev backend port
 
 // set up cors to allow us to accept requests from our client
 app.use(cors());

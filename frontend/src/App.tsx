@@ -54,7 +54,12 @@ export function App(): JSX.Element {
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
-  const [carSim, setcarSim] = useState({})
+  const [carSim, setcarSim] = useState({
+    speed:0,
+    rmps:0,
+    gas:0,
+    temp:0,
+  })
   const [cmdEvents, setCmdEvents] = useState([])
 
   useEffect(() => {
@@ -104,14 +109,14 @@ export function App(): JSX.Element {
   }
   // from game
   const [light, setLight] = useState<DirectionalLight | null>(null)
-  const gltf = useGLTF('/models/ccity_building_set_1.glb') // Load your GLB model
 
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
-  const { onCheckpoint, onFinish, onStart } = actions
+  
 
   const ToggledEditor = useToggle(Editor, 'editor')
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   const ToggledStats = useToggle(Stats, 'stats')
+  
   return (
     <>
       <Intro>
@@ -137,7 +142,12 @@ export function App(): JSX.Element {
             />
             <PerspectiveCamera makeDefault={editor} fov={75} position={[0, 20, 20]} />
             <Physics broadphase="SAP" defaultContactMaterial={{ contactEquationRelaxation: 4, friction: 1e-3 }}>
-              <Vehicle angularVelocity={[...angularVelocity]} position={[...position]} rotation={[...rotation]}>
+              <Vehicle 
+                angularVelocity={[...angularVelocity]} 
+                position={[...position]} 
+                rotation={[...rotation]}
+                carSim={carSim}
+              >
                 {light && <primitive object={light.target} />}
                 <Cameras />
               </Vehicle>
