@@ -71,11 +71,11 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     if (carSim.speed>0){
       console.log("carSim.speed: ", carSim.speed);
       controls.forward = true;
-      mutation.speed = carSim.speed;
-      mutation.fuel = carSim.fuel;
-      mutation.temp = carSim.temp;
-      mutation.rpmTarget = carSim.rpms;
     }
+    mutation.speed = carSim.speed;
+    mutation.fuel = carSim.fuel;
+    mutation.temp = carSim.temp;
+    mutation.rpmTarget = carSim.rpms;
 
     isBoosting = controls.boost && mutation.boost > 0
 
