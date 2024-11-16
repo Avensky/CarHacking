@@ -65,18 +65,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
     // Decrease fuel gradually
     mutation.fuel = Math.max(mutation.fuel - delta * 0.75, 0) // Adjust the rate of fuel decrease (0.005 can be tuned)
-
     speed = mutation.speed
-    console.log("controls.forwards", controls.forward);
-    if (carSim.speed>0){
-      console.log("carSim.speed: ", carSim.speed);
-      controls.forward = true;
-    }
-    mutation.speed = carSim.speed;
-    mutation.fuel = carSim.fuel;
-    mutation.temp = carSim.temp;
-    mutation.rpmTarget = carSim.rpms;
-
     isBoosting = controls.boost && mutation.boost > 0
 
     if (isBoosting) {

@@ -7,7 +7,7 @@ import * as THREE from 'three' // Add this import
 import { usePlane } from '@react-three/cannon'
 import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei'
 
-import { angularVelocity, levelLayer, position, rotation, useStore } from './store'
+import { angularVelocity, levelLayer, mutation, position, rotation, useStore } from './store'
 
 import { Clock, Speed, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { Cameras } from './effects'
@@ -56,8 +56,8 @@ export function App(): JSX.Element {
   const [isConnected, setIsConnected] = useState(socket.connected)
   const [carSim, setcarSim] = useState({
     speed:0,
-    rmps:0,
-    gas:0,
+    rpms:0,
+    fuel:0,
     temp:0,
   })
   const [cmdEvents, setCmdEvents] = useState([])
@@ -74,6 +74,14 @@ export function App(): JSX.Element {
     function onCarSim(value: any) {
       // console.log(value)
       setcarSim(value)
+      // if (carSim.speed>0){
+      //   console.log("carSim.speed: ", carSim.speed);
+      //   controls.forward = true;
+      // }
+      mutation.speed = value.speed;
+      mutation.fuel = value.fuel;
+      mutation.temp = value.temp;
+      mutation.rpmTarget = value.rpms;
     }
     function onError(value: any) {
       // console.log(value)
@@ -146,7 +154,6 @@ export function App(): JSX.Element {
                 angularVelocity={[...angularVelocity]} 
                 position={[...position]} 
                 rotation={[...rotation]}
-                carSim={carSim}
               >
                 {light && <primitive object={light.target} />}
                 <Cameras />
