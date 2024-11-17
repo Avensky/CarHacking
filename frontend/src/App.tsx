@@ -74,14 +74,6 @@ export function App(): JSX.Element {
     function onCarSim(value: any) {
       // console.log(value)
       setcarSim(value)
-      // if (carSim.speed>0){
-      //   console.log("carSim.speed: ", carSim.speed);
-      //   controls.forward = true;
-      // }
-      mutation.speed = value.speed;
-      mutation.fuel = value.fuel;
-      mutation.temp = value.temp;
-      mutation.rpmTarget = value.rpms;
     }
     function onError(value: any) {
       // console.log(value)

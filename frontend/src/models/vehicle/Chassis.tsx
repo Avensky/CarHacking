@@ -116,13 +116,7 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
           controls.forward = true;
         } else {
           controls.forward = false;
-        }
-        // mutation.speed = value.speed;
-        // mutation.fuel = lerp(mutation.fuel, value.fuel, delta);
-        // mutation.temp = lerp(mutation.temp, value.temp, delta);
-        // mutation.speed = lerp(mutation.speed, value.speed, delta);
-        // mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta);
-        
+        }        
       }
       
       brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
