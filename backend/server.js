@@ -79,17 +79,10 @@ io.on("connection", (socket) => {
     });
 
     app.get('/api/abort', (req, res) => {
-        let canData = {
-            speed: 0,
-            revs: 0,
-            fuel: 0,
-        }
-        // console.log('api pinged backend');
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Car.js - Engine Simulation Engaged');
-            socket.emit('carSim', canData) // zero out canData for frontend
             socket.emit('cmdData', `[cmdData][cmd]: ${command}`);
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -105,6 +98,7 @@ io.on("connection", (socket) => {
             }
             console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
+            socket.emit('carSim', canData) // zero out canData for frontend
             res.end(`Success: ${stdout}`);
         });
     });
@@ -197,7 +191,7 @@ io.on("connection", (socket) => {
             // console.log('canData: ', msg.data)
             // socket.emit('canData', JSON.parse(msg.data.toString()));
             canData = {
-                rpms: msg.data.readUIntBE(0, 4),
+                revs: msg.data.readUIntBE(0, 4),
                 speed: msg.data.readUIntBE(4, 2),
                 fuel: msg.data.readUIntBE(6, 2)
             };
