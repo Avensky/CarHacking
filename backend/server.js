@@ -79,21 +79,6 @@ io.on("connection", (socket) => {
     });
 
     app.get('/api/abort', (req, res) => {
-        exec(`cansend vcan0 1F4#0000000000000000`, (error, stdout, stderr) => {
-            console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData][cmd]: reset cmdData`)
-            if (error) {
-                console.error(`exec error: ${error}`);
-                socket.emit('cmdData', `[cmdData][error]: ${error}`);
-                return;
-            }
-            if (stderr) {
-                console.error(`stderr: ${stderr}`);
-                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
-                return;
-            }
-            console.log(`stdout: ${stdout}`);
-        });
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
