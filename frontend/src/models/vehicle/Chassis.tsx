@@ -118,13 +118,13 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
         // mutation.speed = value.speed;
         mutation.fuel = lerp(mutation.fuel, value.fuel, delta*2);
         mutation.temp = lerp(mutation.temp, value.temp, delta*10);
-        mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta*10);
+        mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta*1);
         
         // Get the current velocity from the physics API
         api.velocity.subscribe((velocity) => {
         const currentSpeed = v.set(...velocity).length()
         // Calculate the reduced speed with lerp for gradual slowdown
-        const targetSpeed = value.speed // Adjust rate of speed decrease (0.1 can be tuned)
+        const targetSpeed = value.speed *-1 // Adjust rate of speed decrease (0.1 can be tuned)
         const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
         // Scale down the velocity vector to match the lerped speed
         const scaledVelocity = v.clone().setLength(lerpedSpeed)
