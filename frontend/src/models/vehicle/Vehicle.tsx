@@ -11,9 +11,9 @@ import { getState, mutation, useStore } from '../../store'
 import { useToggle } from '../../useToggle'
 import { Chassis } from './Chassis'
 import { Wheel } from './Wheel'
-import socket from '../../socket'
 
 import type { Camera, Controls, WheelInfo } from '../../store'
+import socket from '../../socket'
 
 const { lerp } = MathUtils
 const v = new Vector3()
@@ -66,9 +66,15 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
     // Decrease fuel gradually
     mutation.fuel = Math.max(mutation.fuel - delta * 0.75, 0) // Adjust the rate of fuel decrease (0.005 can be tuned)
-    speed = mutation.speed
-    isBoosting = controls.boost && mutation.boost > 0
 
+    // Smoothly adjust forward control
+    speed = mutation.speed; // Current vehicle speed
+    const forwardThreshold = 0.1; // Define threshold for forward control
+
+    // Gradually adjust `controls.forward` based on the speed
+    controls.forward = Math.abs(speed) > forwardThreshold;
+    isBoosting = controls.boost && mutation.boost > 0
+    
     if (isBoosting) {
       mutation.boost = Math.max(mutation.boost - 1, 0)
     }
@@ -125,6 +131,19 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     // Vibrations
     chassisBody.current!.children[0].rotation.x = (Math.sin(state.clock.getElapsedTime() * 20) * (speed / maxSpeed)) / 100
     chassisBody.current!.children[0].rotation.z = (Math.cos(state.clock.getElapsedTime() * 20) * (speed / maxSpeed)) / 100
+  
+  
+    // Socket handling for "carSim" events
+    function onCarSim(value: any) {
+      const targetSpeed = value.speed || 0; // Target speed from simulation
+      controls.forward = lerp(controls.forward ? 1 : 0, targetSpeed > forwardThreshold ? 1 : 0, delta * 5) > 0.5;
+    }
+
+    socket.on('carSim', onCarSim)
+    return () => {
+      socket.off(`carSim`, onCarSim)
+    }
+  
   })
 
   const ToggledAccelerateAudio = useToggle(AccelerateAudio, ['ready', 'sound'])
