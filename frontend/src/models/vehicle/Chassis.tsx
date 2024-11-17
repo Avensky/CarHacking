@@ -109,10 +109,6 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
     useFrame((_, delta) => {
       camera = getState().camera
       controls = getState().controls
-      const forwardThreshold = 0.1; // Define threshold for forward control
-      const speed = mutation.speed || 0
-      // Gradually adjust `controls.forward` based on the speed
-      controls.forward = Math.abs(speed) > forwardThreshold;
 
       
       brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
@@ -127,8 +123,9 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
 
        // Socket handling for "carSim" events
     function onCarSim(value: any) {
-      const targetSpeed = value.speed || 0; // Target speed from simulation
-      controls.forward = lerp(controls.forward ? 1 : 0, targetSpeed > forwardThreshold ? 1 : 0, delta * 5) > 0.5;
+      if (value.speed>0){
+        controls.forward = true;
+      }
     }
 
     socket.on('carSim', onCarSim)
