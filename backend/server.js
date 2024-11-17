@@ -191,9 +191,9 @@ io.on("connection", (socket) => {
             // console.log('canData: ', msg.data)
             // socket.emit('canData', JSON.parse(msg.data.toString()));
             canData = {
-                revs: msg.data.readUIntBE(0, 4),
-                speed: msg.data.readUIntBE(4, 2),
-                fuel: msg.data.readUIntBE(6, 2)
+                revs: msg.data.readUIntBE(0, 4)||0,
+                speed: msg.data.readUIntBE(4, 2)||0,
+                fuel: msg.data.readUIntBE(6, 2)||0
             };
             // console.log("car info: ", canData);
             const res = JSON.stringify(msg.data)
