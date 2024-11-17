@@ -79,25 +79,22 @@ io.on("connection", (socket) => {
     });
 
     app.get('/api/abort', (req, res) => {
-        let command = `cansend vcan0 1F4#0000000000000000`
-        exec(command, (error, stdout, stderr) => {
+        exec(`cansend vcan0 1F4#0000000000000000`, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
-            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
+            socket.emit('cmdData', `[cmdData][cmd]: reset cmdData`)
             if (error) {
                 console.error(`exec error: ${error}`);
                 socket.emit('cmdData', `[cmdData][error]: ${error}`);
-                res.end(`Error: ${error.message}`);
                 return;
             }
             if (stderr) {
                 console.error(`stderr: ${stderr}`);
                 socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
-                res.end(`Stderr: ${stderr}`);
                 return;
             }
             console.log(`stdout: ${stdout}`);
         });
-        command = `killall node`;
+        const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Abort Engaged');
@@ -116,7 +113,6 @@ io.on("connection", (socket) => {
             }
             // console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: Kill All Success`);
-            socket.emit('carSim', canData) // zero out canData for frontend
             res.end(`Success: Abort All`);
         });
     });
@@ -170,6 +166,30 @@ io.on("connection", (socket) => {
             }
             console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
+            res.end(`Success: ${stdout}`);
+        });
+    });
+    app.get('/api/stop', (req, res) => {
+        console.log('Can Attack Sent');
+        // Execute shell command
+        const command = "cansend vcan0 1F4#0000000000000000";
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
+            if (error) {
+                console.error(`exec error: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`)
             res.end(`Success: ${stdout}`);
         });
     });
