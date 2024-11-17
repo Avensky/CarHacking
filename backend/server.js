@@ -79,7 +79,11 @@ io.on("connection", (socket) => {
     });
 
     app.get('/api/abort', (req, res) => {
-        socket.emit('carSim', canData) // zero out canData for frontend
+        let data = {
+            speed: 0,
+            revs: 0,
+        }
+        socket.emit('carSim', data) // zero out canData for frontend
         // console.log('api pinged backend');
         const command = `killall node`;
         // Execute shell command

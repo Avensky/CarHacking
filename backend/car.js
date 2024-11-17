@@ -140,7 +140,7 @@ const engine = () => {
     }
 }
 
-// run script every 10 times per second
-setInterval(engine, 100);
+// run script every 1 times per second
+setInterval(engine, 1000);
 
 channel.start();
