@@ -95,7 +95,7 @@ export function App(): JSX.Element {
     socket.on('disconnect', onDisconnect)
     socket.on('carSim', onCarSim)
     socket.on('cmdData', onCmdEvent)
-    socket.on('error', (err) => {
+    socket.on('error', (err:any) => {
       onError(err)
     })
 

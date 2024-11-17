@@ -1,5 +1,5 @@
 import { MathUtils, Vector3 } from 'three'
-import { useLayoutEffect } from 'react'
+import { useEffect, useLayoutEffect } from 'react'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useRaycastVehicle } from '@react-three/cannon'
 
@@ -11,6 +11,7 @@ import { getState, mutation, useStore } from '../../store'
 import { useToggle } from '../../useToggle'
 import { Chassis } from './Chassis'
 import { Wheel } from './Wheel'
+import socket from '../../socket'
 
 import type { Camera, Controls, WheelInfo } from '../../store'
 
@@ -20,8 +21,7 @@ const v = new Vector3()
 type VehicleProps = PropsWithChildren<Pick<BoxProps, 'angularVelocity' | 'position' | 'rotation'>>
 type DerivedWheelInfo = WheelInfo & Required<Pick<WheelInfoOptions, 'chassisConnectionPointLocal' | 'isFrontWheel'>>
 
-export function Vehicle({ angularVelocity, children, position, rotation }: VehicleProps, 
-  carSim: {speed:number, fuel:number, rpms:number, temp:number}) {
+export function Vehicle({ angularVelocity, children, position, rotation }: VehicleProps) {
   const defaultCamera = useThree((state) => state.camera)
   const [chassisBody, vehicleConfig, wheelInfo, wheels] = useStore((s) => [s.chassisBody, s.vehicleConfig, s.wheelInfo, s.wheels])
   const { back, force, front, height, maxBrake, steer, maxSpeed, width } = vehicleConfig
@@ -57,6 +57,25 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
   let swaySpeed = 0
   let swayTarget = 0
   let swayValue = 0
+ 
+  useFrame(()=>{ 
+    function onCarSim(value: any) {
+      // console.log(value)
+      // if (carSim.speed>0){
+      //   console.log("carSim.speed: ", carSim.speed);
+      //   controls.forward = true;
+      // }
+      mutation.speed = value.speed;
+      mutation.fuel = value.fuel;
+      mutation.temp = value.temp;
+      mutation.rpmTarget = value.rpms;
+    }
+
+    socket.on('carSim', onCarSim)
+    return () => {
+      socket.off(`carSim`, onCarSim)
+    }
+  })
 
   useFrame((state, delta) => {
     camera = getState().camera
