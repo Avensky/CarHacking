@@ -58,24 +58,6 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
   let swayTarget = 0
   let swayValue = 0
  
-  useFrame(()=>{ 
-    function onCarSim(value: any) {
-      // console.log(value)
-      // if (carSim.speed>0){
-      //   console.log("carSim.speed: ", carSim.speed);
-      //   controls.forward = true;
-      // }
-      mutation.speed = value.speed;
-      mutation.fuel = value.fuel;
-      mutation.temp = value.temp;
-      mutation.rpmTarget = value.rpms;
-    }
-
-    socket.on('carSim', onCarSim)
-    return () => {
-      socket.off(`carSim`, onCarSim)
-    }
-  })
 
   useFrame((state, delta) => {
     camera = getState().camera

@@ -15,7 +15,7 @@ import type { CollideEvent } from '@react-three/cannon'
 import { getState, setState, mutation, useStore } from '../../store'
 
 import type { Camera, Controls } from '../../store'
-
+import socket from '../../socket'
 const { lerp } = MathUtils
 
 /*
@@ -104,36 +104,55 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
 
   let camera: Camera
   let controls: Controls
+
+
+
   useFrame((_, delta) => {
+    camera = getState().camera
+    controls = getState().controls
+    
     // Get the current velocity from the physics API
     // api.velocity.subscribe((velocity) => {
     //   const currentSpeed = v.set(...velocity).length()
-
+    function onCarSim(value: any) {
+      console.log(value)
+      if (value.speed>0){
+        console.log("carSim.speed: ", value.speed);
+        controls.forward = true;
+      }
+      mutation.speed = value.speed;
+      mutation.fuel = value.fuel;
+      mutation.temp = value.temp;
+      mutation.rpmTarget = value.rpms;
+    }
     //   if (mutation.speed>5){
-    //     // Calculate the reduced speed with lerp for gradual slowdown
-    //     const targetSpeed = Math.max(currentSpeed - delta * 20, 0) // Adjust rate of speed decrease (0.1 can be tuned)
-    //     const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
-  
-    //     // Scale down the velocity vector to match the lerped speed
-    //     const scaledVelocity = v.clone().setLength(lerpedSpeed)
-    //     api.velocity.set(scaledVelocity.x, scaledVelocity.y, scaledVelocity.z)
-    //   }
-    // })
-    
-    camera = getState().camera
-    controls = getState().controls
-    brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
-    brake.current.material.emissive.lerp(c.set(controls.brake ? 'red' : 'red'), delta * 10)
-    brake.current.material.opacity = lerp(brake.current.material.opacity, controls.brake ? 1 : 0.3, delta * 10)
-    glass.current.material.opacity = lerp(glass.current.material.opacity, camera === 'FIRST_PERSON' ? 0.1 : 0.75, delta)
-    glass.current.material.color.lerp(c.set(camera === 'FIRST_PERSON' ? 'white' : 'black'), delta)
-    if (wheel.current) wheel.current.rotation.z = lerp(wheel.current.rotation.z, controls.left ? -Math.PI : controls.right ? Math.PI : 0, delta)
-    needle.current.rotation.y = (mutation.speed / maxSpeed) * -Math.PI * 2 - 0.9
-    chassis_1.current.material.color.lerp(c.set(getState().color), 0.1)
-  })
+      //     // Calculate the reduced speed with lerp for gradual slowdown
+      //     const targetSpeed = Math.max(currentSpeed - delta * 20, 0) // Adjust rate of speed decrease (0.1 can be tuned)
+      //     const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
+      
+      //     // Scale down the velocity vector to match the lerped speed
+      //     const scaledVelocity = v.clone().setLength(lerpedSpeed)
+      //     api.velocity.set(scaledVelocity.x, scaledVelocity.y, scaledVelocity.z)
+      //   }
+      // })
+      
+      brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
+      brake.current.material.emissive.lerp(c.set(controls.brake ? 'red' : 'red'), delta * 10)
+      brake.current.material.opacity = lerp(brake.current.material.opacity, controls.brake ? 1 : 0.3, delta * 10)
+      glass.current.material.opacity = lerp(glass.current.material.opacity, camera === 'FIRST_PERSON' ? 0.1 : 0.75, delta)
+      glass.current.material.color.lerp(c.set(camera === 'FIRST_PERSON' ? 'white' : 'black'), delta)
+      if (wheel.current) wheel.current.rotation.z = lerp(wheel.current.rotation.z, controls.left ? -Math.PI : controls.right ? Math.PI : 0, delta)
+        needle.current.rotation.y = (mutation.speed / maxSpeed) * -Math.PI * 2 - 0.9
+      chassis_1.current.material.color.lerp(c.set(getState().color), 0.1)
 
-  return (
-    <group ref={ref} dispose={null}>
+      socket.on('carSim', onCarSim)
+      return () => {
+        socket.off(`carSim`, onCarSim)
+      }
+    })
+    
+    return (
+      <group ref={ref} dispose={null}>
       <group position={[0, -0.2, -0.2]}>
         <mesh ref={chassis_1} castShadow receiveShadow geometry={n.Chassis_1.geometry} material={m.BodyPaint} material-color="#f0c050" />
         <mesh castShadow geometry={n.Chassis_2.geometry} material={n.Chassis_2.material} material-color="#353535" />
