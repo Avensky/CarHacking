@@ -78,8 +78,26 @@ io.on("connection", (socket) => {
         });
     });
 
-    app.post('/api/abort', (req, res) => {
-        const command = `killall node`;
+    app.get('/api/abort', (req, res) => {
+        let command = `cansend vcan0 1F4#0000000000000000`
+        exec(command, (error, stdout, stderr) => {
+            console.log('Command Executed Successfully');
+            socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
+            if (error) {
+                console.error(`exec error: ${error}`);
+                socket.emit('cmdData', `[cmdData][error]: ${error}`);
+                res.end(`Error: ${error.message}`);
+                return;
+            }
+            if (stderr) {
+                console.error(`stderr: ${stderr}`);
+                socket.emit('cmdData', `[cmdData][stderr]: ${stderr}`);
+                res.end(`Stderr: ${stderr}`);
+                return;
+            }
+            console.log(`stdout: ${stdout}`);
+        });
+        command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Abort Engaged');

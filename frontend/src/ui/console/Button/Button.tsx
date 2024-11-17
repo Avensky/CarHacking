@@ -13,9 +13,9 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
     setIsLoading(true)
   
     // send commands to backend via http request
-    let method = axios.get;
-    if (props.name=="Abort")
-      method= axios.post;
+    const method = axios.get;
+    // if (props.name=="Abort")
+    //   method= axios.post;
     if (props.url && !props.reload) {
       method(props.url)
         .then(() => {
