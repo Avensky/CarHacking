@@ -82,7 +82,7 @@ io.on("connection", (socket) => {
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
-            console.log('Car.js - Engine Simulation Engaged');
+            console.log('Abort Engaged');
             socket.emit('cmdData', `[cmdData][cmd]: ${command}`);
             if (error) {
                 console.error(`exec error: ${error}`);
@@ -96,8 +96,8 @@ io.on("connection", (socket) => {
                 res.end(`Stderr: ${stderr}`);
                 return;
             }
-            console.log(`stdout: ${stdout}`);
-            socket.emit('cmdData', `[cmdData][stdout]: ${stdout}`);
+            // console.log(`stdout: ${stdout}`);
+            socket.emit('cmdData', `[cmdData][stdout]: Kill All Success`);
             socket.emit('carSim', canData) // zero out canData for frontend
             res.end(`Success: ${stdout}`);
         });
@@ -132,9 +132,9 @@ io.on("connection", (socket) => {
 
     app.get('/api/reload', (req, res) => {
         console.log('frontend wants to reload');
-        socket.emit('carSim', canData) // zero out canData for frontend
         // Execute shell command
         const command = "pm2 restart CarHacking";
+        socket.emit('carSim', canData) // zero out canData for frontend
         exec(command, (error, stdout, stderr) => {
             console.log('Command Executed Successfully');
             socket.emit('cmdData', `[cmdData][cmd]: ${command}`)
