@@ -16,10 +16,10 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
    
     if (props.name=="Abort"){
       axios.get('/api/stop').then((response) => {
-        console.log(response)
+        // console.log(response)
       })
       .catch((error: { response: any }) => {
-        console.log(error.response)
+        // console.log(error.response)
       })
     }
 
@@ -31,7 +31,7 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
         })
         .catch((error: { response: any }) => {
           setIsLoading(false)
-          console.log(error.response)
+          // console.log(error.response)
         })
     } else if (props.reload === true) {
       setIsLoading(false)
