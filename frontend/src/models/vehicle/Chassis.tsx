@@ -111,15 +111,17 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
 
       function onCarSim(value: any) {
         console.log(value)
-        // if (value.speed>0){
-        //   console.log("carSim.speed: ", value.speed);
-        //   controls.forward = true;
-        // }
+        if (value.speed>0){
+          console.log("carSim.speed: ", value.speed);
+          controls.forward = true;
+        } else {
+          controls.forward = false;
+        }
         // mutation.speed = value.speed;
-        mutation.fuel = lerp(mutation.fuel, value.fuel, delta);
-        mutation.temp = lerp(mutation.temp, value.temp, delta);
-        mutation.speed = lerp(mutation.speed, value.speed, delta);
-        mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta);
+        // mutation.fuel = lerp(mutation.fuel, value.fuel, delta);
+        // mutation.temp = lerp(mutation.temp, value.temp, delta);
+        // mutation.speed = lerp(mutation.speed, value.speed, delta);
+        // mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta);
         
       }
       
