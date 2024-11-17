@@ -125,6 +125,8 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
     function onCarSim(value: any) {
       if (value.speed>0){
         controls.forward = true;
+      } else {
+        controls.forward = false;
       }
     }
 

@@ -13,11 +13,18 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
     setIsLoading(true)
   
     // send commands to backend via http request
-    const method = axios.get;
-    // if (props.name=="Abort")
-    //   method= axios.post;
-    if (props.url && !props.reload) {
-      method(props.url)
+   
+    if (props.name=="Abort"){
+      axios.get('/api/stop').then((response) => {
+        console.log(response)
+      })
+      .catch((error: { response: any }) => {
+        console.log(error.response)
+      })
+    }
+
+    else if (props.url && !props.reload) {
+      axios.get(props.url)
         .then(() => {
           setIsLoading(false)
           // console.log(response)
