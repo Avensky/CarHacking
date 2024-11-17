@@ -78,7 +78,7 @@ io.on("connection", (socket) => {
         });
     });
 
-    app.get('/api/abort', (req, res) => {
+    app.post('/api/abort', (req, res) => {
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
@@ -98,8 +98,8 @@ io.on("connection", (socket) => {
             }
             // console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: Kill All Success`);
-            res.end(`Success: ${stdout}`);
             socket.emit('carSim', canData) // zero out canData for frontend
+            res.end(`Success: Abort All`);
         });
     });
 
@@ -181,36 +181,36 @@ io.on("connection", (socket) => {
     });
 
     // if (process.env.NODE_ENV === "production") {
-        const can = require("socketcan");
-        const channel = can.createRawChannel("vcan0", true);
-        // default values
+    const can = require("socketcan");
+    const channel = can.createRawChannel("vcan0", true);
+    // default values
 
-        // log data being sent by car.js
-        // reply any message
-        channel.addListener("onMessage", (msg) => {
-            // console.log('canData: ', msg.data)
-            // socket.emit('canData', JSON.parse(msg.data.toString()));
-            canData = {
-                revs: msg.data.readUIntBE(0, 4)||0,
-                speed: msg.data.readUIntBE(4, 2)||0,
-                fuel: msg.data.readUIntBE(6, 2)||0
-            };
-            // console.log("car info: ", canData);
-            const res = JSON.stringify(msg.data)
-            // send data to frontend
-            // maybe there is a way to only send one? and manipulate the data 
-            // in the frontedn but this works. could be optimized.
-            socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
-            socket.emit('carSim', canData) //send data to app
-        })
+    // log data being sent by car.js
+    // reply any message
+    channel.addListener("onMessage", (msg) => {
+        // console.log('canData: ', msg.data)
+        // socket.emit('canData', JSON.parse(msg.data.toString()));
+        canData = {
+            revs: msg.data.readUIntBE(0, 4),
+            speed: msg.data.readUIntBE(4, 2),
+            fuel: msg.data.readUIntBE(6, 2)
+        };
+        // console.log("car info: ", canData);
+        const res = JSON.stringify(msg.data)
+        // send data to frontend
+        // maybe there is a way to only send one? and manipulate the data 
+        // in the frontedn but this works. could be optimized.
+        socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
+        socket.emit('carSim', canData) //send data to app
+    })
 
-        channel.start()
+    channel.start()
 
-        socket.on("disconnect", (reason) => {
-            console.log(`disconnected due to ${reason}`);
-            socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
-            channel.stop();
-        });
+    socket.on("disconnect", (reason) => {
+        console.log(`disconnected due to ${reason}`);
+        socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
+        channel.stop();
+    });
     // }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
