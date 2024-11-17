@@ -100,41 +100,38 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
       const rpmTarget = Math.max(((gearPosition % 1) + Math.log(gearPosition)) / 4, 0)
       Object.assign(mutation, { rpmTarget, speed, velocity, gearPosition })
     }),
-  [maxSpeed], )
+    [maxSpeed], )
 
-  let camera: Camera
-  let controls: Controls
+    let camera: Camera
+    let controls: Controls
 
+    useFrame((_, delta) => {
+      camera = getState().camera
+      controls = getState().controls
 
-
-  useFrame((_, delta) => {
-    camera = getState().camera
-    controls = getState().controls
-    
-    // Get the current velocity from the physics API
-    // api.velocity.subscribe((velocity) => {
-    //   const currentSpeed = v.set(...velocity).length()
-    function onCarSim(value: any) {
-      console.log(value)
-      if (value.speed>0){
-        console.log("carSim.speed: ", value.speed);
-        controls.forward = true;
+      function onCarSim(value: any) {
+        console.log(value)
+        // if (value.speed>0){
+        //   console.log("carSim.speed: ", value.speed);
+        //   controls.forward = true;
+        // }
+        mutation.speed = value.speed;
+        mutation.fuel = value.fuel;
+        mutation.temp = value.temp;
+        mutation.rpmTarget = value.rpms;
+        
+        // Get the current velocity from the physics API
+        api.velocity.subscribe((velocity) => {
+        const currentSpeed = v.set(...velocity).length()
+        // Calculate the reduced speed with lerp for gradual slowdown
+        const targetSpeed = value.speed // Adjust rate of speed decrease (0.1 can be tuned)
+        const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
+        // Scale down the velocity vector to match the lerped speed
+        const scaledVelocity = v.clone().setLength(lerpedSpeed)
+        api.velocity.set(scaledVelocity.x, scaledVelocity.y, scaledVelocity.z)
+        
+        })
       }
-      mutation.speed = value.speed;
-      mutation.fuel = value.fuel;
-      mutation.temp = value.temp;
-      mutation.rpmTarget = value.rpms;
-    }
-    //   if (mutation.speed>5){
-      //     // Calculate the reduced speed with lerp for gradual slowdown
-      //     const targetSpeed = Math.max(currentSpeed - delta * 20, 0) // Adjust rate of speed decrease (0.1 can be tuned)
-      //     const lerpedSpeed = lerp(currentSpeed, targetSpeed, delta)
-      
-      //     // Scale down the velocity vector to match the lerped speed
-      //     const scaledVelocity = v.clone().setLength(lerpedSpeed)
-      //     api.velocity.set(scaledVelocity.x, scaledVelocity.y, scaledVelocity.z)
-      //   }
-      // })
       
       brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
       brake.current.material.emissive.lerp(c.set(controls.brake ? 'red' : 'red'), delta * 10)

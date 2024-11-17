@@ -28,11 +28,11 @@ const engine = () => {
         // if engine is on in neutral, raise them to 900
         if (now.gear === 0 && now.revs < 700) {
             console.log("neutral engine under 700revs");
-            now.revs += 100;
+            now.revs += 200;
         }
         else if (now.gear === 0 && (now.revs >= 700)) {
             console.log("neutral engine over 700revs >=");
-            now.revs -= 100;
+            now.revs -= 200;
         }
         // fluctuate rpms to increase from 2000rpms to 6000rpms as speed increases
         // simulating gear shifting in a vehicle
@@ -40,7 +40,7 @@ const engine = () => {
         // continue to inscrease speed until rmps reach 6000rpms
         if (now.gear != 0 && now.revs < 6000) {
             console.log("in gear, increase speed +1, revs +200");
-            now.revs += 200;
+            now.revs += 400;
             now.speed++;
         }
         // whenever rpms reach high numbers its time to shift gears
@@ -57,7 +57,7 @@ const engine = () => {
                 // speed and rpms
                 if (now.revs < 9000) {
                     console.log("if gear is maxed out and increase revs and speed until max")
-                    now.revs += 50;
+                    now.revs += 100;
                     now.speed++;
                 }
             }
@@ -68,9 +68,9 @@ const engine = () => {
         // Using an index alternate between adding and subtracting revs
         // simulating an engines fluctuation
         if (now.index % 2 === 0) {
-            now.revs += 50;
+            now.revs += 25;
         } else {
-            now.revs -= 50;
+            now.revs -= 25;
         }
 
     }
