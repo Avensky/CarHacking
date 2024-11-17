@@ -15,6 +15,8 @@ import type { CollideEvent } from '@react-three/cannon'
 import { getState, setState, mutation, useStore } from '../../store'
 
 import type { Camera, Controls } from '../../store'
+import socket from '../../socket'
+
 const { lerp } = MathUtils
 
 /*
@@ -107,6 +109,11 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
     useFrame((_, delta) => {
       camera = getState().camera
       controls = getState().controls
+      const forwardThreshold = 0.1; // Define threshold for forward control
+      const speed = mutation.speed || 0
+      // Gradually adjust `controls.forward` based on the speed
+      controls.forward = Math.abs(speed) > forwardThreshold;
+
       
       brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
       brake.current.material.emissive.lerp(c.set(controls.brake ? 'red' : 'red'), delta * 10)
@@ -116,6 +123,19 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
       if (wheel.current) wheel.current.rotation.z = lerp(wheel.current.rotation.z, controls.left ? -Math.PI : controls.right ? Math.PI : 0, delta)
         needle.current.rotation.y = (mutation.speed / maxSpeed) * -Math.PI * 2 - 0.9
       chassis_1.current.material.color.lerp(c.set(getState().color), 0.1)
+
+
+       // Socket handling for "carSim" events
+    function onCarSim(value: any) {
+      const targetSpeed = value.speed || 0; // Target speed from simulation
+      controls.forward = lerp(controls.forward ? 1 : 0, targetSpeed > forwardThreshold ? 1 : 0, delta * 5) > 0.5;
+    }
+
+    socket.on('carSim', onCarSim)
+    return () => {
+      socket.off(`carSim`, onCarSim)
+    }
+
     })
     
     return (
