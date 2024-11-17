@@ -84,12 +84,12 @@ io.on("connection", (socket) => {
             revs: 0,
             fuel: 0,
         }
-        socket.emit('carSim', canData) // zero out canData for frontend
         // console.log('api pinged backend');
         const command = `killall node`;
         // Execute shell command
         exec(command, (error, stdout, stderr) => {
             console.log('Car.js - Engine Simulation Engaged');
+            socket.emit('carSim', canData) // zero out canData for frontend
             socket.emit('cmdData', `[cmdData][cmd]: ${command}`);
             if (error) {
                 console.error(`exec error: ${error}`);
