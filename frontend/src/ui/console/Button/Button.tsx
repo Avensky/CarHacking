@@ -23,7 +23,7 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
       })
     }
 
-    else if (props.url && !props.reload) {
+    if (props.url && !props.reload) {
       axios.get(props.url)
         .then(() => {
           setIsLoading(false)
