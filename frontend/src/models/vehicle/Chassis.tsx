@@ -115,10 +115,10 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
         //   console.log("carSim.speed: ", value.speed);
         //   controls.forward = true;
         // }
-        mutation.speed = value.speed;
-        mutation.fuel = value.fuel;
-        mutation.temp = value.temp;
-        mutation.rpmTarget = value.rpms;
+        // mutation.speed = value.speed;
+        mutation.fuel = lerp(mutation.fuel, value.fuel, delta*2);
+        mutation.temp = lerp(mutation.temp, value.temp, delta*10);
+        mutation.rpmTarget = lerp(mutation.rpmTarget, value.rpms, delta*10);
         
         // Get the current velocity from the physics API
         api.velocity.subscribe((velocity) => {
