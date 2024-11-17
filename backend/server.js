@@ -98,8 +98,8 @@ io.on("connection", (socket) => {
             }
             // console.log(`stdout: ${stdout}`);
             socket.emit('cmdData', `[cmdData][stdout]: Kill All Success`);
-            socket.emit('carSim', canData) // zero out canData for frontend
             res.end(`Success: ${stdout}`);
+            socket.emit('carSim', canData) // zero out canData for frontend
         });
     });
 
