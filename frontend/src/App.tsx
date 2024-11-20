@@ -60,30 +60,36 @@ type CmdEvent = string; // Replace with the actual structure if known
 
 export function App(): JSX.Element {
   // Fullscreen
+  useEffect(() => {
+    window.scrollTo(0, 0);
+  }, []);
+  
   const [isFullscreen, setIsFullscreen] = useState(false);
   const enterFullscreen = async () => {
+  const element = document.documentElement;
+
+  if (element.requestFullscreen) {
+    await element.requestFullscreen();
+  } else if ((element as any).webkitRequestFullscreen) { // Safari
+    await (element as any).webkitRequestFullscreen();
+  } else if ((element as any).msRequestFullscreen) { // Older Microsoft Edge
+    await (element as any).msRequestFullscreen();
+  } else {
+    alert('Fullscreen mode is not supported by your browser.');
+    return;
+  }
+
+  setIsFullscreen(true);
+
+  // Orientation lock after fullscreen
+  if (screen.orientation && screen.orientation.lock) {
     try {
-      if (document.documentElement.requestFullscreen) {
-        await document.documentElement.requestFullscreen();
-        setIsFullscreen(true);
-        console.log('Entered fullscreen mode');
-        
-        // Attempt to lock orientation (works on Android, not iOS)
-        if (screen.orientation && screen.orientation.lock) {
-          try {
-            await screen.orientation.lock('landscape');
-            console.log('Orientation locked to landscape');
-          } catch (error) {
-            console.error('Failed to lock orientation:', error);
-          }
-        }
-      } else {
-        alert('Fullscreen mode is not supported by your browser.');
-      }
-    } catch (err) {
-      console.error('Failed to enter fullscreen:', err);
+      await screen.orientation.lock('landscape');
+    } catch (error) {
+      console.warn('Orientation lock failed:', error);
     }
-  };
+  }
+};
 
   // Manage data received from backend
   const [isConnected, setIsConnected] = useState(socket.connected);

@@ -43,11 +43,11 @@ export function Dashboard(): JSX.Element {
       <div className='dash-top'>
         <Speed speed={speed} />
         <Rpms rpms={rpms} />
-      </div>
-      <div className="dash-bottom">
         <FuelTemp fuel={fuel} temp={temp} />
-        <Boost />
       </div>
+      {/* <div className="dash-bottom">
+        <Boost />
+      </div> */}
     </div>
   )
 }
