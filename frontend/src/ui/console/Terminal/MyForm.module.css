@@ -1,16 +1,16 @@
 .MyForm {
     display: flex;
     width: 100%;
-    margin: 1lvh 0lvw;
+    /* margin: 1lvh 0lvw; */
     box-sizing: border-box;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: start;
 }
 
 .MyForm input {
-    min-width: 60%;
+    min-width: 75%;
 }
 
 .MyForm button {
-    min-width: 30%;
+    min-width: 25%;
 }

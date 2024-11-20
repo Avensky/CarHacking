@@ -2,9 +2,12 @@ import { useEffect, useRef } from 'react'
 import styles from './Log.module.css'
 
 export function Log(props: { events: any }): JSX.Element {
-  const logEndRef = useRef(null)
+  const logEndRef = useRef<HTMLDivElement | null>(null);
   const scrollToBottom = () => {
-    logEndRef.current.scrollIntoView({ behavior: 'instant' })
+    // logEndRef.current.scrollIntoView({ behavior: 'instant' })
+    if (logEndRef.current) {
+      logEndRef.current.scrollIntoView({ behavior: 'instant' });
+    }
   }
   useEffect(scrollToBottom, [props.events])
   return (

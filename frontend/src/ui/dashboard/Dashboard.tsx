@@ -1,9 +1,10 @@
-import { FuelTemp } from './FuelTemp/FuelTemp'
-import { Speed } from './Speed/Speed'
-import { Rpms } from './Rpms/Rpms'
+import { FuelTemp } from './FuelTemp'
+import { Speed } from './Speed'
+import { Rpms } from './Rpms'
 import { mutation } from '../../store'
 import { useEffect, useState } from 'react'
 import { addEffect } from '@react-three/fiber'
+import { Boost } from './Boost'
 
 const getSpeed = () => mutation.speed
 const getRpms = () => mutation.rpmTarget
@@ -39,12 +40,13 @@ export function Dashboard(): JSX.Element {
 
   return (
     <div className="dashboard">
-      {/* <div className='dash-top'>
-            </div> */}
-      <div className="dash-bottom">
+      <div className='dash-top'>
         <Speed speed={speed} />
         <Rpms rpms={rpms} />
+      </div>
+      <div className="dash-bottom">
         <FuelTemp fuel={fuel} temp={temp} />
+        <Boost />
       </div>
     </div>
   )

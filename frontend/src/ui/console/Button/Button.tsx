@@ -41,7 +41,7 @@ export function Button(props: { url: string; reload: boolean; name: string}): JS
   }
   return (
     <div
-      className={isLoading ? 'start loading' : 'start'}
+      className={isLoading ? 'btn loading' : 'btn'}
       onClick={onSubmit}
       // disabled={isLoading}
     >

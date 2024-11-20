@@ -1,4 +1,4 @@
-import { Boost } from './Boost'
+import { Boost } from '../dashboard/Boost'
 import { Gauge } from './Gauge'
 import { Text } from './Text'
 

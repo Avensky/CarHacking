@@ -6,12 +6,9 @@ import { Log } from './log/Log'
 export function Console(props: { isConnected: boolean; cmdEvents: any }): JSX.Element {
   return (
     <div className="console ">
-      <Log events={props.cmdEvents} />
-      <ConnectionManager isConnected={props.isConnected} />
       <div className="command">
         <div>
           <div className="flex-row">
-            <MyForm />
             {props.isConnected === true ? (
               <>
                 <Button reload={false} url="/api/start" name="Start Sim" />
@@ -30,6 +27,9 @@ export function Console(props: { isConnected: boolean; cmdEvents: any }): JSX.El
           </div>
         </div>
       </div>
+      <Log events={props.cmdEvents} />
+      <MyForm />
+      <ConnectionManager isConnected={props.isConnected} />
     </div>
   )
 }

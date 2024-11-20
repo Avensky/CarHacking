@@ -2,12 +2,13 @@
     display: flex;
     flex-wrap: wrap;
     width: 100%;
-    padding: 0lvh 1lvw;
+    /* padding: 1dvh 0dvw; */
 
 }
 
 .ConnectionManager button {
-    min-width: 15%;
+    min-width: 10%;
+    margin: 1%;
     /* background: grey; */
 }
 

@@ -1,6 +1,6 @@
-import { Dashboard } from './dashboard/Dashboard'
-import { Speed } from './Speed'
+// import { Speed } from './Speed'
 import { Console } from './console/index'
+import Pedals from './Pedals'
 
 export function UI({ cmdEvents, isConnected }): JSX.Element {
   return (
@@ -9,8 +9,7 @@ export function UI({ cmdEvents, isConnected }): JSX.Element {
         <Console cmdEvents={cmdEvents} isConnected={isConnected} />
       </div>
       <div className="overlay-right">
-        <Speed />
-        <Dashboard />
+        <Pedals />
       </div>
     </div>
   )

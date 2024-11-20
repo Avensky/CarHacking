@@ -1,17 +1,16 @@
 .Log {
-    margin: 1dvh 0dvw;
     color: rgba(255, 255, 255, 0.95);
     /* overflow-y: scroll; */
     display: flex;
     align-items: start;
     justify-content: flex-end;
     flex-direction: column;
-    max-height: 50dvh;
-    margin-top: 1rem;
+    height: 25dvh;
     pointer-events: all;
     user-select: all;
     word-break: break-all;
     width: 100%;
+    background-color: rgba(0, 0, 0, 0.663);
 }
 
 .Messages {
@@ -19,4 +18,5 @@
     display: flex;
     flex-direction: column;
     overflow: auto;
+    font-size: .65rem;
 }

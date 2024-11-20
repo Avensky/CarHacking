@@ -236,14 +236,18 @@ body {
 }
 
 .boost-bar {
-  position: relative;
-  top: 6lvh;
+  /* position: relative; */
+  /* top: 6lvh; */
 }
 
 .boost-bg-path {
   stroke: #132237;
   stroke-width: 13px;
   stroke-dasharray: 295px;
+}
+
+.boost-text {
+  color: black
 }
 
 .boost-path {
@@ -275,6 +279,33 @@ body {
   font-weight: bold;
 }
 
+/* --------------- HELP --------------- */
+.split{
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-self: center;
+}
+.Pedals {
+  padding: 0.5dvw 0.5dvh;
+  width: 280px;
+  align-items: center;
+  text-align: start;
+}
+
+.gasPedal{
+  height: 85px;
+  width: 85px;
+  background: url(/images/gasPedal.png) no-repeat;
+  background-size:contain;
+}
+
+.brakePedal{
+  height: 65px;
+  width: 65px;
+  background: url(/images/brakePedal.png) no-repeat;
+  background-size: contain;
+}
 /* --------------- HELP --------------- */
 
 .help {
@@ -564,27 +595,29 @@ button {
 }
 
 .dashboard {
-  /* position: absolute; */
-  /* bottom: 2lvh; */
-  /* right: 2lvw; */
+  position: absolute;
+  top: 0;
+  right: 0;
   box-sizing: border-box;
   /* z-index: 2; */
   user-select: none;
   pointer-events: none;
   padding: 1lvh 1lvw;
-  display: flex;
-  flex-direction: column;
+  /* display: flex; */
+  /* flex-direction: row; */
   /* justify-content: end; */
-  align-items: end;
+  align-items: start;
   height: 100%;
 }
 
-.top-dash {}
+.dash-top {
+  display: flex;
+}
 
-.dash-bottom {
+.dash-bottom{
   display: flex;
   align-items: end;
-
+  flex-direction: column;
 }
 
 /* fuel and temp gauge */
@@ -628,19 +661,19 @@ button {
 } */
 
 /* button */
-.start {
+.btn {
   background-color: rgb(12, 42, 16);
   /* background-image: url('../assets/binary-numbers/1921.jpg'); */
   background-size: contain;
   border-radius: 50%;
-  width: 60px;
-  height: 50px;
-  margin: .5lvh .5lvw;
+  width: 45px;
+  height: 35px;
+  /* margin: .5lvh .5lvw; */
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: .8rem;
-  font-weight: 900;
+  font-size: .6rem;
+  font-weight: 600;
   color: white;
   text-align: center;
   text-shadow:
@@ -673,9 +706,8 @@ button {
 }
 
 .console {
-  min-height: 30lvh;
-  max-height: 80lvh;
-  width: 40lvw;
+  height: 30dvh;
+  width: 280px;
   z-index: 1;
   box-sizing: border-box;
   padding: 1lvh 1lvw;
