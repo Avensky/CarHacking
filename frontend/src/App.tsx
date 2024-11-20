@@ -61,43 +61,29 @@ type CmdEvent = string; // Replace with the actual structure if known
 export function App(): JSX.Element {
   // Fullscreen
   const [isFullscreen, setIsFullscreen] = useState(false);
-
-  useEffect(() => {
-    const handleUserInteraction = () => {
+  const enterFullscreen = async () => {
+    try {
       if (document.documentElement.requestFullscreen) {
-        document.documentElement.requestFullscreen()
-          .then(() => {
-            setIsFullscreen(true);
-            console.log('Entered fullscreen mode');
-            // Lock orientation after fullscreen is granted
-            if (screen.orientation && screen.orientation.lock) {
-              screen.orientation.lock('landscape')
-                .then(() => {
-                  console.log('Orientation locked to landscape');
-                })
-                .catch((error) => {
-                  console.error('Failed to lock orientation:', error);
-                });
-            }
-          })
-          .catch((err) => {
-            console.error('Failed to enter fullscreen:', err);
-          });
+        await document.documentElement.requestFullscreen();
+        setIsFullscreen(true);
+        console.log('Entered fullscreen mode');
+        
+        // Attempt to lock orientation (works on Android, not iOS)
+        if (screen.orientation && screen.orientation.lock) {
+          try {
+            await screen.orientation.lock('landscape');
+            console.log('Orientation locked to landscape');
+          } catch (error) {
+            console.error('Failed to lock orientation:', error);
+          }
+        }
       } else {
         alert('Fullscreen mode is not supported by your browser.');
       }
-
-      // Remove the event listener after first interaction
-      window.removeEventListener('click', handleUserInteraction);
-    };
-  
-    // Add event listener for user interaction
-    window.addEventListener('click', handleUserInteraction);
-  
-    return () => {
-      window.removeEventListener('click', handleUserInteraction);
-    };
-  }, []);
+    } catch (err) {
+      console.error('Failed to enter fullscreen:', err);
+    }
+  };
 
   // Manage data received from backend
   const [isConnected, setIsConnected] = useState(socket.connected);
@@ -179,16 +165,13 @@ export function App(): JSX.Element {
 
   return (
     <>
-    {!isFullscreen && (
-      <div className="fullscreenPrompt">
-        <button onClick={() => {
-          document.documentElement.requestFullscreen();
-          setIsFullscreen(true);
-        }}>
-          Enter
-        </button>
-      </div>
-    )}
+     {!isFullscreen && (
+        <div className="fullscreenPrompt">
+          <button onClick={enterFullscreen}>
+            Enter Fullscreen
+          </button>
+        </div>
+      )}
 
         <Suspense fallback={null}>
           {/* Switch canvas to Matrix upon disconnect */}
