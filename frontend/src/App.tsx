@@ -54,6 +54,30 @@ function TiledScene({ scale = [0.0065, 0.0065, 0.0065], tileCount = 2, spacingA 
 type CmdEvent = string[]; // Replace with the actual structure if known
 
 export function App(): JSX.Element {
+  //Fullscreen
+  const [isFullscreen, setIsFullscreen] = useState(false);
+
+    useEffect(() => {
+      const handleOrientationChange = () => {
+        if (window.innerWidth < window.innerHeight) {
+          // Portrait mode
+          if (isFullscreen) {
+            document.exitFullscreen();
+            setIsFullscreen(false);
+          }
+        } else {
+          // Landscape mode
+          if (!isFullscreen && document.documentElement.requestFullscreen) {
+            document.documentElement.requestFullscreen();
+            setIsFullscreen(true);
+          }
+        }
+      };
+
+      window.addEventListener('orientationchange', handleOrientationChange);
+      return () => window.removeEventListener('orientationchange', handleOrientationChange);
+    }, [isFullscreen]);
+
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
