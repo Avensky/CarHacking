@@ -135,7 +135,7 @@ export function App(): JSX.Element {
     canvas = <Matrix />;
   } else {
     canvas = (
-      <Canvas>
+      <Canvas dpr={[1, 2]} shadows>
         <fog attach="fog" args={['white', 0, 500]} />
         <Sky sunPosition={[100, 10, 100]} distance={10000} />
         <ambientLight intensity={0.09} />
