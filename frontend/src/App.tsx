@@ -78,6 +78,24 @@ export function App(): JSX.Element {
     };
   }, []);
 
+  useEffect(() => {
+    const lockOrientation = async () => {
+      if (screen.orientation && screen.orientation.lock) {
+        try {
+          await screen.orientation.lock('landscape');
+        } catch (error) {
+          console.error('Failed to lock orientation:', error);
+        }
+      }
+    };
+  
+    window.addEventListener('click', lockOrientation);
+  
+    return () => {
+      window.removeEventListener('click', lockOrientation);
+    };
+  }, []);
+
   // MANGE DATA RECIEVED FROM BACKEND
   // const [error, setError] = useState([]);
   const [isConnected, setIsConnected] = useState(socket.connected)
