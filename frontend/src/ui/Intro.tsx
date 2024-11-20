@@ -8,8 +8,8 @@ import { Keys } from './Keys'
 import { Auth } from './Auth'
 
 export function Intro({ children }: { children: ReactNode }): JSX.Element {
-  const [clicked, setClicked] = useState(false)
-  const [loading, setLoading] = useState(true)
+  const [clicked, setClicked] = useState(true)
+  const [loading, setLoading] = useState(false)
   const { progress } = useProgress()
   const [session, set] = useStore((state) => [state.session, state.set])
 
