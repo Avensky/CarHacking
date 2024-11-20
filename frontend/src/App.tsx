@@ -35,7 +35,6 @@ function Ground() {
     </mesh>
   );
 }
-
 function TiledScene({ scale = [0.0065, 0.0065, 0.0065], tileCount = 2, spacingA = 362.7, spacingB = 152.09 }) {
   const gltf = useGLTF('/models/ccity_building_set_1.glb');
 
@@ -171,13 +170,13 @@ export function App(): JSX.Element {
 
   return (
     <>
-     {!isFullscreen && (
+     {/* {!isFullscreen && (
         <div className="fullscreenPrompt">
           <button onClick={enterFullscreen}>
             Enter Fullscreen
           </button>
         </div>
-      )}
+      )} */}
 
         <Suspense fallback={null}>
           {/* Switch canvas to Matrix upon disconnect */}
