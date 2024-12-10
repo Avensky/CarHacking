@@ -161,7 +161,10 @@ export function App(): JSX.Element {
           castShadow
         />
         <PerspectiveCamera makeDefault={editor} fov={75} position={[0, 20, 20]} />
-        <Physics broadphase="SAP" defaultContactMaterial={{ contactEquationRelaxation: 4, friction: 1e-3 }}>
+        <Physics broadphase="SAP" 
+          defaultContactMaterial={
+            { contactEquationRelaxation: 4, friction: 1e-3 }
+          }>
           <Vehicle
             angularVelocity={[...angularVelocity]}
             position={[...position]}
@@ -187,6 +190,7 @@ export function App(): JSX.Element {
           </button>
         </div>
       )} */}
+        <Intro>
 
         <Suspense fallback={null}>
           {/* Switch canvas to Matrix upon disconnect */}
@@ -203,6 +207,7 @@ export function App(): JSX.Element {
           <Keyboard />
         </Suspense>
 
+        </Intro>
     </>
   );
 }
