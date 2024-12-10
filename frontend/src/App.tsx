@@ -7,7 +7,9 @@ import { usePlane, Physics } from '@react-three/cannon';
 import type { DirectionalLight, Mesh } from 'three';
 import { Sky, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 
-import { angularVelocity, position, rotation, useStore } from './store';
+import { angularVelocity,
+  position, 
+  rotation, useStore } from './store';
 
 import { Intro, Help, Editor, LeaderBoard, PickColor } from './ui';
 import { Cameras } from './effects';
@@ -19,6 +21,7 @@ import socket from './socket';
 import { Matrix } from './components/Matrix';
 import { UI } from './ui/UI';
 import { Dashboard } from './ui/dashboard/Dashboard';
+
 
 // Ground component
 function Ground() {
@@ -58,6 +61,7 @@ function TiledScene({ scale = [0.0065, 0.0065, 0.0065], tileCount = 2, spacingA 
 type CmdEvent = string; // Replace with the actual structure if known
 
 export function App(): JSX.Element {
+  
   // Fullscreen
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -93,6 +97,8 @@ export function App(): JSX.Element {
   // Manage data received from backend
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [cmdEvents, setCmdEvents] = useState<CmdEvent[]>([]);
+  // const [socketPosition, setSocketPosition] = useState();
+
   useEffect(() => {
     function onConnect() {
       setIsConnected(true);
@@ -102,12 +108,16 @@ export function App(): JSX.Element {
       setIsConnected(false);
       // console.log('disconnected')
     }
-    function onError(value: CmdEvent) {
+    function onError(value: any) {
       setCmdEvents((previous) => [...previous, value]);
     }
-    function onCmdEvent(value: CmdEvent) {
+    function onCmdEvent(value: any) {
       setCmdEvents((previous) => [...previous, value]);
     }
+    function onMove(position: any) {
+      // setSocketPosition(position);
+    }
+    socket.on('move', onMove);
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('cmdData', onCmdEvent);

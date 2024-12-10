@@ -6,7 +6,7 @@ import type { PublicApi, WheelInfoOptions } from '@react-three/cannon'
 import type { Session } from '@supabase/supabase-js'
 import type { Group } from 'three'
 import type { GetState, SetState, StateSelector } from 'zustand'
-
+import socket from './socket'
 import { keys } from './keys'
 
 // speed
@@ -199,6 +199,7 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
       set((state) => {
         state.api?.angularVelocity.set(...angularVelocity)
         state.api?.position.set(...position)
+        // socket.emit('move', position);
         state.api?.rotation.set(...rotation)
         state.api?.velocity.set(0, 0, 0)
 

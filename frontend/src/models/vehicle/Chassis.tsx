@@ -78,6 +78,7 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
   const [maxSpeed] = useStore((s) => [s.vehicleConfig.maxSpeed])
   const { nodes: n, materials: m } = useGLTF('/models/chassis-draco.glb') as ChassisGLTF
 
+  // Collision is handled via the onCollide callback, which uses debounce to limit the frequency of crash sound playback.
   const onCollide = useCallback(
     debounce<(e: CollideEvent) => void>((e) => {
       if (e.body.userData.trigger || !getState().sound || !crashAudio.current) return
@@ -87,8 +88,13 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
     [],
   )
 
+  // attach physics to the chassis, The hook takes two arguments:
+  // A function that returns the body's configuration: { mass, args, allowSleep, onCollide, ...props }.
+  // A reference (ref) to attach the physics body to a React Three Fiber mesh group.
   const [, api] = useBox(() => ({ mass, args, allowSleep: false, onCollide, ...props }), ref)
-
+//useBox returns a tuple:
+// The first element (ignored here, represented by _) is a React reference to the physics body.
+// The second element, api, is an object that allows you to interact with the physics body programmatically (e.g., updating position, velocity, or applying forces).
   useEffect(() => {
     setState({ api })
     return () => setState({ api: null })
@@ -97,44 +103,57 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
   useLayoutEffect( () =>
     api.velocity.subscribe((velocity) => {
       const speed = v.set(...velocity).length()
+      // Calculates and interpolates the gear position,
       const gearPosition = speed / (maxSpeed / gears)
+      // RPM (revolutions per minute), and speed based on the velocity.
       const rpmTarget = Math.max(((gearPosition % 1) + Math.log(gearPosition)) / 4, 0)
+      // Updates a mutation object to share these properties across the app.
       Object.assign(mutation, { rpmTarget, speed, velocity, gearPosition })
     }),
     [maxSpeed], )
 
     let camera: Camera
     let controls: Controls
-
+    
+    // Updates the car's behavior on every frame using useFrame. This includes:
     useFrame((_, delta) => {
       camera = getState().camera
       controls = getState().controls
-
       
+          // Set a new position
+      // api.position.set(0, 1, 0);
+
+      // Apply a force to the body
+      // api.applyForce([0, 500, 0], [0, 0, 0]);
+      // socket.emit('move', api.position);
+      
+      // Adjusting brake lights and glass opacity based on user controls.
       brake.current.material.color.lerp(c.set(controls.brake ? '#555' : 'white'), delta * 10)
       brake.current.material.emissive.lerp(c.set(controls.brake ? 'red' : 'red'), delta * 10)
       brake.current.material.opacity = lerp(brake.current.material.opacity, controls.brake ? 1 : 0.3, delta * 10)
       glass.current.material.opacity = lerp(glass.current.material.opacity, camera === 'FIRST_PERSON' ? 0.1 : 0.75, delta)
       glass.current.material.color.lerp(c.set(camera === 'FIRST_PERSON' ? 'white' : 'black'), delta)
+      
+      // Updating the speedometer needle rotation proportional to the car's speed.
+      // Interpolating the wheel rotation and chassis material color based on user inputs and camera mode.
       if (wheel.current) wheel.current.rotation.z = lerp(wheel.current.rotation.z, controls.left ? -Math.PI : controls.right ? Math.PI : 0, delta)
         needle.current.rotation.y = (mutation.speed / maxSpeed) * -Math.PI * 2 - 0.9
       chassis_1.current.material.color.lerp(c.set(getState().color), 0.1)
 
-
-       // Socket handling for "carSim" events
-    function onCarSim(value: any) {
-      if (value.speed>0){
-        controls.forward = true;
-      } else {
-        controls.forward = false;
-      }
-    }
-
-    socket.on('carSim', onCarSim)
-    return () => {
-      socket.off(`carSim`, onCarSim)
-    }
-
+      // Socket handling for "carSim" events
+      // function onCarSim(value: any) {
+      //   if (value.speed>0){
+      //     controls.forward = true;
+      //   } else {
+      //     controls.forward = false;
+      //   }
+      // }
+      
+      // socket.on('carSim', onCarSim)
+      // return () => {
+      //   socket.off(`carSim`, onCarSim)
+      // }
+      
     })
     
     return (
@@ -179,6 +198,7 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
         />
       </group>
       {children}
+      {/* Plays a crash sound using a PositionalAudio component when a collision occurs. */}
       <PositionalAudio ref={crashAudio} url="/sounds/crash.mp3" loop={false} distance={5} load={undefined} />
     </group>
   )

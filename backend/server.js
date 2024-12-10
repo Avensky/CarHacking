@@ -237,6 +237,11 @@ io.on("connection", (socket) => {
     // }
     // console transport name
     console.log(`connected with transport ${socket.conn.transport.name}`);
+    console.log('User connected:', socket.id);
+
+    socket.on('move', (data) => {
+        socket.broadcast.emit('playerMoved', data); // Broadcast movement to other players
+    });
 
     socket.conn.on("upgrade", (transport) => {
         console.log(`transport upgraded to ${transport.name}`);
@@ -245,6 +250,7 @@ io.on("connection", (socket) => {
 
     socket.on("disconnect", (reason) => {
         console.log(`disconnected due to ${reason}`);
+        console.log('User disconnected:', socket.id);
         socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
     });
 
@@ -253,6 +259,8 @@ io.on("connection", (socket) => {
         console.error(`Socket.IO error: ${err}`);
         socket.emit('cmdData', `[SocketIO]: Socket.IO error: ${err}`)
     });
+
+
 });
 
 // launch server in production mode
