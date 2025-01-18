@@ -107,7 +107,7 @@ const actionInputMap: ActionInputMap = {
   boost: ['shift'],
   brake: [' '],
   camera: ['c'],
-  editor: ['.'],
+  editor: [','],
   forward: ['arrowup', 'w', 'z'],
   help: ['i'],
   honk: ['h'],
@@ -177,7 +177,10 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
   const actions: Actions = {
     ...booleanActions,
     ...controlActions,
-    camera: () => set((state) => ({ camera: cameras[(cameras.indexOf(state.camera) + 1) % cameras.length] })),
+    camera: () => set(
+      (state) => (
+        { camera: cameras[(cameras.indexOf(state.camera) + 1) % cameras.length] }
+      )),
     onCheckpoint: () => {
       const { start } = get()
       if (start) {
@@ -199,7 +202,6 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
       set((state) => {
         state.api?.angularVelocity.set(...angularVelocity)
         state.api?.position.set(...position)
-        // socket.emit('move', position);
         state.api?.rotation.set(...rotation)
         state.api?.velocity.set(0, 0, 0)
 

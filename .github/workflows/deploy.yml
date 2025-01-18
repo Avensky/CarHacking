@@ -24,20 +24,15 @@ jobs:
           cache-name: cache-node-modules
         with:
           path: node_modules
-          key: ${{runner.os}}-backend-${{ env.cache-name }}-${{ hashFiles('package-lock.json')}}
+          key: ${{runner.os}}-${{ env.cache-name }}-${{ hashFiles('package-lock.json')}}
           restore-keys: |
-            ${{ runner.os }}-backend-${{ env.cache-name }}-
-            ${{ runner.os }}-backend-
+            ${{ runner.os }}-${{ env.cache-name }}-
             ${{ runner.os }}-
       - name: Install Dependencies
         if: steps.cache-backend.outputs.cache-hit != 'true'
-        run: |
-          cd backend
-          npm i
+        run: npm i
       - name: Check linting and formatting
-        run: |
-          cd backend
-          npm run lint 
+        run: npm run lint
       - name: Execute test cases
         run: echo testing...
   frontend:
@@ -49,7 +44,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.3 
+          node-version: 18.20.3
       - name: Cache node modules
         id: cache-frontend
         uses: actions/cache@v4
@@ -80,7 +75,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.3 
+          node-version: 18.20.3
       - name: Use cache node modules
         uses: actions/cache@v4
         with:
@@ -92,7 +87,6 @@ jobs:
             frontend-cache-frontend-${{ hashFiles('frontend/package-lock.json')}}
       - name: Install Dependencies
         run: |
-          cd backend
           npm i
           cd ../frontend
           npm i
@@ -109,4 +103,3 @@ jobs:
           pm2 start CarHacking --update-env
           pm2 save
           sudo service nginx restart
-          

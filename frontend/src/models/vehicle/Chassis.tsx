@@ -62,6 +62,7 @@ interface ChassisGLTF extends GLTF {
   }
 }
 
+
 type MaterialMesh = Mesh<BufferGeometry, MeshStandardMaterial>
 
 const gears = 6
@@ -92,16 +93,33 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
   // A function that returns the body's configuration: { mass, args, allowSleep, onCollide, ...props }.
   // A reference (ref) to attach the physics body to a React Three Fiber mesh group.
   const [, api] = useBox(() => ({ mass, args, allowSleep: false, onCollide, ...props }), ref)
-//useBox returns a tuple:
-// The first element (ignored here, represented by _) is a React reference to the physics body.
-// The second element, api, is an object that allows you to interact with the physics body programmatically (e.g., updating position, velocity, or applying forces).
+  //useBox returns a tuple:
+  // The first element (ignored here, represented by _) is a React reference to the physics body.
+  // The second element, api, is an object that allows you to interact with the physics body programmatically (e.g., updating position, velocity, or applying forces).
   useEffect(() => {
     setState({ api })
     return () => setState({ api: null })
   }, [api])
+  
+  // Log chassis position
+  // api.position.subscribe((position) => {
+  //   console.log('Chassis:{' + '\nPosition: ' + position + '\n');
+  // });
+  //   // Log chassis position
+  // api.angularVelocity.subscribe((velocity) => {
+  //   console.log('Chassis:{'+ '\nangularVelocity: ' + velocity + '\n');
+  // });
+  //   // Log chassis position
+  // api.rotation.subscribe((rotation) => {
+  //   console.log('Chassis:{'+ '\nRoration: ' + rotation + '\n');
+  // });
 
+  
   useLayoutEffect( () =>
     api.velocity.subscribe((velocity) => {
+      // console.log('Velocity:{'
+      //   + '\nVelocity: ' + velocity + '\n'
+      // );
       const speed = v.set(...velocity).length()
       // Calculates and interpolates the gear position,
       const gearPosition = speed / (maxSpeed / gears)
@@ -120,7 +138,8 @@ export const Chassis = forwardRef<Group, PropsWithChildren<BoxProps>>(({ args = 
       camera = getState().camera
       controls = getState().controls
       
-          // Set a new position
+
+      // Set a new position
       // api.position.set(0, 1, 0);
 
       // Apply a force to the body

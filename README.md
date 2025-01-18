@@ -337,7 +337,7 @@ sudo nano /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/car.js
 # set up virtual canbus
 
 sudo apt-get install can-utils
-sudo modprobe vcan
+sudo mo vobe vcan
 sudo /usr/sbin/modprobe vcan
 
 # in a terminal 2 start sending car data to gauges in terminal #1

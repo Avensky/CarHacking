@@ -12,15 +12,22 @@ interface FuelTempProps {
   fuel: number // Expect fuel as a number
   temp: number // Expect temp as a number
 }
-export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
-  return (
-    <div className="misc">
-      <div className="fuel">
-        <Speedometer value={fuel * -1} width={100} height={100} min={-500} max={0} angle={170} rotation={275}>
-          <Background
-            // rotation={360}
-            angle={360}
-          />
+// export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
+  export function FuelTemp({ fuel = 0, temp = 100 }: FuelTempProps): JSX.Element {
+    // Ensure values are valid and within expected ranges
+    const safeFuel = isNaN(fuel) ? 0 : fuel;
+    const safeTemp = isNaN(temp) ? 100 : temp;
+
+    const clampedFuel = Math.max(-500, Math.min(0, safeFuel * -1));
+    const clampedTemp = Math.max(100, Math.min(280, safeTemp));
+    return (
+      <div className="misc">
+        <div className="fuel">
+          <Speedometer value={clampedFuel} width={100} height={100} min={-500} max={0} angle={170} rotation={275}>
+            <Background
+              // rotation={360}
+              angle={360}
+            />
           {/* <Background rotation={90} angle={180} /> */}
           <Arc arcWidth={4} />
           <Needle baseOffset={8} baseWidth={1} circleRadius={5} circleColor="rgba(0, 0, 0, 0.60)" color="rgba(110, 6, 6, 1)" />
@@ -75,7 +82,7 @@ export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
         </Speedometer>
       </div>
       <div className="temp">
-        <Speedometer value={temp} width={100} height={100} min={100} max={280} angle={180} rotation={90}>
+        <Speedometer value={clampedTemp} width={100} height={100} min={100} max={280} angle={180} rotation={90}>
           {/* <Background
                         angle={180}
                     rotation={180}

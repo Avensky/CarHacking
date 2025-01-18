@@ -10,8 +10,8 @@ const getSpeed = () => mutation.speed
 const getRpms = () => mutation.rpmTarget
 const getFuel = () => mutation.fuel
 const getTemp = () => mutation.temp
-export function Dashboard(): JSX.Element {
-  // console.log('carSim: ', carSim)
+export function Dashboard(physics:any): JSX.Element {
+  // console.log('physics: ', physics)
   // console.log('speed: ', carSim.speed)
   // console.log('speed: ', mutation.speed)
   // console.log('rpmTarget: ', mutation.rpmTarget)
@@ -41,9 +41,9 @@ export function Dashboard(): JSX.Element {
   return (
     <div className="dashboard">
       <div className='dash-top'>
-        <Speed speed={speed} />
-        <Rpms rpms={rpms} />
-        <FuelTemp fuel={fuel} temp={temp} />
+        <Speed speed={physics.velocity} />
+        <Rpms rpms={physics.rpmTarget} />
+        <FuelTemp fuel={physics.fuel} temp={physics.temp} />
       </div>
       {/* <div className="dash-bottom">
         <Boost />
