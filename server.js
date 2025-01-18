@@ -22,7 +22,7 @@ const {
     RaycastVehicle,
     SAPBroadphase,
     Quaternion
-  } = require('cannon-es');
+} = require('cannon-es');
 // set up cors to allow us to accept requests from our client
 app.use(cors());
 app.options('http://localhost:5173', cors());  // Adjust according to your frontend's origin
@@ -55,12 +55,12 @@ io.on("connect", (socket) => {
     // Check the user 
     console.log('Player Connected: ', socket.id);
     const chassisShape = new Box(new Vec3(2, 0.5, 1))
-    const chassisBody = new Body({ mass: 150, rotation:new Vec3(0, -Math.PI/3, 0) })
-    
+    const chassisBody = new Body({ mass: 150, rotation: new Vec3(0, -Math.PI / 3, 0) })
+
     chassisBody.addShape(chassisShape)
     chassisBody.position.set(0, 1, 0)
     chassisBody.angularVelocity.set(0, 0.5, 0)
-    
+
     // Create the vehicle
     const vehicle = new RaycastVehicle({
         chassisBody,
@@ -103,8 +103,8 @@ io.on("connect", (socket) => {
     vehicle.wheelInfos.forEach((wheel) => {
         const cylinderShape = new Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20)
         const wheelBody = new Body({
-          mass: 0,
-          material: wheelMaterial,
+            mass: 0,
+            material: wheelMaterial,
         })
         wheelBody.type = Body.KINEMATIC
         wheelBody.collisionFilterGroup = 0 // turn off collisions
@@ -119,11 +119,11 @@ io.on("connect", (socket) => {
     // Update the wheel bodies
     world.addEventListener('postStep', () => {
         for (let i = 0; i < vehicle.wheelInfos.length; i++) {
-          vehicle.updateWheelTransform(i)
-          const transform = vehicle.wheelInfos[i].worldTransform
-          const wheelBody = wheelBodies[i]
-          wheelBody.position.copy(transform.position)
-          wheelBody.quaternion.copy(transform.quaternion)
+            vehicle.updateWheelTransform(i)
+            const transform = vehicle.wheelInfos[i].worldTransform
+            const wheelBody = wheelBodies[i]
+            wheelBody.position.copy(transform.position)
+            wheelBody.quaternion.copy(transform.quaternion)
         }
     })
 
@@ -143,7 +143,7 @@ io.on("connect", (socket) => {
     //         matrix[i].push(height)
     //     }
     // }
-  
+
     // const groundMaterial = new Material('ground')
     // const heightfieldShape = new Heightfield(matrix, {
     //   elementSize: 100 / sizeX,
@@ -160,112 +160,112 @@ io.on("connect", (socket) => {
     // heightfieldBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0)
     // world.addBody(heightfieldBody)
     // demo.addVisual(heightfieldBody)
-    
+
     // Create a new material for the ground (optional)
     const groundMaterial = new Material('groundMaterial');
-    
+
     // Create the ground plane
     const groundShape = new Plane();
     const groundBody = new Body({
         mass: 0, // static body, doesn't move
         material: groundMaterial,
     });
-    
+
     // Add the plane shape to the body
     groundBody.addShape(groundShape);
-    
+
     // Rotate the plane so it lies flat along the y-axis
     groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-    
+
     // Add the body to the world
     world.addBody(groundBody);
-    
+
     // Define interactions between wheels and ground
     const wheel_ground = new ContactMaterial(wheelMaterial, groundMaterial, {
-      friction: 0.3,
-      restitution: 0,
-      contactEquationStiffness: 1000,
+        friction: 0.3,
+        restitution: 0,
+        contactEquationStiffness: 1000,
     })
     world.addContactMaterial(wheel_ground)
-    
+
     // Keybindings
     // Add force on keydown
     socket.on('keydown', (event) => {
         const maxSteerVal = 0.5
         const maxForce = 1000
         const brakeForce = 1000000
-        
+
         console.log("Keydow: ", event)
         switch (event.key) {
             case 'w':
-                case 'ArrowUp':
-                    vehicle.applyEngineForce(-maxForce, 2)
-                    vehicle.applyEngineForce(-maxForce, 3)
-                    break
-                    
-                    case 's':
-                        case 'ArrowDown':
-                            vehicle.applyEngineForce(maxForce, 2)
-                            vehicle.applyEngineForce(maxForce, 3)
-                            break
-                            
-                            case 'a':
-                                case 'ArrowLeft':
-                                    vehicle.setSteeringValue(maxSteerVal, 0)
-                                    vehicle.setSteeringValue(maxSteerVal, 1)
-                                    break
-                                    
-                                    case 'd':
-                                        case 'ArrowRight':
-                                            vehicle.setSteeringValue(-maxSteerVal, 0)
+            case 'ArrowUp':
+                vehicle.applyEngineForce(-maxForce, 2)
+                vehicle.applyEngineForce(-maxForce, 3)
+                break
+
+            case 's':
+            case 'ArrowDown':
+                vehicle.applyEngineForce(maxForce, 2)
+                vehicle.applyEngineForce(maxForce, 3)
+                break
+
+            case 'a':
+            case 'ArrowLeft':
+                vehicle.setSteeringValue(maxSteerVal, 0)
+                vehicle.setSteeringValue(maxSteerVal, 1)
+                break
+
+            case 'd':
+            case 'ArrowRight':
+                vehicle.setSteeringValue(-maxSteerVal, 0)
                 vehicle.setSteeringValue(-maxSteerVal, 1)
                 break
-                
-                case 'b':
-                    vehicle.setBrake(brakeForce, 0)
-                    vehicle.setBrake(brakeForce, 1)
-                    vehicle.setBrake(brakeForce, 2)
-                    vehicle.setBrake(brakeForce, 3)
-                    break
-                }
-            })
-            // Reset force on keyup
-            socket.on('keyup', (event) => {
-                console.log("Keyup: ", event)
-                switch (event.key) {
-                    case 'w':
-                        case 'ArrowUp':
-                            vehicle.applyEngineForce(0, 2)
-                            vehicle.applyEngineForce(0, 3)
-                            break
-                            
-                            case 's':
-                                case 'ArrowDown':
+
+            case 'b':
+                vehicle.setBrake(brakeForce, 0)
+                vehicle.setBrake(brakeForce, 1)
+                vehicle.setBrake(brakeForce, 2)
+                vehicle.setBrake(brakeForce, 3)
+                break
+        }
+    })
+    // Reset force on keyup
+    socket.on('keyup', (event) => {
+        console.log("Keyup: ", event)
+        switch (event.key) {
+            case 'w':
+            case 'ArrowUp':
                 vehicle.applyEngineForce(0, 2)
                 vehicle.applyEngineForce(0, 3)
                 break
-  
-              case 'a':
-              case 'ArrowLeft':
+
+            case 's':
+            case 'ArrowDown':
+                vehicle.applyEngineForce(0, 2)
+                vehicle.applyEngineForce(0, 3)
+                break
+
+            case 'a':
+            case 'ArrowLeft':
                 vehicle.setSteeringValue(0, 0)
                 vehicle.setSteeringValue(0, 1)
                 break
-  
-              case 'd':
-              case 'ArrowRight':
+
+            case 'd':
+            case 'ArrowRight':
                 vehicle.setSteeringValue(0, 0)
                 vehicle.setSteeringValue(0, 1)
                 break
-  
-              case 'b':
+
+            case 'b':
                 vehicle.setBrake(0, 0)
                 vehicle.setBrake(0, 1)
                 vehicle.setBrake(0, 2)
                 vehicle.setBrake(0, 3)
                 break
-            }
+        }
     })
-      
+
     world.gravity.set(0, -10, 0)
     // Sweep and prune broadphase
 
@@ -280,9 +280,9 @@ io.on("connect", (socket) => {
 
     // console.log('chassisBody:', chassisBody);
     // console.log('Methods:', Object.keys(chassisBody)``);
-    
+
     // console.log('Wheels:', vehicle.wheelInfos);s```
-    
+
     const simulate = () => {
         // world.step(1 / 60); // Simulate physics at 60Hz
         // try {
@@ -308,14 +308,14 @@ io.on("connect", (socket) => {
                 angularVelocity: vehicle.chassisBody.angularVelocity,
                 quaternion: vehicle.chassisBody.quaternion
             }
-          // Add more properties as needed
+            // Add more properties as needed
         };
         // console.log('data', vehicle);
         socket.emit('physicsUpdate', vehicleData);
     };
-      
-      // Set up the simulation loop
-      setInterval(simulate, 1000 * fixedTimeStep); // 60 times per second
+
+    // Set up the simulation loop
+    setInterval(simulate, 1000 * fixedTimeStep); // 60 times per second
 
     let canData = {
         speed: 0,
@@ -485,36 +485,36 @@ io.on("connect", (socket) => {
     });
 
     if (process.env.NODE_ENV === "production") {
-    const can = require("socketcan");
-    const channel = can.createRawChannel("vcan0", true);
-    // default values
+        const can = require("socketcan");
+        const channel = can.createRawChannel("vcan0", true);
+        // default values
 
-    // log data being sent by car.js
-    // reply any message
-    channel.addListener("onMessage", (msg) => {
-        // console.log('canData: ', msg.data)
-        // socket.emit('canData', JSON.parse(msg.data.toString()));
-        canData = {
-            revs: msg.data.readUIntBE(0, 4),
-            speed: msg.data.readUIntBE(4, 2),
-            fuel: msg.data.readUIntBE(6, 2)
-        };
-        // console.log("car info: ", canData);
-        const res = JSON.stringify(msg.data)
-        // send data to frontend
-        // maybe there is a way to only send one? and manipulate the data 
-        // in the frontedn but this works. could be optimized.
-        socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
-        socket.emit('carSim', canData) //send data to app
-    })
+        // log data being sent by car.js
+        // reply any message
+        channel.addListener("onMessage", (msg) => {
+            // console.log('canData: ', msg.data)
+            // socket.emit('canData', JSON.parse(msg.data.toString()));
+            canData = {
+                revs: msg.data.readUIntBE(0, 4),
+                speed: msg.data.readUIntBE(4, 2),
+                fuel: msg.data.readUIntBE(6, 2)
+            };
+            // console.log("car info: ", canData);
+            const res = JSON.stringify(msg.data)
+            // send data to frontend
+            // maybe there is a way to only send one? and manipulate the data 
+            // in the frontedn but this works. could be optimized.
+            socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
+            socket.emit('carSim', canData) //send data to app
+        })
 
-    channel.start()
+        channel.start()
 
-    socket.on("disconnect", (reason) => {
-        console.log(`disconnected due to ${reason}`);
-        socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
-        channel.stop();
-    });
+        socket.on("disconnect", (reason) => {
+            console.log(`disconnected due to ${reason}`);
+            socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
+            channel.stop();
+        });
     } else {
         socket.on("disconnect", (reason) => {
             console.log(`disconnected due to ${reason}`);
@@ -525,7 +525,7 @@ io.on("connect", (socket) => {
     console.log(`connected with transport ${socket.conn.transport.name}`);
     console.log('User connected:', socket.id);
 
-    
+
     socket.conn.on("upgrade", (transport) => {
         console.log(`transport upgraded to ${transport.name}`);
         socket.emit('cmdData', `[SocketIO]: transport upgraded to ${transport.name}`)
