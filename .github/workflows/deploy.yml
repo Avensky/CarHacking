@@ -88,7 +88,7 @@ jobs:
       - name: Install Dependencies
         run: |
           npm i
-          cd ../frontend
+          cd frontend
           npm i
       - name: Create production build
         run: |

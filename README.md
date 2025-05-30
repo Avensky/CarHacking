@@ -1,187 +1,421 @@
-# ReadME
 
-edit: summer 2024
-task: update front-end
-attemp1: Install 3d graphics for online experience using threejs
+# 🚗 CarHacking CTF, Toolkit, and Simulator
 
-![Gauges screenshot](https://user-images.githubusercontent.com/79558669/180919193-4b0581e3-ed1f-457c-8e1e-63e7c2ea8a78.png)
+A curated collection of tools, scripts, and resources for automotive security research and CAN bus experimentation.
 
-![GitHub last commit](https://img.shields.io/github/last-commit/crice114/CarHacking)
+This project launches a 3D vehicle simulator where users can attempt code injections for points in a CTF.
 
-## About
+When the fuel gauge reaches 0, the simulation ends and all gauges are reset.
 
-This project will create a 3-d model render of a tank and gagues along the interface.
+---
 
-The project runs on a Raspberry Pi and simulates a car outputting revs, speed, and fuel consumption(this is shown at a rate that is sped up for functional timing purposes) and displays via the frond end using nodejs, threejs, react, fiber, and socketcan.
-
-When the fuel gauge reaches 0, the simulation ends and all gauges are reset.The Pi model I am using is Raspberry Pi 4 model B.
-
-The server is created using express, socket.io, socketcan and the gauges are created with the help of an existing canvas-gauge template.
-
-## Prerequites
-
-Raspberry Pi 4/5 model B.
-Raspbian 64 bit OS.
-
-## Installation
-
-# Flash 64 bit os raspbian
-
-# Connect to the internet and accept updates
-
-# INSTRUCTIONS
-
-## This project was developed using production assets to prevent unexpected problems, ensuring for a robust system
-
-## About the Interface
-
-Start Sim - engages the Car.js script from the backend, simulating an engine accelerating and shifting gears 1-6. Engine reaches top speed at 6k rpms in 6th gear. Script will run until the fuel runs out.
-
-Abort - kills all node processes including the Car Simulation
-
-Reload Node - restarts the server without restarting the device
-
-Reload UI - refreshes the browser
-
-Hack Car - Sends a code injection, manipulating speed and rpms
-
-Command Line - Can be used to remotely reboot the device or send commands directly from browser to pi
-
-# Flash Raspian os 64 bit
-
-# Set up Pi and process all updates
-
-# setup environment variables - create a file and add the variable
-
-# Go to preferences then Raspberry Pi Configuration then interfaces, and enable SSH:
-
-ssh <username>@<ipaddress>
-
-# type your password and save a key fingerprint to your list of known hosts
-
-# type yes and continue
-
-The authenticity of host '<hostname> (<hostname>)' can't be established.
-<KEY> key fingerprint is SHA256:<SHA>.
-
-This key is not known by any other names.
-Are you sure you want to continue connecting (yes/no/[fingerprint])? yes
-
-# Create environment variables
-
-sudo nano ~/.profile
-NODE_ENV=production
-
-source ~/.profile
-echo $NODE_ENV
-
-# Setup node and npm
-
-# install node version manager
-
-sudo curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
-
-# activate nvm
-
-source ~/.bashrc
-
-# confirm installation
-
-command -v nvm
-
-# install node
-
-nvm install 18
-
-# setup continuous integration / continuous delivery pipeline
-
-# make a dir in /var/www/ -- This is necessary for nginx to recognize it as a website
-
-sudo mkdir -p /var/www/
-sudo mkdir /var/www/CarHacking; cd /var/www/CarHacking;
-
-<!-- sudo mkdir -p /var/www/CarHacking; cd /var/www/CarHacking; -->
-
-sudo chown -R $USER:$USER /var/www/CarHacking;
-sudo chmod -R 755 /var/www/CarHacking;
-
-# Create your own fork on the repository https://github.com/Avensky/CarHacking
-
-# On Github go to your project>settings>actions>runners>new self-hosted runner>linux>ARM64
-
-<!-- for ubuntu use the command to check architecture: uname -a -->
-
-# Use the instructions on github with sudo, skip folder creation since we already made one. The instructions should look something like this:
-
-# Download the latest runner package
-
-#sudo curl -o actions-runner-linux-arm64-2.317.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.317.0/actions-runner-linux-arm64-2.317.0.tar.gz;
-
-echo "7e8e2095d2c30bbaa3d2ef03505622b883d9cb985add6596dbe2f234ece308f3 actions-runner-linux-arm64-2.317.0.tar.gz" | shasum -a 256 -c;
-
-#sudo tar xzf ./actions-runner-linux-arm64-2.319.1.tar.gz;
-
-# configure
-
-sudo touch .env;
-sudo chown -R $USER:$USER .env;
-sudo chown -R $USER:$USER /home/uri/;
-
-./config.sh --url https://github.com/Avensky/CarHacking --token THISISJUSTASAMPLETOKEN;
-
-./run.sh
-
-## Name the runner and select defaults
-
-sudo ./svc.sh install;
-sudo ./svc.sh start;
-
-## INSTALL PM2 for persistant server
-
-npm install -g pm2
-
-<!-- sudo apt update && sudo apt install curl && sudo curl -sL https://raw.githubusercontent.com/Unitech/pm2/master/packager/setup.deb.sh | sudo -E bash - -->
-
-node /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js
-pm2 start /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js --name CarHacking
-pm2 startup
-
-To setup the Startup Script, copy/paste the following command:
-
-#sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v18.20.3/bin /home/pi/.nvm/versions/node/v18.20.3/lib/node_modules/pm2/bin/pm2 startup systemd -u pi --hp /home/pi
-
-pm2 save
-
-# Install NGIX - Forwards requests to client using reverse proxy
-
-- sudo apt update;
-  sudo apt install nginx;
-- sudo ufw app list
-
-# Setup Server Block
-
-## NOTE: If you need to delete this dir and start a new one, rerun this permissions on the new build
-
-sudo chown -R $USER:$USER /var/www/CarHacking;
-sudo chmod -R 755 /var/www/CarHacking;
-
-sudo chown -R $USER:$USER /var/www/CarHacking/\_work/CarHacking/CarHacking/frontend/build
-sudo chown -R $USER:$USER /var/www/CarHacking/;
-sudo chmod -R 755 /var/www/CarHacking;
-sudo chmod -R 777 /var/www/CarHacking;
-
-- sudo nano /etc/nginx/sites-available/CarHacking
-
-# edit server_name to match your ip
-
-## restart systemctl when updating
+## 📁 Project Structure
 
 ```
+CarHacking/
+├── .github/actions       # Github actions
+├── .github/workflows     # CICD yml files
+├── apis/                 # Api collection
+├── captures/             # Sample CAN bus data captures
+├── controllers/          # controllers
+├── docs/                 # Research papers and reference materials
+├── frontend/             # Vite Frontend with React 
+├── routes/               # Routing apis
+├── utils/                # Reusable scripts
+├── server.js             # Backend
+├── README.md             # Project overview and usage instructions
+```
+
+---
+
+## 🧰 Tools & Scripts
+
+This repository includes various tools and scripts designed to assist in car hacking endeavors:
+
+- **CAN Bus Sniffers**: Utilities to monitor and log CAN traffic.
+- **Start Sim**: Simulates vehicle CAN Bus data.
+- **Abort**: Kills all node processes ending the simulation.
+- **Reload Node**: Restarts the server without restarting the device.
+- **Reload UI**: Refreshes the browser.
+- **Message Injectors**: Scripts to send custom messages onto the CAN bus.
+- **Hack Car**: Script simulates a code injection, manipulating the vehicle gauges, and movements.
+-**Command Line**: Command line allows for unique code injection from a browser.
+- **Diagnostic Tools**: Programs to interact with vehicle ECUs using standard protocols.
+
+*Note: Ensure you have the necessary permissions and are compliant with local laws before interacting with vehicle networks.*
+
+---
+
+## 📝 Documentation
+
+The `docs/` directory contains valuable resources to deepen your understanding of automotive security:
+
+- **Research Papers**: In-depth analyses of vehicle network vulnerabilities.
+- **Presentations**: Slides from conferences and workshops on car hacking.
+- **Guides**: Step-by-step instructions for setting up your own car hacking lab.
+
+---
+
+## 📌 Prerequisites
+
+Before using the tools, ensure you have:
+
+- **Hardware**: A compatible CAN interface device (e.g. Raspberry Pi)
+- **Software**: Python 3.x installed on your system.
+- **Permissions**: Appropriate rights to interact with vehicle networks.
+
+## 🚀 Getting Started
+
+To begin using the tools in this repository:
+
+1. **Set Up Your Environment**: Ensure you have the necessary hardware (e.g., CAN interface devices) and software dependencies installed.
+
+# 🐧 Flashing Raspberry Pi OS (Raspbian) on a Raspberry Pi
+
+This guide walks you through flashing **Raspberry Pi OS** (formerly Raspbian) onto a microSD card and booting it on your Raspberry Pi.
+
+---
+
+## ✅ Requirements
+
+- 🧠 A **Raspberry Pi** (any model)
+- 💾 A **microSD card** (8GB+ recommended, Class 10/UHS-1)
+- 💻 A computer with **internet access & microSD card reader or usb for mircroSD adapter**
+- 🔌 A **power supply** for the Pi
+- ⌨️ (Optional) Keyboard, mouse, and HDMI display
+
+---
+
+## 🔧 Step-by-Step Instructions
+
+### 🥇 Step 1: Download Raspberry Pi Imager
+
+1. Visit: [https://www.raspberrypi.com/software](https://www.raspberrypi.com/software)
+2. Download and install the **Raspberry Pi Imager** for your OS (Windows/macOS/Linux)
+
+---
+
+### 🥈 Step 2: Insert and Select Your microSD Card
+
+1. Insert your microSD card into your computer
+2. Open **Raspberry Pi Imager**
+3. Click **“Choose OS”** and select one:
+   - `Raspberry Pi OS (32-bit)` (Recommended)
+   - `Raspberry Pi OS Lite` (for headless setup, no GUI)
+
+---
+
+### 🛠️ Step 3: Configure (Optional)
+
+Click the ⚙️ icon in the Imager to:
+
+- Set a **hostname**
+- Enable **SSH**
+- Set **Wi-Fi SSID/password**
+- Set **locale/timezone/keyboard**
+- Create a **user account**
+
+> ⚠️ These options save time if you're setting up a headless system.
+
+---
+
+### 🥉 Step 4: Flash the OS
+
+1. Click **“Choose Storage”** → Select your SD card (Accept Updates)
+2. Click **“Write”** → Wait for the flashing process to finish
+3. Safely **eject** the card
+
+---
+
+### 🚀 Step 5: Boot the Raspberry Pi
+
+1. Insert the flashed SD card into your Raspberry Pi
+2. Plug in HDMI, keyboard, mouse, and power
+3. Raspberry Pi OS will boot into the desktop or CLI
+
+---
+
+## 🧠 Optional: SSH & Wi-Fi (Headless Setup)
+
+If you're not using a monitor/keyboard:
+
+### Enable SSH:
+Create a blank file named `ssh` (no extension) on the **boot** partition.
+
+### Connect to Wi-Fi:
+Create a file called `wpa_supplicant.conf` (in boot partition):
+
+```country=US
+ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
+update_config=1
+
+network={
+ssid="YourWiFiName"
+psk="YourWiFiPassword"
+}
+```
+
+Then boot the Pi and connect via:
+
+```bash
+ssh pi@<IP_ADDRESS>
+```
+
+### Save a Key Fingerprint
+Type your password and save key to your list of known hosts.
+
+🛠 First-Time Setup Commands
+Open config menu:
+
+```sudo raspi-config
+```
+Update the system:
+```sudo apt update && sudo apt full-upgrade -y
+```
+
+📝 Notes
+Default login (if using desktop OS):
+
+Username: pi
+
+Password: raspberry
+
+Use a good-quality SD card and power supply for stability
+
+## Add Environment Variables
+```echo 'export NODE_ENV=production' >> ~/.profile
+```
+🔄 Apply it Immediately (without reboot):
+After adding it, run:
+```source ~/.profile
+```
+
+## ✅ Install `nvm`
+
+Open your terminal and run:
+
+```bash
+curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.40.1/install.sh | bash
+```
+
+> This command downloads and runs the official install script from the `nvm-sh` GitHub repo.
+
+---
+
+## 🔄 Step 2: Activate `nvm`
+
+After installation, activate `nvm` by sourcing your shell configuration file:
+
+For **bash**:
+```bash
+source ~/.bashrc
+```
+
+---
+
+## 🔍 Step 3: Verify Installation
+
+Check if `nvm` was installed successfully:
+
+```bash
+nvm --version
+```
+
+You should see the version number (e.g., `0.40.1`).
+
+---
+
+## 🚀 Step 4: Install Node.js with `nvm`
+
+You can now install any version of Node.js:
+
+```bash
+nvm install node          # Latest version
+nvm install 18            # Specific version
+nvm use 18                # Switch to version 18
+```
+
+Set a default version:
+
+```bash
+nvm alias default 24
+```
+
+---
+
+## 📎 Notes
+
+- `nvm` installs Node.js in your home directory (`~/.nvm`)
+- It does **not require `sudo`** to manage Node versions
+
+---
+
+# 🚀 CI/CD Pipeline Setup for CarHacking (GitHub Actions + Self-Hosted Runner)
+
+This guide explains how to set up a **self-hosted GitHub Actions runner** for deploying the [Avensky/CarHacking](https://github.com/Avensky/CarHacking) project using CI/CD on a Raspberry Pi or ARM64 device.
+
+---
+
+## 🔁 1. Clone the Repository and Prepare the Environment
+
+```bash
+# Create a directory recognized by Nginx
+sudo mkdir -p /var/www/
+sudo mkdir /var/www/CarHacking
+cd /var/www/CarHacking
+
+# Set correct ownership and permissions
+sudo chown -R $USER:$USER /var/www/CarHacking
+sudo chmod -R 755 /var/www/CarHacking
+```
+
+---
+
+## 🍴 2. Fork the Repository
+
+- Go to: [https://github.com/Avensky/CarHacking](https://github.com/Avensky/CarHacking)
+- Click **Fork** and clone your forked version if needed.
+
+---
+
+## 🏃 3. Set Up a GitHub Self-Hosted Runner
+
+1. Go to your fork on GitHub → **Settings** → **Actions** → **Runners**
+2. Click **New self-hosted runner**
+3. Choose:
+   - OS: Linux
+   - Architecture: ARM64 (for Raspberry Pi)
+4. Follow the instructions (skip directory creation since we already did that - you should be in this directory /var/www/CarHacking)
+
+---
+
+## 📦 4. Download and Configure the Runner
+
+Replace with the latest version from GitHub’s runner releases page (commenting out this section to avoid copy and paste, follow github's instructions):
+
+```bash
+# Download the runner ie:
+# curl -o actions-runner-linux-arm64-2.324.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.324.0/actions-runner-linux-arm64-2.324.0.tar.gz
+
+# Verify integrity
+
+# Extract the runner
+# tar xzf ./actions-runner-linux-arm64-2.324.0.tar.gz
+```
+
+---
+
+## ⚙️ 5. Configure the Runner
+
+```bash
+# Create .env for environment variables
+# sudo touch .env
+# sudo chown -R $USER:$USER .env
+# sudo chown -R $USER:$USER /home/$USER/
+
+# Replace the token with your actual GitHub token
+./config.sh --url https://github.com/<your-username>/CarHacking --token YOUR_TOKEN_HERE
+```
+
+> 🧠 During this step, you’ll name the runner and accept default prompts.
+
+---
+
+## ▶️ 6. Run the Runner
+
+```bash
+# Run manually
+./run.sh
+```
+
+---
+
+## 🛠 7. Install as a Service (Recommended)
+
+```bash
+sudo ./svc.sh install
+sudo ./svc.sh start
+```
+
+---
+
+## ✅ Done!
+
+Your GitHub Actions runner is now connected. Any workflow `.yml` files you add to `.github/workflows/` in your repo will now execute using this runner.
+
+---
+
+# 🌐 Install and Configure NGINX with PM2
+
+This guide walks you through installing **PM2** and **NGINX** on a Raspberry Pi to persist and proxy a Node.js backend using GitHub Actions and virtual CAN bus.
+
+---
+
+## 🔧 Install PM2 for Persistent Node Server
+
+```bash
+npm install -g pm2
+```
+
+Start your backend server:
+
+```bash
+`node /var/www/CarHacking/_work/CarHacking/CarHacking/backend/server.js`
+pm2 start /var/www/CarHacking/_work/CarHacking/CarHacking/backend/server.js --name CarHacking
+pm2 startup
+```
+
+To finalize the startup script:
+
+```bash
+# Replace the path below with your actual Node.js version path
+sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v18.20.3/bin \
+    /home/pi/.nvm/versions/node/v18.20.3/lib/node_modules/pm2/bin/pm2 \
+    startup systemd -u pi --hp /home/pi
+
+pm2 save
+```
+
+
+---
+
+## 🌍 Install NGINX (Reverse Proxy for Frontend + API)
+
+```bash
+sudo apt update
+sudo apt install nginx
+sudo ufw app list
+```
+
+---
+
+## 🗂 Set Up Server Directory Permissions
+
+```bash
+sudo chown -R $USER:$USER /var/www/CarHacking
+sudo chmod -R 755 /var/www/CarHacking
+sudo chown -R $USER:$USER /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/build
+sudo chmod -R 777 /var/www/CarHacking
+```
+
+---
+
+## 📝 Configure NGINX Site
+
+Edit the NGINX site configuration:
+
+```bash
+sudo nano /etc/nginx/sites-available/CarHacking
+```
+
+Paste the following configuration (replace `<ipaddress>` with your Pi's IP):
+
+```nginx
 server {
   listen 80;
   listen [::]:80;
 
-  root /var/www/CarHacking/\_work/CarHacking/CarHacking/frontend/build;
+  root /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/build;
   index index.html index.htm index.nginx-debian.html;
 
   server_name <ipaddress>;
@@ -211,144 +445,140 @@ server {
 }
 ```
 
-- sudo ln -s /etc/nginx/sites-available/CarHacking /etc/nginx/sites-enabled/
+Enable the site and tweak NGINX settings:
 
-- sudo nano /etc/nginx/nginx.conf
-  ...
-  http {
-  ...
-  server_names_hash_bucket_size 64;
-  ...
-  }
-  ...
+```bash
+sudo ln -s /etc/nginx/sites-available/CarHacking /etc/nginx/sites-enabled/
+sudo nano /etc/nginx/nginx.conf
+```
 
-sudo systemctl status nginx.service
-sudo systemctl start nginx.service
-sudo systemctl reload nginx.service;
-sudo systemctl restart nginx.service
-sudo systemctl restart nginx;
+In the `http` block, ensure:
 
-sudo nginx -t;
-sudo service nginx restart;
-sudo service nginx status;
+```nginx
+server_names_hash_bucket_size 64;
+```
 
-# set up virtual canbus
+---
 
+## 🔁 Test and Restart NGINX
+
+```bash
+sudo nginx -t
+sudo systemctl restart nginx
+```
+
+---
+
+## 🚗 Set Up Virtual CAN Bus
+
+```bash
 sudo apt-get install can-utils
 sudo modprobe vcan
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+```
 
-# use these when resetting pi on a different network
+---
 
-sudo ip link add dev vcan0 type vcan;
-sudo ip link set up vcan0;
+## 🔄 Recovery After Restart / IP Change
 
-# IMPORTANT!!!
+### 1. Restart GitHub Actions Runner
 
-# recovering from a restart requires to check runner, canbus, and nginx
+```bash
+cd /var/www/CarHacking
+sudo ./svc.sh start
+```
 
-## reload the runner
+### 2. Restart Virtual CAN Bus
 
-cd /var/www/CarHacking;
-sudo ./svc.sh start;
+```bash
+sudo ip link add dev vcan0 type vcan
+sudo ip link set up vcan0
+```
 
-<!-- ## Test and look for vcan
-ifconfig -->
+### 3. Restart PM2 Server
 
-<!-- # on your pc type [Raspberry Pi IP Address]:3000/index.html in a web browser
-http://192.168.yur.ip -->
-<!--
-# in a terminal 2 start sending car data to gauges in terminal #1
-node car.js -->
-
-<!-- # in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
-cansend vcan0 1F4#AAAAAAAAAAAAAAAA -->
-
-# IMPORTANT!!!!!!!
-
-# Recovering from a change in IP Address
-
-## Stop the server
-
-pm2 stop 0
-
-## edit server block server_name to match your ip
-
-### to get ip
-
-`hostname -I`
-
-### edit nginx configuration and add your new ip
-
-sudo nano /etc/nginx/sites-available/CarHacking
-`#server_name <192.168.old.ip> <192.168.new.ip>;`
-
-## test the configuration and reload
-
-sudo nginx -t;
-sudo service nginx restart;
-
-<!-- ## To restore Broken pipeline remove the service
-cd /var/www/CarHacking/;
-sudo ./svc.sh uninstall; -->
-
-<!-- ## on github go to repo>settings>actions>runner>remove runner
-## to remove runner copy the command shown to you by github
-```#./config.sh remove --token JUSTANEXAMPLE4SBTGNCJMVPLGQ4CLS;``` -->
-
-<!-- ## once thats done force remove the runner on github
-## click on 'New self-hosted runner'>linux>ARM64 -->
-<!-- ```#sudo curl -o actions-runner-linux-x64-2.317.0.tar.gz -L https://github.com/actions/runner/releases/download/v2.317.0/actions-runner-linux-x64-2.317.0.tar.gz``` -->
-<!--
-## reinstall the service
-sudo tar xzf ./actions-runner-linux-arm64-2.317.0.tar.gz -->
-
-<!-- ## install runner using new token
-sudo chmod -R 777 /var/www/CarHacking;
-```#./config.sh --url https://github.com/Avensky/CarHacking --token USEYOURNEWTOKENIVNYBD3GRTPBQ``` -->
-
-## restart the service
-
-cd /var/www/CarHacking;
-sudo ./svc.sh install;
-sudo ./svc.sh start;
-
-# set up a new canbus to reflect change in ip
-
-sudo ip link add dev vcan0 type vcan;
-sudo ip link set up vcan0;
-
-# restart server
-
+```bash
 pm2 restart 0
+```
 
-## Recovering from a restart (But Same IP)
+---
 
-sudo ip link add dev vcan0 type vcan;
-sudo ip link set up vcan0;
-cd /var/www/CarHacking/;
-sudo ./svc.sh start;
+## 🌐 Recover From IP Address Change
 
-## Debugging backend short cuts
+### Stop server:
 
-node /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/car.js
-sudo nano /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/server.js
-sudo nano /var/www/CarHacking/\_work/CarHacking/CarHacking/backend/car.js
+```bash
+pm2 stop 0
+```
 
-# set up virtual canbus
+### Find your new IP:
 
-sudo apt-get install can-utils
-sudo mo vobe vcan
-sudo /usr/sbin/modprobe vcan
+```bash
+hostname -I
+```
+
+### Update `server_name` in NGINX config:
+
+```bash
+sudo nano /etc/nginx/sites-available/CarHacking
+```
+
+Update:
+```nginx
+server_name <new.ip.address>;
+```
+
+### Restart NGINX:
+
+```bash
+sudo nginx -t
+sudo service nginx restart
+```
+---
+
+2. # 🤝 Contributing
+
+Contributions are welcome! If you have tools, scripts, or documentation to add:
+
+1. **Fork the Repository**
+
+2. **Create a New Branch**:
+
+   ```bash
+   git checkout -b feature/your-feature-name
+   ```
+
+3. **Commit Your Changes**:
+
+   ```bash
+   git commit -m "Add your feature"
+   ```
+
+4. **Push to Your Fork**:
+
+   ```bash
+   git push origin feature/your-feature-name
+   ```
+
+5. **Create a Pull Request**
+
+Please ensure your contributions adhere to the project's coding standards and include appropriate documentation.
+
+---
+
+## 📬 Contact
+
+For questions, suggestions, or collaborations, please open an issue or contact [Avensky](https://github.com/Avensky).
+
 
 # in a terminal 2 start sending car data to gauges in terminal #1
-
 node car.js
 
-# in a terminal 3 hack the car gauges, do a cansend to the virtual canbus ID(found by cansniffer) and send in 16 bits of data to manipulate gauges.
-
+# in a terminal try 
 cansend vcan0 1F4#AAAAAAAAAAAAAAAA
 
-## Acknowledgement
+## Acknowledgements
 
 Project concept and execution inspired by rhysmorgan134/Can-App
 
