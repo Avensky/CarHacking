@@ -231,14 +231,14 @@ You can now install any version of Node.js:
 
 ```bash
 nvm install node          # Latest version
-nvm install 18            # Specific version
-nvm use 18                # Switch to version 18
+nvm install 18.20.3       # Specific version
+nvm use 18.20.3           # Switch to version 18
 ```
 
 Set a default version:
 
 ```bash
-nvm alias default 18
+nvm alias default 18.20.3
 ```
 
 ---

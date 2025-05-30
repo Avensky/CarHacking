@@ -43,7 +43,7 @@ const io = new Server(server, {
             ? "http://192.168.1.175"
             : "http://localhost:5173", // Replace with your Vite frontend URL
         methods: ['GET', 'POST']
-    }``
+    }
 });
 
 console.log("io");
@@ -491,8 +491,8 @@ io.on("connect", (socket) => {
     });
 
     if (process.env.NODE_ENV === "production") {
-        const can = require("socketcan");
-        const channel = can.createRawChannel("vcan0", true);
+        const socketcan = require("socketcan");
+        const channel = socketcan.createRawChannel("vcan0", true);
         // default values
 
         // log data being sent by car.js
