@@ -25,7 +25,11 @@ const {
 } = require('cannon-es');
 // set up cors to allow us to accept requests from our client
 app.use(cors());
-app.options('http://localhost:5173', cors());  // Adjust according to your frontend's origin
+app.options(process.env.NODE_ENV === "production"
+    ? "http://192.168.1.175"
+    : "http://localhost:5173",
+    cors());  // Adjust according to your frontend's origin
+
 // Middleware to parse JSON bodies
 app.use(express.json());
 app.use(bodyParser.json()); // parse json data sent to frontend
@@ -35,7 +39,9 @@ app.use(bodyParser.urlencoded({ extended: true }));
 
 const io = new Server(server, {
     cors: {
-        origin: "http://localhost:5173", // Replace with your Vite frontend URL
+        origin: process.env.NODE_ENV === "production"
+            ? "http://192.168.1.175"
+            : "http://localhost:5173", // Replace with your Vite frontend URL
         methods: ['GET', 'POST']
     }
 });

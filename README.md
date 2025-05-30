@@ -345,6 +345,60 @@ Your GitHub Actions runner is now connected. Any workflow `.yml` files you add t
 
 ---
 
+# 🚀 Manually Triggering Initial GitHub Actions Workflow
+
+After setting up your **self-hosted GitHub Actions runner**, you need to manually trigger the first workflow to verify the runner and kick off the deployment pipeline.
+
+---
+
+## 📂 Workflow File: `init.yml`
+
+Your workflow uses:
+
+```yaml
+on:
+  workflow_dispatch:
+```
+
+This enables **manual triggering** from the GitHub web interface.
+
+---
+
+## 🧭 How to Manually Trigger the Workflow
+
+1. Go to your **GitHub repository** (your fork).
+2. Click the **"Actions"** tab.
+3. In the left sidebar, select **"Inital Deployment"** (or whatever you named the workflow).
+4. Click the **"Run workflow"** dropdown.
+5. Choose the branch (e.g., `main`), and click **"Run workflow"**.
+
+> This will run the full pipeline on your **self-hosted runner**, executing the `backend`, `frontend`, and `build` jobs.
+
+---
+
+## 🧪 What Happens in the Workflow
+
+The workflow performs these steps across 3 jobs:
+
+### 🔧 `backend` job:
+- Checks out code
+- Sets up Node.js
+- Caches `node_modules`
+- Installs dependencies
+- Lints and tests backend
+
+### 🎨 `frontend` job:
+- Waits for `backend` to finish
+- Repeats setup and linting steps for frontend code
+
+### 🏗 `build` job:
+- Waits for `frontend`
+- Builds the production frontend with `npm run build`
+
+---
+
+✅ Once complete, the runner should have tested, linted, and built your app for deployment.
+
 # 🌐 Install and Configure NGINX with PM2
 
 This guide walks you through installing **PM2** and **NGINX** on a Raspberry Pi to persist and proxy a Node.js backend using GitHub Actions and virtual CAN bus.
@@ -352,16 +406,15 @@ This guide walks you through installing **PM2** and **NGINX** on a Raspberry Pi 
 ---
 
 ## 🔧 Install PM2 for Persistent Node Server
+Verify your server runs then close it.
+```bash
+node /var/www/CarHacking/_work/CarHacking/CarHacking/server.js
+```
+Install pm2
 
 ```bash
 npm install -g pm2
-```
-
-Start your backend server:
-
-```bash
-`node /var/www/CarHacking/_work/CarHacking/CarHacking/backend/server.js`
-pm2 start /var/www/CarHacking/_work/CarHacking/CarHacking/backend/server.js --name CarHacking
+pm2 start /var/www/CarHacking/_work/CarHacking/CarHacking/server.js --name CarHacking
 pm2 startup
 ```
 
@@ -369,13 +422,13 @@ To finalize the startup script:
 
 ```bash
 # Replace the path below with your actual Node.js version path
-sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v18.20.3/bin \
-    /home/pi/.nvm/versions/node/v18.20.3/lib/node_modules/pm2/bin/pm2 \
+
+sudo env PATH=$PATH:/home/pi/.nvm/versions/node/v24.1.0/bin \
+    /home/pi/.nvm/versions/node/v24.1.0/lib/node_modules/pm2/bin/pm2 \
     startup systemd -u pi --hp /home/pi
 
 pm2 save
 ```
-
 
 ---
 
@@ -384,7 +437,6 @@ pm2 save
 ```bash
 sudo apt update
 sudo apt install nginx
-sudo ufw app list
 ```
 
 ---
@@ -394,7 +446,7 @@ sudo ufw app list
 ```bash
 sudo chown -R $USER:$USER /var/www/CarHacking
 sudo chmod -R 755 /var/www/CarHacking
-sudo chown -R $USER:$USER /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/build
+sudo chown -R $USER:$USER /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/dist
 sudo chmod -R 777 /var/www/CarHacking
 ```
 
@@ -415,7 +467,7 @@ server {
   listen 80;
   listen [::]:80;
 
-  root /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/build;
+  root /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/dist;
   index index.html index.htm index.nginx-debian.html;
 
   server_name <ipaddress>;
@@ -537,7 +589,7 @@ sudo service nginx restart
 ```
 ---
 
-2. # 🤝 Contributing
+# 🤝 Contributing
 
 Contributions are welcome! If you have tools, scripts, or documentation to add:
 
@@ -572,13 +624,7 @@ Please ensure your contributions adhere to the project's coding standards and in
 For questions, suggestions, or collaborations, please open an issue or contact [Avensky](https://github.com/Avensky).
 
 
-# in a terminal 2 start sending car data to gauges in terminal #1
-node car.js
-
-# in a terminal try 
-cansend vcan0 1F4#AAAAAAAAAAAAAAAA
-
-## Acknowledgements
+# Acknowledgements
 
 Project concept and execution inspired by rhysmorgan134/Can-App
 
