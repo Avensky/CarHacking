@@ -558,7 +558,7 @@ Contributions are welcome! If you have tools, scripts, or documentation to add:
 4. **Push to Your Fork**:
 
    ```bash
-   git push origin feature/your-feature-name
+   git push origin
    ```
 
 5. **Create a Pull Request**
