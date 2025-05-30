@@ -43,7 +43,7 @@ const io = new Server(server, {
             ? "http://192.168.1.175"
             : "http://localhost:5173", // Replace with your Vite frontend URL
         methods: ['GET', 'POST']
-    }
+    }``
 });
 
 console.log("io");

@@ -238,7 +238,7 @@ nvm use 18                # Switch to version 18
 Set a default version:
 
 ```bash
-nvm alias default 24
+nvm alias default 18
 ```
 
 ---
