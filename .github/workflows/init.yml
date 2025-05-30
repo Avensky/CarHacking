@@ -12,7 +12,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.8
+          node-version: 18.20.3
       - name: Install Dependencies
         run: npm i
       - name: Check linting and formatting
@@ -28,7 +28,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.8
+          node-version: 18.20.3
       - name: Install Dependencies
         run: |
           cd frontend
@@ -46,7 +46,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.8
+          node-version: 18.20.3
       - name: Install Dependencies
         run: |
           npm i
