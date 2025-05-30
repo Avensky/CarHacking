@@ -13,19 +13,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.20.8
-      - name: Cache node modules
-        id: cache-backend
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: node_modules
-          key: ${{runner.os}}-${{ env.cache-name }}-${{ hashFiles('package-lock.json')}}
-          restore-keys: |
-            ${{ runner.os }}-${{ env.cache-name }}-
-            ${{ runner.os }}-
       - name: Install Dependencies
-        if: steps.cache-backend.outputs.cache-hit != 'true'
         run: npm i
       - name: Check linting and formatting
         run: npm run lint
@@ -41,20 +29,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 18.20.8
-      - name: Cache node modules
-        id: cache-frontend
-        uses: actions/cache@v4
-        env:
-          cache-name: cache-node-modules
-        with:
-          path: frontend/node_modules
-          key: ${{runner.os}}-frontend-${{env.cache-name}}-${{ hashFiles('frontend/package-lock.json')}}
-          restore-keys: |
-            ${{ runner.os }}-frontend-${{ env.cache-name }}
-            ${{ runner.os }}-frontend-
-            ${{ runner.os }}-
       - name: Install Dependencies
-        if: steps.cache-frontend.outputs.cache-hit !='true'
         run: |
           cd frontend
           npm i
@@ -71,16 +46,7 @@ jobs:
       - name: Set up NodeJS environment
         uses: actions/setup-node@v4
         with:
-          node-version: 18.20.3
-      - name: Use cache node modules
-        uses: actions/cache@v4
-        with:
-          path: |
-            node_modules
-            frontend/node_modules
-          key: |
-            backend-cache-backend-${{ hashFiles('package-lock.json')}}
-            frontend-cache-frontend-${{ hashFiles('frontend/package-lock.json')}}
+          node-version: 18.20.8
       - name: Install Dependencies
         run: |
           npm i
