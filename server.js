@@ -490,9 +490,10 @@ io.on("connect", (socket) => {
         });
     });
 
+
     if (process.env.NODE_ENV === "production") {
-        const socketcan = require("socketcan");
         try {
+            const socketcan = require("socketcan");
             const channel = socketcan.createRawChannel("vcan0", true);
             // default values
 
@@ -514,49 +515,44 @@ io.on("connect", (socket) => {
                 socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
                 socket.emit('carSim', canData) //send data to app
             })
-            channel.start();
+
+            channel.start()
+
+            socket.on("disconnect", (reason) => {
+                console.log(`disconnected due to ${reason}`);
+                socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
+                channel.stop();
+            });
+
+            // console transport name
+            console.log(`connected with transport ${socket.conn.transport.name}`);
+            console.log('User connected:', socket.id);
+
+            socket.conn.on("upgrade", (transport) => {
+                console.log(`transport upgraded to ${transport.name}`);
+                socket.emit('cmdData', `[SocketIO]: transport upgraded to ${transport.name}`)
+            });
+
+            socket.on("disconnect", (reason) => {
+                // Clean up on disconnect
+                // world.removeBody(players[socket.id]);
+                // `delete players[socket.id];
+                console.log(`disconnected due to ${reason}`);
+                console.log('Player disconnected:', socket.id);
+                socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
+            });
+
+            // handler errors
+            socket.on('error', (err) => {
+                console.error(`Socket.IO error: ${err}`);
+                socket.emit('cmdData', `[SocketIO]: Socket.IO error: ${err}`)
+            });
         } catch (err) {
             console.error("CAN init failed:", err.message);
         }
-
-        socket.on("disconnect", (reason) => {
-            console.log(`disconnected due to ${reason}`);
-            socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
-            channel.stop();
-        });
-    } else {
-        socket.on("disconnect", (reason) => {
-            console.log(`disconnected due to ${reason}`);
-            socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
-        });
     }
-    // console transport name
-    console.log(`connected with transport ${socket.conn.transport.name}`);
-    console.log('User connected:', socket.id);
-
-
-    socket.conn.on("upgrade", (transport) => {
-        console.log(`transport upgraded to ${transport.name}`);
-        socket.emit('cmdData', `[SocketIO]: transport upgraded to ${transport.name}`)
-    });
-
-    socket.on("disconnect", (reason) => {
-        // Clean up on disconnect
-        // world.removeBody(players[socket.id]);
-        // `delete players[socket.id];
-        console.log(`disconnected due to ${reason}`);
-        console.log('Player disconnected:', socket.id);
-        socket.emit('cmdData', `[SocketIO]: disconnected due to ${reason}`)
-    });
-
-    // handler errors
-    socket.on('error', (err) => {
-        console.error(`Socket.IO error: ${err}`);
-        socket.emit('cmdData', `[SocketIO]: Socket.IO error: ${err}`)
-    });
-
-
 });
+
 
 // launch server in production mode
 if (process.env.NODE_ENV === 'production') {
