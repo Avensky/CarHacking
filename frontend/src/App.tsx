@@ -1,16 +1,20 @@
 // src/App.tsx
 
 import { Canvas } from '@react-three/fiber';
-import { useGLTF} from '@react-three/drei';
+import { useGLTF } from '@react-three/drei';
 import { Suspense, useRef, useState, useEffect } from 'react';
-import { useCompoundBody, Debug, usePlane, Physics, useCylinder, 
-  CylinderArgs, CylinderProps, PlaneProps, useHeightfield } from '@react-three/cannon';
+import {
+  useCompoundBody, Debug, usePlane, Physics, useCylinder,
+  CylinderArgs, CylinderProps, PlaneProps, useHeightfield
+} from '@react-three/cannon';
 import { DirectionalLight, Group, Mesh, Object3D } from 'three';
 import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 
-import { angularVelocity,
-  position, 
-  rotation, useStore } from './store';
+import {
+  angularVelocity,
+  position,
+  rotation, useStore
+} from './store';
 
 import { Intro, Help, Editor, LeaderBoard, PickColor } from './ui';
 import { Cameras } from './effects';
@@ -39,10 +43,10 @@ interface CityProps {
   key: string;
 }
 interface vehicleProps {
-  position:THREE.Vector3,
+  position: THREE.Vector3,
   rotation: THREE.Vector3,
-  angularVelocity:THREE.Vector3,
-  velocity:THREE.Vector3
+  angularVelocity: THREE.Vector3,
+  velocity: THREE.Vector3
 }
 interface TileProps {
   size: THREE.Vector3;
@@ -53,12 +57,31 @@ interface TileProps {
 // Define the type of cmdEvents. For example, if they are objects:
 type CmdEvent = string; // Replace with the actual structure if known
 interface PhysicsData {
-  position:THREE.Vector3,
-  angularVelocity:THREE.Vector3,
-  velocity:THREE.Vector3
+  position: THREE.Vector3,
+  angularVelocity: THREE.Vector3,
+  velocity: THREE.Vector3
 }
 
-export function City({ position, scale =1 }: CityProps) {
+import React from 'react'
+import type { ReactNode } from 'react';
+
+class ErrorBoundary extends React.Component<{ children: ReactNode }> {
+  state = { hasError: false }
+
+  static getDerivedStateFromError(error: any) {
+    return { hasError: true }
+  }
+
+  render() {
+    if (this.state.hasError) {
+      return <div>Graphics error – try reloading the page.</div>
+    }
+
+    return this.props.children
+  }
+}
+
+export function City({ position, scale = 1 }: CityProps) {
   const gltf = useGLTF('/models/ccity_building_set_1.glb');
   const cityRef = useRef<Object3D>();
 
@@ -72,18 +95,18 @@ export function City({ position, scale =1 }: CityProps) {
 
   return (
     <primitive
-            // key={id}
-            ref={cityRef}
-            object={gltf.scene.clone()}
-          />
+      // key={id}
+      ref={cityRef}
+      object={gltf.scene.clone()}
+    />
 
   );
 }
 
 function TiledScene({ size, scale, tileCount }: TileProps) {
-   // Define grid parameters
-   const width = size.x*.0065; // Distance between cities
-   const depth = size.z*.0065; // Distance between cities
+  // Define grid parameters
+  const width = size.x * .0065; // Distance between cities
+  const depth = size.z * .0065; // Distance between cities
   return (
     <>
       {[...Array(tileCount)].map((_, i) =>
@@ -92,7 +115,7 @@ function TiledScene({ size, scale, tileCount }: TileProps) {
             key={`${i}-${j}`}
             scale={scale}
             size={size}
-            position={[(i * width)+69.55, 0, (j * depth)+69.55]}          
+            position={[(i * width) + 69.55, 0, (j * depth) + 69.55]}
           />
         ))
       )}
@@ -129,20 +152,21 @@ export function App(): JSX.Element {
   // Ground Component to dynamically adjust based on the bounding box
 
   function GroundPlane(props: PlaneProps) {
-    const [width, depth] = [size.x*.0065, size.z*.0065];
+    const [width, depth] = [size.x * .0065, size.z * .0065];
     // console.log("width: "+width+", depth: ", depth);
-    const [ref] = usePlane(() => ({ 
+    const [ref] = usePlane(() => ({
       position: [0, -.01, 0],
       rotation: [-Math.PI / 2, 0, 0], // Make the plane horizontal
-      material: 'ground', 
-      type: 'Static', 
-      ...props }
+      material: 'ground',
+      type: 'Static',
+      ...props
+    }
     ), useRef<Group>(null))
-    
+
     return (
-      <group 
-      ref={ref} 
-      receiveShadow
+      <group
+        ref={ref}
+        receiveShadow
       >
         <mesh receiveShadow>
           <planeGeometry args={[width, depth]} />
@@ -156,7 +180,7 @@ export function App(): JSX.Element {
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
-  
+
   // Manage data received from backend
   const [isConnected, setIsConnected] = useState(socket.connected);
   const [cmdEvents, setCmdEvents] = useState<CmdEvent[]>([]);
@@ -209,16 +233,16 @@ export function App(): JSX.Element {
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor');
   const ToggledStats = useToggle(Stats, 'stats');
   const ToggledDebug = useToggledControl(Debug, '?')
-  
+
   //  Make sure to handle disconnections and reconnections gracefully if this is intended for production.
   let canvas;
   if (!isConnected && process.env.NODE_ENV === 'production') {
     canvas = <Matrix />;
   } else {
     canvas = (
-      <Canvas dpr={[1, 2]} 
-      //camera={{ fov: 50, position: [0, 5, 15] }}
-      shadows
+      <Canvas dpr={[1, 2]}
+        //camera={{ fov: 50, position: [0, 5, 15] }}
+        shadows
       >
         {/* <fog attach="fog" args={['white',  50, 100]} /> */}
         {/* <color attach="background" args={['#171720']} /> */}
@@ -236,22 +260,22 @@ export function App(): JSX.Element {
           shadow-camera-bottom={-150}
           castShadow
         />
-        <PerspectiveCamera 
-          makeDefault={editor} 
-          fov={75} 
-          position={[0, 20, 20]} 
+        <PerspectiveCamera
+          makeDefault={editor}
+          fov={75}
+          position={[0, 20, 20]}
         />
-        <Physics broadphase="SAP" 
-          defaultContactMaterial={{ 
-            contactEquationRelaxation: 4, 
-            friction: 1e-3 
+        <Physics broadphase="SAP"
+          defaultContactMaterial={{
+            contactEquationRelaxation: 4,
+            friction: 1e-3
           }}
           // gravity={[0, -10, 0]}
           allowSleep={false}
-          >
-            <ToggledDebug>
+        >
+          <ToggledDebug>
             {/* <Terrain /> */}
-            <GroundPlane />  
+            <GroundPlane />
             {/* Render multiple cities */}
             {/* Use InstancedMesh for performance */}
             {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
@@ -260,25 +284,25 @@ export function App(): JSX.Element {
               tileCount = {1}
               size={size}
             /> */}
-            <Pillar position={[size.x*.0065/2, 2.5, 0]} userData={{ id: 'pillar-1' }} />
+            <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} />
             {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
-            <Pillar position={[-size.x*.0065/2, 2.5, 0]} userData={{ id: 'pillar-3' }} />
+            <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} />
             {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
             {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
-          <Vehicle 
-            position={[0, 1, 0]} 
-            rotation={[0, -Math.PI / 2, 0]} 
-            angularVelocity={[0, 0.5, 0]}
+            <Vehicle
+              position={[0, 1, 0]}
+              rotation={[0, -Math.PI / 2, 0]}
+              angularVelocity={[0, 0.5, 0]}
             // position={[(size.x*.0065/2)-57, 1, 20.55]} 
             // rotation={[0, -Math.PI / 2, 0]} 
             // angularVelocity={[0, 0.5, 0]}
             // angularVelocity={[physics.angularVelocity.x, physics.angularVelocity.y, physics.angularVelocity.z]}
             // physics={physics}
             // rotation={[physics.rotation.x, physics.rotation.y, physics.rotation.z]}
-          >
-            {light && <primitive object={light.target} />}
-            <Cameras />
-          </Vehicle>
+            >
+              {light && <primitive object={light.target} />}
+              <Cameras />
+            </Vehicle>
           </ToggledDebug>
         </Physics>
         <Suspense fallback={null}>
@@ -287,6 +311,7 @@ export function App(): JSX.Element {
         {/* <OrbitControls /> */}
         <ToggledOrbitControls />
       </Canvas>
+
     );
   }
 
@@ -295,7 +320,9 @@ export function App(): JSX.Element {
       <Intro>
         <Suspense fallback={null}>
           {/* Switch canvas to Matrix upon disconnect */}
-          {canvas}
+          <ErrorBoundary >
+            {canvas}
+          </ErrorBoundary>
           {/* <Dashboard physics={ physics }/> */}
           {/* <Clock /> */}
           <UI cmdEvents={cmdEvents} isConnected={isConnected} />
@@ -307,7 +334,7 @@ export function App(): JSX.Element {
           <HideMouse />
           {/* <Keyboard /> */}
         </Suspense>
-        </Intro>
+      </Intro>
     </>
   );
 }

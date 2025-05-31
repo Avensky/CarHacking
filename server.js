@@ -60,16 +60,19 @@ io.on("connect", (socket) => {
     socket.join(`${socket.id}`);
     // Check the user 
     console.log('Player Connected: ', socket.id);
-    const chassisShape = new Box(new Vec3(2, 0.5, 1))
+    const chassisShape = new Box(new Vec3(1.7, 1, 4))
     const chassisBody = new Body({ mass: 150, rotation: new Vec3(0, -Math.PI / 3, 0) })
 
     chassisBody.addShape(chassisShape)
     chassisBody.position.set(0, 1, 0)
-    chassisBody.angularVelocity.set(0, 0.5, 0)
+    // chassisBody.angularVelocity.set(0, 0.5, 0)
 
     // Create the vehicle
     const vehicle = new RaycastVehicle({
         chassisBody,
+        indexRightAxis: 0,
+        indexUpAxis: 1,
+        indexForwardAxis: 2,
     })
 
     const wheelOptions = {
@@ -89,16 +92,16 @@ io.on("connect", (socket) => {
         useCustomSlidingRotationalSpeed: true,
     }
 
-    wheelOptions.chassisConnectionPointLocal.set(-1, 0, 1)
+    wheelOptions.chassisConnectionPointLocal.set(1, 0, -2)
     vehicle.addWheel(wheelOptions)
 
-    wheelOptions.chassisConnectionPointLocal.set(-1, 0, -1)
+    wheelOptions.chassisConnectionPointLocal.set(-1, 0, -2)
     vehicle.addWheel(wheelOptions)
 
-    wheelOptions.chassisConnectionPointLocal.set(1, 0, 1)
+    wheelOptions.chassisConnectionPointLocal.set(1, 0, 2)
     vehicle.addWheel(wheelOptions)
 
-    wheelOptions.chassisConnectionPointLocal.set(1, 0, -1)
+    wheelOptions.chassisConnectionPointLocal.set(-1, 0, 2)
     vehicle.addWheel(wheelOptions)
 
     vehicle.addToWorld(world)

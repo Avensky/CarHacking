@@ -58,7 +58,7 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
   let swaySpeed = 0
   let swayTarget = 0
   let swayValue = 0
- 
+
 
   useFrame((state, delta) => {
     camera = getState().camera
@@ -70,16 +70,16 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
 
     // Smoothly adjust forward control
     speed = mutation.speed; // Current vehicle speed
-    
+
     isBoosting = controls.boost && mutation.boost > 0
 
     if (isBoosting) {
       mutation.boost = Math.max(mutation.boost - 1, 0)
     }
-    
+
     // Decrease fuel gradually
     mutation.fuel = Math.max(mutation.fuel - delta * 0.75, 0) // Adjust the rate of fuel decrease (0.005 can be tuned)
-   
+
 
 
     // engineValue = lerp(
@@ -93,8 +93,8 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     //     : 0,
     //   delta * 20, // smooth speed
     // )
-    steeringValue = lerp(steeringValue, controls.left || controls.right 
-      ? steer * (controls.left && !controls.right ? 1 : -1) 
+    steeringValue = lerp(steeringValue, controls.left || controls.right
+      ? steer * (controls.left && !controls.right ? 1 : -1)
       : 0, delta * 20)
     for (i = 2; i < 4; i++) api.applyEngineForce(speed < maxSpeed ? engineValue : 0, i)
     for (i = 0; i < 2; i++) api.setSteeringValue(steeringValue, i)
@@ -131,34 +131,34 @@ export function Vehicle({ angularVelocity, children, position, rotation }: Vehic
     // Vibrations
     chassisBody.current!.children[0].rotation.x = (Math.sin(state.clock.getElapsedTime() * 20) * (speed / maxSpeed)) / 100
     chassisBody.current!.children[0].rotation.z = (Math.cos(state.clock.getElapsedTime() * 20) * (speed / maxSpeed)) / 100
-  
+
   })
 
   const ToggledAccelerateAudio = useToggle(AccelerateAudio, ['ready', 'sound'])
   const ToggledEngineAudio = useToggle(EngineAudio, ['ready', 'sound'])
-  
+
   // if (mutation.fuel>0){
   //   ToggledEngineAudio = useToggle(EngineAudio, ['ready', 'sound'])
   // }
 
   return (
     <group>
-        <Chassis ref={chassisBody}>
-          <ToggledAccelerateAudio />
-          <BoostAudio />
-          <BrakeAudio />
-          <ToggledEngineAudio />
-          <HonkAudio />
-          <Boost />
-          {children}
-        </Chassis>
-        <>
-          {wheels.map((wheel, index) => (
-            <Wheel ref={wheel} leftSide={!(index % 2)} key={index} />
-          ))}
-        </>
-        <Dust />
-        <Skid />
+      <Chassis ref={chassisBody}>
+        <ToggledAccelerateAudio />
+        <BoostAudio />
+        <BrakeAudio />
+        <ToggledEngineAudio />
+        <HonkAudio />
+        <Boost />
+        {children}
+      </Chassis>
+      <>
+        {wheels.map((wheel, index) => (
+          <Wheel ref={wheel} leftSide={!(index % 2)} key={index} />
+        ))}
+      </>
+      <Dust />
+      <Skid />
     </group>
   )
 }
