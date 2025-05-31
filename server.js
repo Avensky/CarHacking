@@ -492,29 +492,32 @@ io.on("connect", (socket) => {
 
     if (process.env.NODE_ENV === "production") {
         const socketcan = require("socketcan");
-        const channel = socketcan.createRawChannel("vcan0", true);
-        // default values
+        try {
+            const channel = socketcan.createRawChannel("vcan0", true);
+            // default values
 
-        // log data being sent by car.js
-        // reply any message
-        channel.addListener("onMessage", (msg) => {
-            // console.log('canData: ', msg.data)
-            // socket.emit('canData', JSON.parse(msg.data.toString()));
-            canData = {
-                revs: msg.data.readUIntBE(0, 4),
-                speed: msg.data.readUIntBE(4, 2),
-                fuel: msg.data.readUIntBE(6, 2)
-            };
-            // console.log("car info: ", canData);
-            const res = JSON.stringify(msg.data)
-            // send data to frontend
-            // maybe there is a way to only send one? and manipulate the data 
-            // in the frontedn but this works. could be optimized.
-            socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
-            socket.emit('carSim', canData) //send data to app
-        })
-
-        channel.start()
+            // log data being sent by car.js
+            // reply any message
+            channel.addListener("onMessage", (msg) => {
+                // console.log('canData: ', msg.data)
+                // socket.emit('canData', JSON.parse(msg.data.toString()));
+                canData = {
+                    revs: msg.data.readUIntBE(0, 4),
+                    speed: msg.data.readUIntBE(4, 2),
+                    fuel: msg.data.readUIntBE(6, 2)
+                };
+                // console.log("car info: ", canData);
+                const res = JSON.stringify(msg.data)
+                // send data to frontend
+                // maybe there is a way to only send one? and manipulate the data 
+                // in the frontedn but this works. could be optimized.
+                socket.emit('cmdData', `[carSim]: ${res}`) //send car data to frontend logs
+                socket.emit('carSim', canData) //send data to app
+            })
+            channel.start();
+        } catch (err) {
+            console.error("CAN init failed:", err.message);
+        }
 
         socket.on("disconnect", (reason) => {
             console.log(`disconnected due to ${reason}`);
