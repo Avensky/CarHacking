@@ -1,4 +1,4 @@
-const { World, Body, Box, Vec3, Quaternion, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
+const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
 
 // world
 const world = new World();
@@ -66,9 +66,6 @@ function createVehicle(id) {
     chassisConnectionPointLocal: new Vec3(), // set below
     isFrontWheel: true
   }
-  // Example: rotate 90° around Y axis (turn to face +X)
-  const rotation = new Quaternion()
-  // rotation.setFromEuler(0, -Math.PI / 2, 0)  // (x, y, z) angles in radians
   const chassisShape = new Box(new Vec3(width / 2, height / 2, length / 2));
   const chassisBody = new Body({
     mass: chassisMass,
@@ -76,8 +73,6 @@ function createVehicle(id) {
   chassisBody.addShape(chassisShape);
   const rideHeight = radius + suspensionRestLength * 0.6; // Midway compression
   chassisBody.position.set(0, rideHeight, 0); // Lift above ground
-
-  // chassisBody.quaternion.copy(rotation)
 
   const vehicle = new RaycastVehicle({
     chassisBody,
