@@ -2,35 +2,7 @@ import type { MutableRefObject } from 'react'
 import { useEffect, useRef } from 'react'
 import socket from '../../socket'
 
-function useKeyControls(
-  { current }: MutableRefObject<Record<GameControl, boolean>>,
-  map: Record<KeyCode, GameControl>,
-) {
-  useEffect(() => {
-    const handleKeydown = ({ key }: KeyboardEvent) => {
-      socket.emit('keydown', key)
-      if (!isKeyCode(key)) return
-      current[map[key]] = true
-    }
-    window.addEventListener('keydown', handleKeydown)
-    
-    
-
-
-    const handleKeyup = ({ key }: KeyboardEvent) => {
-      socket.emit('keyup', key)
-      if (!isKeyCode(key)) return
-      current[map[key]] = false
-    }
-    window.addEventListener('keyup', handleKeyup)
-
-    return () => {
-      window.removeEventListener('keydown', handleKeydown)
-      window.removeEventListener('keyup', handleKeyup)
-    }
-  }, [current, map])
-}
-
+// 🔼 Move this section to the top BEFORE using GameControl
 const keyControlMap = {
   ' ': 'brake',
   ArrowDown: 'backward',
@@ -49,6 +21,40 @@ type GameControl = typeof keyControlMap[KeyCode]
 
 const keyCodes = Object.keys(keyControlMap) as KeyCode[]
 const isKeyCode = (v: unknown): v is KeyCode => keyCodes.includes(v as KeyCode)
+
+// ✅ Now use GameControl here
+function useKeyControls(
+  ref: MutableRefObject<Record<GameControl, boolean>>,
+  map: Record<KeyCode, GameControl>,
+) {
+  useEffect(() => {
+    console.log('🚀 useKeyControls initialized')
+    const emitControls = () => {
+      console.log('🛰 emitting:', ref.current)
+      socket.emit('controls', { ...ref.current })
+    }
+
+    const handleKeydown = ({ key }: KeyboardEvent) => {
+      if (!isKeyCode(key)) return
+      ref.current[map[key]] = true
+      emitControls()
+    }
+
+    const handleKeyup = ({ key }: KeyboardEvent) => {
+      if (!isKeyCode(key)) return
+      ref.current[map[key]] = false
+      emitControls()
+    }
+
+    window.addEventListener('keydown', handleKeydown)
+    window.addEventListener('keyup', handleKeyup)
+
+    return () => {
+      window.removeEventListener('keydown', handleKeydown)
+      window.removeEventListener('keyup', handleKeyup)
+    }
+  }, [map])
+}
 
 export function useControls() {
   const controls = useRef<Record<GameControl, boolean>>({

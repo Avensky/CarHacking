@@ -36,6 +36,8 @@ import { InstancedMesh } from 'three';
 import { useMemo } from 'react';
 import { clone } from 'lodash-es';
 import { connected } from 'process';
+
+
 interface CityProps {
   size: THREE.Vector3;
   position: [number, number, number];
@@ -64,6 +66,9 @@ interface PhysicsData {
 
 import React from 'react'
 import type { ReactNode } from 'react';
+
+
+
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }> {
   state = { hasError: false }
@@ -189,6 +194,7 @@ export function App(): JSX.Element {
 
   useEffect(() => {
     function onConnect() {
+      console.log('✅ Socket connected:', socket.id)
       setIsConnected(true);
       console.log('connected: ', socket.connected)
     }
@@ -290,25 +296,18 @@ export function App(): JSX.Element {
             {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
             {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
             <Vehicle
-              position={[0, 1, 0]}
-              rotation={[0, -Math.PI / 2, 0]}
-              angularVelocity={[0, 0.5, 0]}
-            // position={[(size.x*.0065/2)-57, 1, 20.55]} 
-            // rotation={[0, -Math.PI / 2, 0]} 
-            // angularVelocity={[0, 0.5, 0]}
-            // angularVelocity={[physics.angularVelocity.x, physics.angularVelocity.y, physics.angularVelocity.z]}
-            // physics={physics}
-            // rotation={[physics.rotation.x, physics.rotation.y, physics.rotation.z]}
+            // position={[0, 1, 0]}
+            // rotation={[0, -Math.PI / 2, 0]}
             >
-              {light && <primitive object={light.target} />}
-              <Cameras />
+              {/* {light && <primitive object={light.target} />}
+              <Cameras /> */}
             </Vehicle>
           </ToggledDebug>
         </Physics>
         <Suspense fallback={null}>
           <Environment preset="night" />
         </Suspense>
-        {/* <OrbitControls /> */}
+        <OrbitControls />
         <ToggledOrbitControls />
       </Canvas>
 
@@ -317,24 +316,24 @@ export function App(): JSX.Element {
 
   return (
     <>
-      <Intro>
-        <Suspense fallback={null}>
-          {/* Switch canvas to Matrix upon disconnect */}
-          <ErrorBoundary >
-            {canvas}
-          </ErrorBoundary>
-          {/* <Dashboard physics={ physics }/> */}
-          {/* <Clock /> */}
-          <UI cmdEvents={cmdEvents} isConnected={isConnected} />
-          <ToggledEditor />
-          <Help />
-          <ToggledStats />
-          <LeaderBoard />
-          <PickColor />
-          <HideMouse />
-          {/* <Keyboard /> */}
-        </Suspense>
-      </Intro>
+      {/* <Intro> */}
+      <Suspense fallback={null}>
+        {/* Switch canvas to Matrix upon disconnect */}
+        <ErrorBoundary >
+          {canvas}
+        </ErrorBoundary>
+        {/* <Dashboard physics={ physics }/> */}
+        {/* <Clock /> */}
+        <UI cmdEvents={cmdEvents} isConnected={isConnected} />
+        <ToggledEditor />
+        <Help />
+        <ToggledStats />
+        <LeaderBoard />
+        <PickColor />
+        <HideMouse />
+        <Keyboard />
+      </Suspense>
+      {/* </Intro> */}
     </>
   );
 }
