@@ -9,7 +9,7 @@ function setupExpress(app) {
   app.get('/api/ping', (_, res) => res.send('pong'));
   app.post('/api/cmd', (req, res) => {
     const command = req.body;
-    console.log('Received command:', command);
+    // console.log('Received command:', command);
     res.send({ status: 'received' });
   });
 

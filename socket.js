@@ -10,7 +10,7 @@ function setupSocketIO(io) {
     inputs[socket.id] = { forward: false, backward: false, left: false, right: false, brake: false };
 
     socket.on('controls', (data) => {
-      console.log(data);
+      // console.log(data);
       inputs[socket.id] = data;
     });
 

@@ -19,7 +19,7 @@ groundBody.addShape(groundShape);
 
 // Rotate the plane so it lies flat along the y-axis
 groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-
+groundBody.position.set(0, 0, 0);
 // Add the body to the world
 world.addBody(groundBody);
 
@@ -39,12 +39,13 @@ const vehicles = {};
 const steeringState = {}; // key: id, value: current steer angle
 const brakeState = {}; // key: id, value: current brake force
 
-const width = 2
-const height = 1
-const length = 4
+const length = 4.21  // <- Match AE86 GLB length
+const width = 1.92
+const height = 1.28
+
 const chassisMass = 250
-const suspensionRestLength = 0.4
-const radius = 0.3
+const suspensionRestLength = 0.18
+const radius = 0.623
 
 function createVehicle(id) {
   steeringState[id] = 0; // Initialize steering angle
@@ -54,11 +55,11 @@ function createVehicle(id) {
     radius: radius,
     directionLocal: new Vec3(0, -1, 0), // Down
     // suspensionStiffness: 1,
-    suspensionStiffness: 80,
+    suspensionStiffness: 150,
     suspensionRestLength: suspensionRestLength,
     frictionSlip: 8.5,
-    dampingRelaxation: 2.3,       // rebound
-    dampingCompression: 4.5,       // compression
+    dampingRelaxation: 6.5,       // resistance during compression
+    dampingCompression: 6.5,       // resistance on rebound
     // maxSuspensionForce: 0,
     maxSuspensionForce: 100000,
     rollInfluence: 0.01,
@@ -71,7 +72,8 @@ function createVehicle(id) {
     mass: chassisMass,
   });
   chassisBody.addShape(chassisShape);
-  const rideHeight = radius + suspensionRestLength * 0.6; // Midway compression
+  const compressionFactor = .7;
+  const rideHeight = radius + suspensionRestLength * compressionFactor; // Midway compression
   chassisBody.position.set(0, rideHeight, 0); // Lift above ground
 
   const vehicle = new RaycastVehicle({
@@ -84,8 +86,11 @@ function createVehicle(id) {
 
 
   // Set positions:
-  const wheelHalfTrack = width / 3 - 0.1; // Distance from center to side
-  const wheelBase = 1.6;      // Distance front to back
+  // const wheelHalfTrack = width / 3 - 0.1; // Distance from center to side
+  // const wheelBase = 1.6;      // Distance front to back
+
+  const wheelHalfTrack = width / 2 - 0.25
+  const wheelBase = 2.41 // Distance front to back
 
   const frontLeft = {
     ...wheelOptions,
@@ -134,7 +139,7 @@ function createVehicle(id) {
 
 function updateVehicleInputs(id, control) {
   const maxSteer = 0.5;
-  const maxForce = 500;
+  const maxForce = 700;
   const maxBrakeForce = 25;
   const { vehicle } = vehicles[id] || {};
   const brakeLerpSpeed = 0.25; // Smoothing factor
@@ -149,8 +154,12 @@ function updateVehicleInputs(id, control) {
   // steeringWheels.forEach(i => vehicle.setSteeringValue(0, i));
   // [0, 1, 2, 3].forEach(i => vehicle.setBrake(0, i));
 
-  vehicle.setSteeringValue(0, 0);
-  vehicle.setSteeringValue(0, 1);
+  vehicle.setSteeringValue(0, 0); //clear steering
+  vehicle.setSteeringValue(0, 1); //clear steering
+  if (control.forward || control.backward) {
+    for (let i = 0; i < 4; i++) vehicle.setBrake(0, i);
+    brakeState[id] = 0; // reset cached brake state
+  }
   // Controls
   if (control.forward) {
     vehicle.applyEngineForce(+maxForce, 2)
@@ -180,16 +189,29 @@ function updateVehicleInputs(id, control) {
   vehicle.setSteeringValue(newSteer, 0)
   vehicle.setSteeringValue(newSteer, 1)
 
-  const braking = control.brake && !control.forward && !control.backward;
+  const braking = control.brake && !control.forward;
   const targetBrake = braking ? maxBrakeForce : 0;
 
-  // Lerp toward target
-  const currentBrake = brakeState[id];
+  // Smooth brake force application
+  const currentBrake = brakeState[id] ?? 0;
   const newBrake = currentBrake + (targetBrake - currentBrake) * brakeLerpSpeed;
   brakeState[id] = newBrake;
 
-  // Apply brake force to all wheels
-  [0, 1, 2, 3].forEach(i => vehicle.setBrake(newBrake, i));
+  //This mimics rear-wheel braking bias on older cars like the AE86.
+  const frontWheels = [0, 1];
+  const rearWheels = [2, 3];
+
+  for (const i of frontWheels) {
+    vehicle.setBrake(newBrake, i); // light brake on front
+  }
+  for (const i of rearWheels) {
+    vehicle.setBrake(newBrake * 0.8, i); // stronger rear brake
+  }
+
+  // for handbreak
+  if (control.handbrake) {
+    rearWheels.forEach(i => vehicle.setBrake(1.5 * maxBrakeForce, i));
+  }
 
 }
 

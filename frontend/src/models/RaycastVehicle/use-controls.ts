@@ -28,9 +28,9 @@ function useKeyControls(
   map: Record<KeyCode, GameControl>,
 ) {
   useEffect(() => {
-    console.log('🚀 useKeyControls initialized')
+    // console.log('🚀 useKeyControls initialized')
     const emitControls = () => {
-      console.log('🛰 emitting:', ref.current)
+      // console.log('🛰 emitting:', ref.current)
       socket.emit('controls', { ...ref.current })
     }
 
