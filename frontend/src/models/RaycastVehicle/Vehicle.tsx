@@ -1,5 +1,5 @@
-import { useEffect, useMemo, useState } from 'react'
-import { Vector3, Quaternion, Mesh, BoxGeometry, CylinderGeometry, MeshStandardMaterial } from 'three'
+import { useEffect, useMemo, useRef, useState } from 'react'
+import { Vector3, Group } from 'three'
 import { useFrame } from '@react-three/fiber'
 import socket from '../../socket'
 import { useControls } from './use-controls'
@@ -24,17 +24,33 @@ export default function Vehicle() {
   //   restLength: { value: 0.18, min: 0.1, max: 0.4 }
   // })
 
-
   const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
-  const controls = useControls()
+  const controls = useControls() // this activates controls
   const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
 
-  // Create a chassis mesh
 
-  const chassis = useMemo(() => {
-    const original = scene.getObjectByName('CarBody') // <- update with actual name
-    return original ? clone(original) : null
+  // But carGroup is a raw THREE.Group created in useMemo, and it does not get attached 
+  // to the scene graph automatically via React. useMemo runs before React renders, and 
+  // carGroup doesn't retain its own stateful reference or lifecycle hooks unless you 
+  // treat it properly inside the render tree.
+  // Create a chassis mesh
+  const carGroupRef = useRef<Group>(null!)
+
+  useEffect(() => {
+    const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
+
+    parts.forEach(name => {
+      const original = scene.getObjectByName(name)
+      if (original) {
+        const cloned = original.clone(true)
+        carGroupRef.current.add(cloned)
+      }
+    })
+
+
   }, [scene])
+
+
 
   const wheels = useMemo(() => {
     const names = ['FL_Wheel', 'FR_Wheel', 'RL_Wheel', 'RR_Wheel'] // <- update if needed
@@ -56,19 +72,22 @@ export default function Vehicle() {
 
   // Update chassis and wheel transforms every frame
   useFrame(() => {
-    if (!physicsData) return
-
+    if (!physicsData || !carGroupRef.current) return
     const { chassisBody, wheelInfos } = physicsData
+    const group = carGroupRef.current
 
     // Update chassis
-    chassis.position.lerpVectors(
-      chassis.position, new Vector3(
+    group.position.lerpVectors(
+      group.position,
+      new Vector3(
         chassisBody.position.x,
-        chassisBody.position.y - .77,
+        chassisBody.position.y - 0.77,
         chassisBody.position.z
-      ), 0.2)
+      ),
+      0.2
+    )
 
-    chassis.quaternion.set(
+    group.quaternion.set(
       chassisBody.quaternion.x,
       chassisBody.quaternion.y,
       chassisBody.quaternion.z,
@@ -95,9 +114,7 @@ export default function Vehicle() {
   // console.log(scene)
   return (
     <>
-
-      {chassis && <primitive object={chassis} />}
-
+      <group ref={carGroupRef} />
       {/* <axesHelper args={[0.5]} /> */}
       {wheels.map((wheel, i) =>
         wheel ? <primitive key={i} object={wheel} /> : null
