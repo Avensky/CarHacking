@@ -36,7 +36,8 @@ const getOffsetFactory = (maxSpeed: number) => () => `${Math.max(1 - mutation.sp
 
 export const Gauge = () => {
   const ref = useRef<SVGStopElement>(null)
-  const maxSpeed = useStore((state) => state.vehicleConfig.maxSpeed)
+  const maxSpeed = useStore((state) => 11)
+  // const maxSpeed = useStore((state) => state.vehicleConfig.maxSpeed)
 
   const getOffset = getOffsetFactory(maxSpeed)
 

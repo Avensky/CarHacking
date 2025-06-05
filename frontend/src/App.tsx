@@ -7,16 +7,12 @@ import {
   useCompoundBody, Debug, usePlane, Physics, useCylinder,
   CylinderArgs, CylinderProps, PlaneProps, useHeightfield
 } from '@react-three/cannon';
-import { DirectionalLight, Group, Mesh, Object3D } from 'three';
+import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
 import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 
-import {
-  angularVelocity,
-  position,
-  rotation, useStore
-} from './store';
+import { levelLayer, useStore } from './store'
 
-import { Intro, Help, Editor, LeaderBoard, PickColor } from './ui';
+import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { Cameras } from './effects';
 
 import { HideMouse, Keyboard } from './controls';
@@ -36,6 +32,8 @@ import { InstancedMesh } from 'three';
 import { useMemo } from 'react';
 import { clone } from 'lodash-es';
 import { connected } from 'process';
+const layers = new Layers()
+layers.enable(levelLayer)
 
 
 interface CityProps {
@@ -148,6 +146,17 @@ function Pillar(props: CylinderProps) {
 }
 
 export function App(): JSX.Element {
+  const [light, setLight] = useState<DirectionalLight | null>(null)
+  const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
+  // const { onCheckpoint, onFinish, onStart } = actions
+  // const ToggledCheckpoint = useToggle(Checkpoint, 'checkpoint')
+  const ToggledDebug = useToggle(Debug, 'debug')
+  const ToggledEditor = useToggle(Editor, 'editor')
+  const ToggledFinished = useToggle(Finished, 'finished')
+  const ToggledMap = useToggle(Minimap, 'map')
+  const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
+  const ToggledStats = useToggle(Stats, 'stats')
+
   // Calculate ground dimensions
   const { scene } = useGLTF(url);
   const { scene: cityScene } = useGLTF('/models/city_rtx.glb')
@@ -156,34 +165,6 @@ export function App(): JSX.Element {
   const boundingBox = new THREE.Box3().setFromObject(scene);
   const size = new THREE.Vector3();
   boundingBox.getSize(size);
-
-  // Ground Component to dynamically adjust based on the bounding box
-
-  function GroundPlane(props: PlaneProps) {
-    const [width, depth] = [size.x * .0065, size.z * .0065];
-    // console.log("width: "+width+", depth: ", depth);
-    const [ref] = usePlane(() => ({
-      position: [0, -.01, 0],
-      rotation: [-Math.PI / 2, 0, 0], // Make the plane horizontal
-      material: 'ground',
-      type: 'Static',
-      ...props
-    }
-    ), useRef<Group>(null))
-
-    return (
-      <group
-        ref={ref}
-        receiveShadow
-      >
-        <mesh receiveShadow>
-          <planeGeometry args={[width, depth]} />
-          <meshStandardMaterial color="green" />
-          <gridHelper args={[width, 100, 0xff0000, 0x00ff00]} />
-        </mesh>
-      </group>
-    );
-  }
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -212,36 +193,21 @@ export function App(): JSX.Element {
       // setCmdEvents((previous) => [...previous, value]);
     }
 
-    // // Listen for physics updates from the server
-    // function onPhysicsUpdate(physics: PhysicsData){
-    //   console.log('physics: ', physics.position)
-    //   setPhysics(physics);
-    // };
-
     // socket.on('move', onMove);
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('cmdData', onCmdEvent);
     socket.on('error', onError);
-    // socket.on('physicsUpdate', onPhysicsUpdate);
 
     return () => {
       socket.off('cmdData', onCmdEvent);
       socket.off('error', onError);
       socket.off('connect', onConnect);
       socket.off('disconnect', onDisconnect);
-      // socket.off('physicsUpdate', onPhysicsUpdate);
       socket.removeAllListeners(`carSim`);
     };
   }, []);
 
-  const [light, setLight] = useState<DirectionalLight | null>(null);
-  const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows]);
-
-  const ToggledEditor = useToggle(Editor, 'editor');
-  const ToggledOrbitControls = useToggle(OrbitControls, 'editor');
-  const ToggledStats = useToggle(Stats, 'stats');
-  const ToggledDebug = useToggledControl(Debug, '?')
 
   //  Make sure to handle disconnections and reconnections gracefully if this is intended for production.
   let canvas;
@@ -249,18 +215,21 @@ export function App(): JSX.Element {
     canvas = <Matrix />;
   } else {
     canvas = (
-      <Canvas dpr={[1, 2]}
-        //camera={{ fov: 50, position: [0, 5, 15] }}
-        shadows
+      <Canvas
+        key={`${dpr}${shadows}`}
+        dpr={[1, dpr]}
+        shadows={shadows}
+        camera={{ position: [0, 5, 15], fov: 50 }}
       >
-        {/* <fog attach="fog" args={['white',  50, 100]} /> */}
+        <fog attach="fog" args={['white', 50, 100]} />
         {/* <color attach="background" args={['#171720']} /> */}
         <Sky sunPosition={[100, 10, 100]} distance={1000} />
-        {/* <ambientLight intensity={0.09} /> */}
+        <ambientLight layers={layers} intensity={0.01} />
         <directionalLight
           ref={setLight}
+          layers={layers}
           position={[0, 50, 150]}
-          intensity={1}
+          intensity={.01}
           shadow-bias={-0.001}
           shadow-mapSize={[4096, 4096]}
           shadow-camera-left={-150}
@@ -282,39 +251,36 @@ export function App(): JSX.Element {
           // gravity={[0, -10, 0]}
           allowSleep={false}
         > */}
-        {/* <ToggledDebug> */}
-        {/* <Terrain /> */}
-        {/* <GroundPlane /> */}
-        {/* Render multiple cities */}
-        {/* Use InstancedMesh for performance */}
-        {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
-        {/* <TiledScene 
+        <ToggledDebug>
+          {/* <Terrain /> */}
+          {/* <GroundPlane /> */}
+          {/* Render multiple cities */}
+          {/* Use InstancedMesh for performance */}
+          {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
+          {/* <TiledScene 
               scale = {0.0065}
               tileCount = {1}
               size={size}
             /> */}
-        {/* <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} /> */}
-        {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
-        {/* <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} /> */}
-        {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
-        {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
+          {/* <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} /> */}
+          {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
+          {/* <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} /> */}
+          {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
+          {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
 
-        <group scale={2} position={[0, 0, 0]}>
-          <primitive object={city} />
-        </group>
-        <Vehicle
-        // position={[0, 1, 0]}
-        // rotation={[0, -Math.PI / 2, 0]}
-        >
-          {/* {light && <primitive object={light.target} />}
-              <Cameras /> */}
-        </Vehicle>
-        {/* </ToggledDebug> */}
+          <group scale={2} position={[0, 0, 0]}>
+            <primitive object={city} />
+          </group>
+          <Vehicle>
+            {light && <primitive object={light.target} />}
+            <Cameras />
+          </Vehicle>
+        </ToggledDebug>
         {/* </Physics> */}
-        <Suspense fallback={null}>
-          <Environment preset="night" />
-        </Suspense>
-        <OrbitControls />
+        <Environment preset="night" />
+
+        <Environment files="textures/dikhololo_night_1k.hdr" />
+        <ToggledMap />
         <ToggledOrbitControls />
       </Canvas >
 
@@ -323,24 +289,30 @@ export function App(): JSX.Element {
 
   return (
     <>
-      {/* <Intro> */}
       <Suspense fallback={null}>
         {/* Switch canvas to Matrix upon disconnect */}
+
         <ErrorBoundary >
-          {canvas}
+
+          <Intro>
+            {canvas}
+            <Clock />
+            <ToggledEditor />
+            <ToggledFinished />
+            <Help />
+            <Speed />
+            <ToggledStats />
+            {/* <ToggledCheckpoint /> */}
+            <LeaderBoard />
+            <PickColor />
+            <HideMouse />
+            <Keyboard />
+          </Intro>
         </ErrorBoundary>
         {/* <Dashboard physics={ physics }/> */}
         {/* <Clock /> */}
         <UI cmdEvents={cmdEvents} isConnected={isConnected} />
-        <ToggledEditor />
-        <Help />
-        <ToggledStats />
-        <LeaderBoard />
-        <PickColor />
-        <HideMouse />
-        <Keyboard />
       </Suspense>
-      {/* </Intro> */}
     </>
   );
 }

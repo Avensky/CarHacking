@@ -22,46 +22,46 @@ export const position = [-200, 0.75, -45] as const
 export const rotation = [0, Math.PI / 2, 0] as const
 
 export const vehicleConfig = {
-  width: 1.7,
-  height: -0.3,
-  front: 1.35,
-  back: -1.3,
-  steer: 0.3,
-  force: 1000,
-  maxBrake: 65,
+  //   width: 1.7,
+  //   height: -0.3,
+  //   front: 1.35,
+  //   back: -1.3,
+  //   steer: 0.3,
+  //   force: 1000,
+  //   maxBrake: 65,
   maxSpeed: 46,
 } as const
 
-type VehicleConfig = typeof vehicleConfig
+// type VehicleConfig = typeof vehicleConfig
 
-export type WheelInfo = Required<
-  Pick<
-    WheelInfoOptions,
-    | 'axleLocal'
-    | 'customSlidingRotationalSpeed'
-    | 'directionLocal'
-    | 'frictionSlip'
-    | 'radius'
-    | 'rollInfluence'
-    | 'sideAcceleration'
-    | 'suspensionRestLength'
-    | 'suspensionStiffness'
-    | 'useCustomSlidingRotationalSpeed'
-  >
->
+// export type WheelInfo = Required<
+//   Pick<
+//     WheelInfoOptions,
+//     | 'axleLocal'
+//     | 'customSlidingRotationalSpeed'
+//     | 'directionLocal'
+//     | 'frictionSlip'
+//     | 'radius'
+//     | 'rollInfluence'
+//     | 'sideAcceleration'
+//     | 'suspensionRestLength'
+//     | 'suspensionStiffness'
+//     | 'useCustomSlidingRotationalSpeed'
+//   >
+// >
 
-export const wheelInfo: WheelInfo = {
-  axleLocal: [-1, 0, 0],
-  customSlidingRotationalSpeed: -0.01,
-  directionLocal: [0, -1, 0],
-  frictionSlip: 1.5,
-  radius: 0.38,
-  rollInfluence: 0,
-  sideAcceleration: 3,
-  suspensionRestLength: 0.35,
-  suspensionStiffness: 30,
-  useCustomSlidingRotationalSpeed: true,
-}
+// export const wheelInfo: WheelInfo = {
+//   axleLocal: [-1, 0, 0],
+//   customSlidingRotationalSpeed: -0.01,
+//   directionLocal: [0, -1, 0],
+//   frictionSlip: 1.5,
+//   radius: 0.38,
+//   rollInfluence: 0,
+//   sideAcceleration: 3,
+//   suspensionRestLength: 0.35,
+//   suspensionStiffness: 30,
+//   useCustomSlidingRotationalSpeed: true,
+// }
 
 export const booleans = {
   binding: false,
@@ -93,6 +93,7 @@ const controls = {
   honk: false,
   left: false,
   right: false,
+  headlights: false
 }
 export type Controls = typeof controls
 type Control = keyof Controls
@@ -101,7 +102,7 @@ export const isControl = (v: PropertyKey): v is Control => Object.hasOwnProperty
 export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans, 'editor' | 'map' | 'sound'> | 'camera' | 'reset'
 
 export type ActionInputMap = Record<BindableActionName, string[]>
-
+const toggledControls: Control[] = ['headlights']// toggle-style inputs
 const actionInputMap: ActionInputMap = {
   backward: ['arrowdown', 's'],
   boost: ['shift'],
@@ -109,6 +110,7 @@ const actionInputMap: ActionInputMap = {
   camera: ['c'],
   editor: [','],
   forward: ['arrowup', 'w', 'z'],
+  headlights: ['f'],
   help: ['i'],
   honk: ['h'],
   leaderboard: ['l'],
@@ -154,8 +156,8 @@ export interface IState extends BaseState {
   session: Session | null
   set: Setter
   start: number
-  vehicleConfig: VehicleConfig
-  wheelInfo: WheelInfo
+  // vehicleConfig: VehicleConfig
+  // wheelInfo: WheelInfo
   wheels: [RefObject<Group>, RefObject<Group>, RefObject<Group>, RefObject<Group>]
   keyInput: string | null
 }
@@ -164,8 +166,35 @@ const setExclusiveBoolean = (set: Setter, boolean: ExclusiveBoolean) => () =>
   set((state) => ({ ...exclusiveBooleans.reduce((o, key) => ({ ...o, [key]: key === boolean ? !state[boolean] : false }), state) }))
 
 const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState>) => {
+
+  const toggleCooldowns: Record<string, number> = {}
+
   const controlActions = keys(controls).reduce<Record<Control, (value: boolean) => void>>((o, control) => {
-    o[control] = (value: boolean) => set((state) => ({ controls: { ...state.controls, [control]: value } }))
+    o[control] = (value: boolean) => {
+      if (toggledControls.includes(control)) {
+        if (value) {
+          const now = Date.now()
+          const lastToggle = toggleCooldowns[control] || 0
+
+          if (now - lastToggle > 300) { // 300ms debounce
+            toggleCooldowns[control] = now
+            set((state) => ({
+              controls: {
+                ...state.controls,
+                [control]: !state.controls[control],
+              },
+            }))
+          }
+        }
+      } else {
+        set((state) => ({
+          controls: {
+            ...state.controls,
+            [control]: value,
+          },
+        }))
+      }
+    }
     return o
   }, {} as Record<Control, (value: boolean) => void>)
 
@@ -231,7 +260,7 @@ const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState
     set,
     start: 0,
     vehicleConfig,
-    wheelInfo,
+    // wheelInfo,
     wheels: [createRef<Group>(), createRef<Group>(), createRef<Group>(), createRef<Group>()],
   }
 })
@@ -264,5 +293,8 @@ const useStore = <T>(sel: StateSelector<IState, T>) => useStoreImpl(sel, shallow
 Object.assign(useStore, useStoreImpl)
 
 const { getState, setState } = useStoreImpl
+
+export const isToggledControl = (c: string): c is Control =>
+  toggledControls.includes(c as Control)
 
 export { getState, setState, useStore }

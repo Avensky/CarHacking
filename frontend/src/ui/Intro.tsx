@@ -5,7 +5,7 @@ import type { ReactNode } from 'react'
 
 import { useStore } from '../store'
 import { Keys } from './Keys'
-import { Auth } from './Auth'
+// import { Auth } from './Auth'
 
 export function Intro({ children }: { children: ReactNode }): JSX.Element {
   const [clicked, setClicked] = useState(false)
@@ -33,9 +33,9 @@ export function Intro({ children }: { children: ReactNode }): JSX.Element {
           <div className="intro-keys">
             <Keys style={{ paddingBottom: 20 }} />
           </div>
-            <a className="start-link" href="#" onClick={() => setClicked(true)}>
-              {loading ? `loading ${progress.toFixed()} %` : 'Click to start'}
-            </a>
+          <a className="start-link" href="#" onClick={() => setClicked(true)}>
+            {loading ? `loading ${progress.toFixed()} %` : 'Click to start'}
+          </a>
           {/* {session?.user?.aud !== 'authenticated' ? (
             <Auth />
           ) : (
