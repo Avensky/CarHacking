@@ -150,6 +150,9 @@ function Pillar(props: CylinderProps) {
 export function App(): JSX.Element {
   // Calculate ground dimensions
   const { scene } = useGLTF(url);
+  const { scene: cityScene } = useGLTF('/models/city_rtx.glb')
+  const city = useMemo(() => clone(cityScene), [cityScene])
+
   const boundingBox = new THREE.Box3().setFromObject(scene);
   const size = new THREE.Vector3();
   boundingBox.getSize(size);
@@ -295,6 +298,10 @@ export function App(): JSX.Element {
         {/* <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} /> */}
         {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
         {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
+
+        <group scale={2} position={[0, 0, 0]}>
+          <primitive object={city} />
+        </group>
         <Vehicle
         // position={[0, 1, 0]}
         // rotation={[0, -Math.PI / 2, 0]}
