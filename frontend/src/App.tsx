@@ -271,45 +271,45 @@ export function App(): JSX.Element {
           fov={75}
           position={[0, 20, 20]}
         />
-        <Physics broadphase="SAP"
+        {/* <Physics broadphase="SAP"
           defaultContactMaterial={{
             contactEquationRelaxation: 4,
             friction: 1e-3
           }}
           // gravity={[0, -10, 0]}
           allowSleep={false}
-        >
-          <ToggledDebug>
-            {/* <Terrain /> */}
-            <GroundPlane />
-            {/* Render multiple cities */}
-            {/* Use InstancedMesh for performance */}
-            {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
-            {/* <TiledScene 
+        > */}
+        {/* <ToggledDebug> */}
+        {/* <Terrain /> */}
+        {/* <GroundPlane /> */}
+        {/* Render multiple cities */}
+        {/* Use InstancedMesh for performance */}
+        {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
+        {/* <TiledScene 
               scale = {0.0065}
               tileCount = {1}
               size={size}
             /> */}
-            <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} />
-            {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
-            <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} />
-            {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
-            {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
-            <Vehicle
-            // position={[0, 1, 0]}
-            // rotation={[0, -Math.PI / 2, 0]}
-            >
-              {/* {light && <primitive object={light.target} />}
+        {/* <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} /> */}
+        {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
+        {/* <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} /> */}
+        {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
+        {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
+        <Vehicle
+        // position={[0, 1, 0]}
+        // rotation={[0, -Math.PI / 2, 0]}
+        >
+          {/* {light && <primitive object={light.target} />}
               <Cameras /> */}
-            </Vehicle>
-          </ToggledDebug>
-        </Physics>
+        </Vehicle>
+        {/* </ToggledDebug> */}
+        {/* </Physics> */}
         <Suspense fallback={null}>
           <Environment preset="night" />
         </Suspense>
         <OrbitControls />
         <ToggledOrbitControls />
-      </Canvas>
+      </Canvas >
 
     );
   }

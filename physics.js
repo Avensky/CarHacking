@@ -19,6 +19,11 @@ groundBody.addShape(groundShape);
 
 // Rotate the plane so it lies flat along the y-axis
 groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
+
+// const normal = new Vec3(0, 0, 1) // default normal of Plane
+// normal.applyQuaternion(groundBody.quaternion)
+// console.log("Ground normal in world space:", normal)
+
 groundBody.position.set(0, 0, 0);
 // Add the body to the world
 world.addBody(groundBody);
@@ -62,6 +67,7 @@ function createVehicle(id) {
     dampingCompression: 6.5,       // resistance on rebound
     // maxSuspensionForce: 0,
     maxSuspensionForce: 100000,
+    maxSuspensionTravel: 0.3,
     rollInfluence: 0.01,
     axleLocal: new Vec3(-1, 0, 0), // Left
     chassisConnectionPointLocal: new Vec3(), // set below
@@ -75,6 +81,8 @@ function createVehicle(id) {
   const compressionFactor = .7;
   const rideHeight = radius + suspensionRestLength * compressionFactor; // Midway compression
   chassisBody.position.set(0, rideHeight, 0); // Lift above ground
+  chassisBody.collisionFilterGroup = 1
+  chassisBody.collisionFilterMask = 0 // nothing should collide with chassis
 
   const vehicle = new RaycastVehicle({
     chassisBody,
@@ -215,6 +223,8 @@ function updateVehicleInputs(id, control) {
 
 }
 
+// console.log(world.bodies.length)
+// world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
 
 // function resetVehicle(id) {
 //   const { chassisBody } = vehicles[id]
