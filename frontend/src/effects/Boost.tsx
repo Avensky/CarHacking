@@ -25,22 +25,22 @@ export function Boost({ count = 12, opacity = 0.5, size = 0.1 }: BoostProps): JS
   let progress: number
 
   useFrame((state) => {
-    isBoosting = mutation.boost > 0 && getState().controls.boost
-    for (i = 0; i < count; i += positions.length) {
-      n = MathUtils.randFloatSpread(0.05)
-      for (j = 0; j < positions.length; j++) {
-        progress = (state.clock.getElapsedTime() + (i + j) * 0.2) % 1
-        o.position.set(positions[j].x + n, positions[j].y, positions[j].z - progress * 0.75)
-        o.rotation.z += progress / 2
-        o.scale.setScalar(isBoosting ? (1 - progress) * 2 : 0)
-        o.matrixWorldNeedsUpdate = true
-        o.updateMatrixWorld()
-        if (ref.current) {
-          ref.current.setMatrixAt(i + j, o.matrixWorld)
-          ref.current.instanceMatrix.needsUpdate = true
-        }
-      }
-    }
+    //   isBoosting = mutation.boost > 0 && getState().controls.boost
+    //   for (i = 0; i < count; i += positions.length) {
+    //     n = MathUtils.randFloatSpread(0.05)
+    //     for (j = 0; j < positions.length; j++) {
+    //       progress = (state.clock.getElapsedTime() + (i + j) * 0.2) % 1
+    //       o.position.set(positions[j].x + n, positions[j].y, positions[j].z - progress * 0.75)
+    //       o.rotation.z += progress / 2
+    //       o.scale.setScalar(isBoosting ? (1 - progress) * 2 : 0)
+    //       o.matrixWorldNeedsUpdate = true
+    //       o.updateMatrixWorld()
+    //       if (ref.current) {
+    //         ref.current.setMatrixAt(i + j, o.matrixWorld)
+    //         ref.current.instanceMatrix.needsUpdate = true
+    //       }
+    //     }
+    //   }
   })
 
   return (

@@ -3,16 +3,14 @@ import create from 'zustand'
 import shallow from 'zustand/shallow'
 import type { RefObject } from 'react'
 import type { PublicApi, WheelInfoOptions } from '@react-three/cannon'
-import type { Session } from '@supabase/supabase-js'
+// import type { Session } from '@supabase/supabase-js'
 import type { Group } from 'three'
 import type { GetState, SetState, StateSelector } from 'zustand'
-import socket from './socket'
 import { keys } from './keys'
 
 // speed
 export const angularVelocity = [0, 0.5, 0] as const
 export const cameras = ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE'] as const
-
 export const dpr = 1.5 as const
 export const levelLayer = 1 as const
 export const maxBoost = 100 as const
@@ -20,7 +18,7 @@ export const maxBoost = 100 as const
 export const position = [-200, 0.75, -45] as const
 // rotate plane horizontal
 export const rotation = [0, Math.PI / 2, 0] as const
-
+import socket from './socket'
 export const vehicleConfig = {
   //   width: 1.7,
   //   height: -0.3,
@@ -29,10 +27,10 @@ export const vehicleConfig = {
   //   steer: 0.3,
   //   force: 1000,
   //   maxBrake: 65,
-  maxSpeed: 46,
+  maxSpeed: 80,
 } as const
 
-// type VehicleConfig = typeof vehicleConfig
+type VehicleConfig = typeof vehicleConfig
 
 // export type WheelInfo = Required<
 //   Pick<
@@ -62,6 +60,7 @@ export const vehicleConfig = {
 //   suspensionStiffness: 30,
 //   useCustomSlidingRotationalSpeed: true,
 // }
+
 
 export const booleans = {
   binding: false,
@@ -93,16 +92,24 @@ const controls = {
   honk: false,
   left: false,
   right: false,
-  headlights: false
+  headlights: false,
+  blinkerLeft: false,
+  blinkerRight: false,
+  hazards: false,
+  reset: false,
 }
 export type Controls = typeof controls
 type Control = keyof Controls
 export const isControl = (v: PropertyKey): v is Control => Object.hasOwnProperty.call(controls, v)
 
-export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans, 'editor' | 'map' | 'sound'> | 'camera' | 'reset'
+export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans,
+  'editor' | 'map' | 'sound'> | 'camera' | 'reset' |
+  'headlights' | 'blinkerLeft' | 'blinkerRight' | 'hazards'
 
 export type ActionInputMap = Record<BindableActionName, string[]>
-const toggledControls: Control[] = ['headlights']// toggle-style inputs
+// toggle-style inputs
+const toggledControls: Control[] = ['headlights', 'blinkerLeft', 'blinkerRight', 'hazards']
+
 const actionInputMap: ActionInputMap = {
   backward: ['arrowdown', 's'],
   boost: ['shift'],
@@ -120,6 +127,10 @@ const actionInputMap: ActionInputMap = {
   reset: ['r'],
   right: ['arrowright', 'd', 'e'],
   sound: ['u'],
+  blinkerLeft: ['1'],
+  blinkerRight: ['2'],
+  hazards: ['3']
+
 }
 
 type Getter = GetState<IState>
@@ -153,10 +164,12 @@ export interface IState extends BaseState {
   finished: number
   get: Getter
   level: RefObject<Group>
-  session: Session | null
+  // session: Session | null
   set: Setter
   start: number
-  // vehicleConfig: VehicleConfig
+  vehiclePosition?: { x: number; y: number; z: number }
+  setVehiclePosition: (pos: { x: number; y: number; z: number }) => void
+  vehicleConfig: VehicleConfig
   // wheelInfo: WheelInfo
   wheels: [RefObject<Group>, RefObject<Group>, RefObject<Group>, RefObject<Group>]
   keyInput: string | null
@@ -165,105 +178,104 @@ export interface IState extends BaseState {
 const setExclusiveBoolean = (set: Setter, boolean: ExclusiveBoolean) => () =>
   set((state) => ({ ...exclusiveBooleans.reduce((o, key) => ({ ...o, [key]: key === boolean ? !state[boolean] : false }), state) }))
 
-const useStoreImpl = create<IState>((set: SetState<IState>, get: GetState<IState>) => {
+const useStoreImpl = create<IState>(
+  (set: SetState<IState>, get: GetState<IState>) => {
 
-  const toggleCooldowns: Record<string, number> = {}
+    const toggleCooldowns: Record<string, number> = {}
 
-  const controlActions = keys(controls).reduce<Record<Control, (value: boolean) => void>>((o, control) => {
-    o[control] = (value: boolean) => {
-      if (toggledControls.includes(control)) {
-        if (value) {
-          const now = Date.now()
-          const lastToggle = toggleCooldowns[control] || 0
+    const controlActions = keys(controls).reduce<Record<Control, (value: boolean) => void>>((o, control) => {
+      o[control] = (value: boolean) => {
+        if (toggledControls.includes(control)) {
+          if (value) {
+            const now = Date.now()
+            const lastToggle = toggleCooldowns[control] || 0
 
-          if (now - lastToggle > 300) { // 300ms debounce
-            toggleCooldowns[control] = now
-            set((state) => ({
-              controls: {
-                ...state.controls,
-                [control]: !state.controls[control],
-              },
-            }))
+            if (now - lastToggle > 300) { // 300ms debounce
+              toggleCooldowns[control] = now
+              set((state) => ({
+                controls: {
+                  ...state.controls,
+                  [control]: !state.controls[control],
+                },
+              }))
+            }
           }
+        } else {
+          set((state) => ({
+            controls: {
+              ...state.controls,
+              [control]: value,
+            },
+          }))
         }
-      } else {
-        set((state) => ({
-          controls: {
-            ...state.controls,
-            [control]: value,
-          },
-        }))
       }
+      return o
+    }, {} as Record<Control, (value: boolean) => void>)
+
+    const booleanActions = keys(booleans).reduce<Record<Booleans, () => void>>((o, boolean) => {
+      o[boolean] = isExclusiveBoolean(boolean) ? setExclusiveBoolean(set, boolean) : () => set((state) => ({ ...state, [boolean]: !state[boolean] }))
+      return o
+    }, {} as Record<Booleans, () => void>)
+
+    const actions: Actions = {
+      ...booleanActions,
+      ...controlActions,
+      camera: () => set(
+        (state) => (
+          { camera: cameras[(cameras.indexOf(state.camera) + 1) % cameras.length] }
+        )),
+      onCheckpoint: () => {
+        const { start } = get()
+        if (start) {
+          const checkpoint = Date.now() - start
+          set({ checkpoint })
+        }
+      },
+      onFinish: () => {
+        const { finished, start } = get()
+        if (start && !finished) {
+          set({ finished: Math.max(Date.now() - start, 0) })
+        }
+      },
+      onStart: () => {
+        set({ finished: 0, start: Date.now() })
+      },
+      reset: () => {
+        // mutation.boost = maxBoost
+        // set((state) => {
+        //   socket.emit(`${angularVelocity},${position},${rotation}`);
+        //   return { ...state, finished: 0, start: 0 }
+        // })
+      },
     }
-    return o
-  }, {} as Record<Control, (value: boolean) => void>)
 
-  const booleanActions = keys(booleans).reduce<Record<Booleans, () => void>>((o, boolean) => {
-    o[boolean] = isExclusiveBoolean(boolean) ? setExclusiveBoolean(set, boolean) : () => set((state) => ({ ...state, [boolean]: !state[boolean] }))
-    return o
-  }, {} as Record<Booleans, () => void>)
-
-  const actions: Actions = {
-    ...booleanActions,
-    ...controlActions,
-    camera: () => set(
-      (state) => (
-        { camera: cameras[(cameras.indexOf(state.camera) + 1) % cameras.length] }
-      )),
-    onCheckpoint: () => {
-      const { start } = get()
-      if (start) {
-        const checkpoint = Date.now() - start
-        set({ checkpoint })
-      }
-    },
-    onFinish: () => {
-      const { finished, start } = get()
-      if (start && !finished) {
-        set({ finished: Math.max(Date.now() - start, 0) })
-      }
-    },
-    onStart: () => {
-      set({ finished: 0, start: Date.now() })
-    },
-    reset: () => {
-      mutation.boost = maxBoost
-      set((state) => {
-        state.api?.angularVelocity.set(...angularVelocity)
-        state.api?.position.set(...position)
-        state.api?.rotation.set(...rotation)
-        state.api?.velocity.set(0, 0, 0)
-
-        return { ...state, finished: 0, start: 0 }
-      })
-    },
-  }
-
-  return {
-    ...booleans,
-    actionInputMap,
-    actions,
-    api: null,
-    bestCheckpoint: 0,
-    camera: cameras[0],
-    chassisBody: createRef<Group>(),
-    checkpoint: 0,
-    color: '#FFFF00',
-    controls,
-    keyBindingsWithError: [],
-    dpr,
-    finished: 0,
-    get,
-    keyInput: null,
-    level: createRef<Group>(),
-    session: null,
-    set,
-    start: 0,
-    vehicleConfig,
-    // wheelInfo,
-    wheels: [createRef<Group>(), createRef<Group>(), createRef<Group>(), createRef<Group>()],
-  }
-})
+    return {
+      ...booleans,
+      actionInputMap,
+      actions,
+      api: null,
+      bestCheckpoint: 0,
+      camera: cameras[0],
+      chassisBody: createRef<Group>(),
+      checkpoint: 0,
+      color: '#FFFF00',
+      controls,
+      keyBindingsWithError: [],
+      dpr,
+      finished: 0,
+      get,
+      keyInput: null,
+      level: createRef<Group>(),
+      session: null,
+      set,
+      start: 0,
+      vehiclePosition: undefined,
+      setVehiclePosition: (pos) => set({ vehiclePosition: pos }),
+      vehicleConfig,
+      // wheelInfo,
+      wheels: [createRef<Group>(), createRef<Group>(), createRef<Group>(), createRef<Group>()],
+    }
+  })
 
 interface Mutation {
   boost: number

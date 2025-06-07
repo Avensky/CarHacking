@@ -1,4 +1,4 @@
-const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
+const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane, Quaternion } = require('cannon-es');
 
 // world
 const world = new World();
@@ -23,34 +23,79 @@ groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
 // const normal = new Vec3(0, 0, 1) // default normal of Plane
 // normal.applyQuaternion(groundBody.quaternion)
 // console.log("Ground normal in world space:", normal)
-
 groundBody.position.set(0, 0, 0);
 // Add the body to the world
 world.addBody(groundBody);
 
 // Define interactions between wheels and ground
+// Wheel Ground
+const friction = 0.6
+const restitution = 0
+const contactEquationStiffness = 1e6
+const contactEquationRelaxation = 3
+
 const wheelMaterial = new Material('wheel')
 const wheel_ground = new ContactMaterial(wheelMaterial, groundMaterial, {
-  friction: 0.6,
-  restitution: 0,
-  contactEquationStiffness: 1e6,
-  contactEquationRelaxation: 3,
+  friction: friction,
+  restitution: restitution,
+  contactEquationStiffness: contactEquationStiffness,
+  contactEquationRelaxation: contactEquationRelaxation,
 })
 world.addContactMaterial(wheel_ground)
 
-
-// vehicle
+// store all vehicles
 const vehicles = {};
+
+// state
 const steeringState = {}; // key: id, value: current steer angle
 const brakeState = {}; // key: id, value: current brake force
 
-const length = 4.21  // <- Match AE86 GLB length
-const width = 1.92
-const height = 1.28
 
-const chassisMass = 250
+// Wheel Config
+const axleLocal = new Vec3(-1, 0, 0)
+const compressionFactor = .7;
+const dampingRelaxation = 6.5       // resistance during compr=ssion
+const dampingCompression = 6.5       // resistance on r=bound
+const directionLocal = new Vec3(0, -1, 0)
+const frictionSlip = 8.5
+const suspensionStiffness = 150
 const suspensionRestLength = 0.18
+const maxSuspensionForce = 100000
+const maxSuspensionTravel = 0.3
 const radius = 0.623
+const rollInfluence = 0.01
+const chassisConnectionPointLocal = new Vec3()
+const isFrontWheel = true
+
+// vehicleConfig
+const length = 4.21   // <- Match AE86 GLB
+const width = 1.92    // <- Match AE86 GLB
+const height = 1.28   // <- Match AE86 GLB
+const chassisMass = 250
+const chassisShape = new Box(new Vec3(width / 2, height / 2, length / 2));
+const indexRightAxis = 0 // X
+const indexUpAxis = 1   // Y
+const indexForwardAxis = 1 // Z
+const rideHeight = radius + suspensionRestLength * compressionFactor; // Midway compression
+const position = new Vec3(10, rideHeight, 0) // spawn
+const rotation = new Vec3(0, Math.PI, 0)
+const wheelHalfTrack = width / 2 - 0.25 // Distance from center to side
+const wheelBase = 2.41 // Distance front to back
+
+// Options
+const steer = 0.3
+const maxSteer = 0.5
+const force = 1800
+const maxBrake = 65
+const maxSpeed = 88
+const maxForce = 500;
+const maxBrakeForce = 25;
+const brakeLerpSpeed = 0.25; // Smoothing factor
+const angularVelocity = [0, 0.5, 0]
+const maxBoost = 100
+const cameras = ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE']
+const dpr = 1.5
+const levelLayer = 1
 
 function createVehicle(id) {
   steeringState[id] = 0; // Initialize steering angle
@@ -58,48 +103,35 @@ function createVehicle(id) {
 
   const wheelOptions = {
     radius: radius,
-    directionLocal: new Vec3(0, -1, 0), // Down
-    // suspensionStiffness: 1,
-    suspensionStiffness: 150,
+    directionLocal: directionLocal, // Down
+    suspensionStiffness: suspensionStiffness,
     suspensionRestLength: suspensionRestLength,
-    frictionSlip: 8.5,
-    dampingRelaxation: 6.5,       // resistance during compression
-    dampingCompression: 6.5,       // resistance on rebound
-    // maxSuspensionForce: 0,
-    maxSuspensionForce: 100000,
-    maxSuspensionTravel: 0.3,
-    rollInfluence: 0.01,
-    axleLocal: new Vec3(-1, 0, 0), // Left
-    chassisConnectionPointLocal: new Vec3(), // set below
-    isFrontWheel: true
+    frictionSlip: frictionSlip,
+    dampingRelaxation: dampingRelaxation,       // resistance during compression
+    dampingCompression: dampingCompression,       // resistance on rebound
+    maxSuspensionForce: maxSuspensionForce,
+    maxSuspensionTravel: maxSuspensionTravel,
+    rollInfluence: rollInfluence,
+    axleLocal: axleLocal, // Left
+    chassisConnectionPointLocal: chassisConnectionPointLocal, // set below
+    isFrontWheel: isFrontWheel
   }
-  const chassisShape = new Box(new Vec3(width / 2, height / 2, length / 2));
+
   const chassisBody = new Body({
     mass: chassisMass,
+    position: position,
+    rotation: rotation,
+    collisionFilterGroup: 1,
+    collisionFilterMask: 0,
+    shape: chassisShape
   });
-  chassisBody.addShape(chassisShape);
-  const compressionFactor = .7;
-  const rideHeight = radius + suspensionRestLength * compressionFactor; // Midway compression
-  chassisBody.position.set(0, rideHeight, 0); // Lift above ground
-  chassisBody.collisionFilterGroup = 1
-  chassisBody.collisionFilterMask = 0 // nothing should collide with chassis
 
   const vehicle = new RaycastVehicle({
     chassisBody,
-    indexRightAxis: 0, // X
-    indexUpAxis: 1,    // Y
-    indexForwardAxis: 2 // Z
+    indexRightAxis: indexRightAxis, // X
+    indexUpAxis: indexUpAxis,    // Y
+    indexForwardAxis: indexForwardAxis // Z
   });
-
-
-
-  // Set positions:
-  // const wheelHalfTrack = width / 3 - 0.1; // Distance from center to side
-  // const wheelBase = 1.6;      // Distance front to back
-
-  const wheelHalfTrack = width / 2 - 0.25
-  const wheelBase = 2.41 // Distance front to back
-
   const frontLeft = {
     ...wheelOptions,
     chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, 0, -wheelBase / 2), isFrontWheel: true
@@ -116,14 +148,13 @@ function createVehicle(id) {
     ...wheelOptions,
     chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, 0, +wheelBase / 2), isFrontWheel: false
   };
-
   vehicle.addWheel(frontLeft);
   vehicle.addWheel(frontRight);
   vehicle.addWheel(rearLeft);
   vehicle.addWheel(rearRight);
   vehicle.addToWorld(world);
-  vehicles[id] = { vehicle, chassisBody };
 
+  vehicles[id] = { vehicle, chassisBody };
 
   // Add the wheel bodies
   const wheelBodies = []
@@ -141,29 +172,32 @@ function createVehicle(id) {
     wheelBodies.push(wheelBody)
     world.addBody(wheelBody)
   })
-
   return vehicle;
 }
 
-function updateVehicleInputs(id, control) {
-  const maxSteer = 0.5;
-  const maxForce = 700;
-  const maxBrakeForce = 25;
-  const { vehicle } = vehicles[id] || {};
-  const brakeLerpSpeed = 0.25; // Smoothing factor
-  brakeState[id] = brakeState[id] || 0;
 
+
+function updateVehicleInputs(id, control) {
+  const { vehicle } = vehicles[id] || {};
   if (!vehicle) return;
 
-
+  brakeState[id] = brakeState[id] || 0;
 
   // Reset
+  // console.log(
+  //   'updateVechicleInputs', control.reset
+  // )
+  if (control.reset) {
+    resetVehicle(vehicle); // ← implement this
+  }
+
+  vehicle.setSteeringValue(0, 0);
+  vehicle.setSteeringValue(0, 1);
+
   // driveWheels.forEach(i => vehicle.applyEngineForce(0, i));
   // steeringWheels.forEach(i => vehicle.setSteeringValue(0, i));
   // [0, 1, 2, 3].forEach(i => vehicle.setBrake(0, i));
 
-  vehicle.setSteeringValue(0, 0); //clear steering
-  vehicle.setSteeringValue(0, 1); //clear steering
   if (control.forward || control.backward) {
     for (let i = 0; i < 4; i++) vehicle.setBrake(0, i);
     brakeState[id] = 0; // reset cached brake state
@@ -226,15 +260,15 @@ function updateVehicleInputs(id, control) {
 // console.log(world.bodies.length)
 // world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
 
-// function resetVehicle(id) {
-//   const { chassisBody } = vehicles[id]
-//   chassisBody.position.set(0, 5, 0) // reset position
-//   const q = new Quaternion()
-//   q.setFromEuler(0, Math.PI / 2, 0)
-//   chassisBody.quaternion.copy(q)
-//   chassisBody.velocity.setZero()
-//   chassisBody.angularVelocity.setZero()
-// }
+function resetVehicle(vehicle) {
+  // vehicle.chassisBody.rotation.set(0, 5, 0)
+  vehicle.chassisBody.position.set(0, 7, 0) //reset position
+  const q = new Quaternion()
+  q.setFromEuler(0, Math.PI / 2, 0)
+  vehicle.chassisBody.quaternion.copy(q)
+  vehicle.chassisBody.velocity.set(0, 0, 0)
+  vehicle.chassisBody.angularVelocity.set(0, 0, 0)
+}
 
 function stepWorld() {
   world.step(1 / 60);
@@ -243,6 +277,7 @@ function stepWorld() {
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
     // console.log("rotation", vehicle.wheelInfos[0].deltaRotation)
     const chassis = {
+      rotation: { ...chassisBody.rotation },
       position: { ...chassisBody.position },
       quaternion: { ...chassisBody.quaternion },
     };
@@ -259,6 +294,7 @@ function stepWorld() {
       chassisBody: {
         position: chassis.position,
         quaternion: chassis.quaternion,
+        rotation: chassis.rotation,
         velocity: { ...chassisBody.velocity },
         angularVelocity: { ...chassisBody.angularVelocity }
       },
@@ -268,5 +304,4 @@ function stepWorld() {
 
   return snapshots;
 }
-
 module.exports = { createVehicle, updateVehicleInputs, stepWorld };

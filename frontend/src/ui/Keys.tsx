@@ -19,7 +19,11 @@ const inputDisplayNameMap = {
   shift: 'Shift ⇧',
   ' ': 'Space ␣',
   tab: 'Tab ⇥',
-  headlights: 'f'
+  headlights: 'f',
+  blinkerLeft: '1',
+  blinkerRight: '2',
+  hazards: '3',
+  reset: 'r',
 } as const
 
 type InputWithDisplayName = keyof typeof inputDisplayNameMap
@@ -33,6 +37,9 @@ const actionDisplayMap: Record<BindableActionName, { displayName: string; order:
   editor: { displayName: 'Editor', order: 8 },
   forward: { displayName: 'Forward', order: 0 },
   headlights: { displayName: 'Headlights', order: 15 },
+  blinkerLeft: { displayName: 'Left Blinker', order: 16 },
+  blinkerRight: { displayName: 'Right Blinker', order: 17 },
+  hazards: { displayName: 'Hazards', order: 18 },
   help: { displayName: 'Help', order: 9 },
   honk: { displayName: 'Honk', order: 5 },
   leaderboard: { displayName: 'Leaderboards', order: 10 },

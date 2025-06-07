@@ -1,8 +1,7 @@
+// Packages
 import { forwardRef, useImperativeHandle, useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react'
 import { Vector3, Group, SpotLightHelper, Color } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
-import socket from '../../socket'
-// import { useControls } from './use-controls'
 import { useGLTF } from '@react-three/drei'
 import { clone } from 'lodash-es'
 import { SpotLight } from 'three'
@@ -11,16 +10,14 @@ import { AccelerateAudio, BoostAudio, Boost, BrakeAudio, Dust, EngineAudio, Honk
 import type { PropsWithChildren } from 'react'
 import { BoxProps } from '@react-three/cannon'
 import { useToggle } from '../../useToggle'
+import { lerp } from 'three/src/math/MathUtils'
 import {
   getState, type Camera, type Controls //. type WheelInfo 
-
 } from '../../store'
-import { lerp } from 'three/src/math/MathUtils'
-// const { lerp } = MathUtils
-const v = new Vector3()
+import socket from '../../socket'
 
+// Define type of data used - Typescript requirement
 type VehicleProps = PropsWithChildren<Pick<BoxProps, 'angularVelocity' | 'position' | 'rotation'>>
-
 interface PhysicsData {
   chassisBody: {
     position: { x: number; y: number; z: number }
@@ -31,16 +28,31 @@ interface PhysicsData {
     quaternion: { x: number; y: number; z: number; w: number }
   }>
 }
+let camera: Camera
+let editor: boolean
+let controls: Controls
+
 // In Vehicle.tsx
 export default forwardRef(function Vehicle({ children }: VehicleProps, ref: React.Ref<Group>) {
-  const carGroupRef = useRef<Group>(null!)
+  // 
+  let speed = 0           // todo: move logic to recieve from backend
+  let steeringValue = 0   // todo: move logic to recieve from backend
+  let engineValue = 0   // todo: move logic to recieve from backend
+  const v = new Vector3()
+
   useImperativeHandle(ref, () => carGroupRef.current, [])
   const defaultCamera = useThree((state) => state.camera)
-  // const [chassisBody, vehicleConfig, wheelInfo, wheels] = useStore((s) => [s.chassisBody, s.vehicleConfig, s.wheelInfo, s.wheels])
-  // const { back, force, front, height, maxBrake, steer, maxSpeed, width } = vehicleConfig
 
+  // Ref's are used for movements
+  const carGroupRef = useRef<Group>(null!)
   const leftLightRef = useRef<SpotLight>(null!)
   const rightLightRef = useRef<SpotLight>(null!)
+  const leftTailLightRef = useRef<SpotLight>(null!)
+  const rightTailLightRef = useRef<SpotLight>(null!)
+  const frontLeftBlinkerRef = useRef<SpotLight>(null!)
+  const frontRightBlinkerRef = useRef<SpotLight>(null!)
+  const rearLeftBlinkerRef = useRef<SpotLight>(null!)
+  const rearRightBlinkerRef = useRef<SpotLight>(null!)
 
   // const controls = useControls({
   //   stiffness: { value: 60, min: 10, max: 200 },
@@ -52,6 +64,9 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
   // const controls = useControls() // this activates controls
   const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
   const [headlightsOn, setHeadlightsOn] = useState(false);
+  const [leftBlinker, setLeftBlinker] = useState(false);
+  const [rightBlinker, setRightBlinker] = useState(false);
+  const [hazards, setHazards] = useState(false);
 
   // But carGroup is a raw THREE.Group created in useMemo, and it does not get attached 
   // to the scene graph automatically via React. useMemo runs before React renders, and 
@@ -95,6 +110,69 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
     rightLight.visible = headlightsOn
     carGroupRef.current.add(rightLight)
     carGroupRef.current.add(rightLight.target)
+
+
+    // Left tail light
+    leftTailLightRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+    const leftTail = leftTailLightRef.current
+    leftTail.position.set(-0.5, 0.6, 1.9) // Rear of the car (x,y,z)
+    leftTail.target.position.set(-0.5, 0.5, 3)
+    leftTail.target.updateMatrixWorld()
+    leftTail.visible = false
+    carGroupRef.current.add(leftTail)
+    carGroupRef.current.add(leftTail.target)
+
+    // Front Right tail light
+    rightTailLightRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+    const rightTail = rightTailLightRef.current
+    rightTail.position.set(0.57, 0.6, 1.8)
+    rightTail.target.position.set(0.57, 0.5, 3)
+    rightTail.target.updateMatrixWorld()
+    rightTail.visible = false
+    carGroupRef.current.add(rightTail)
+    carGroupRef.current.add(rightTail.target)
+
+    // front Left blinker (orange)
+    frontLeftBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 4, 0.3)
+    const frontLeftBlinker = frontLeftBlinkerRef.current
+    frontLeftBlinker.position.set(-0.6, 0.6, -1.9)
+    frontLeftBlinker.target.position.set(-0.6, 0.6, -3)
+    frontLeftBlinker.visible = leftBlinker || hazards
+    frontLeftBlinker.target.updateMatrixWorld()
+    carGroupRef.current.add(frontLeftBlinker)
+    carGroupRef.current.add(frontLeftBlinker.target)
+
+    // front Right blinker (orange)
+    frontRightBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 4, 0.3)
+    const frontRightBlinker = frontRightBlinkerRef.current
+    frontRightBlinker.position.set(0.6, 0.6, -1.9)
+    frontRightBlinker.target.position.set(0.6, 0.6, -3)
+    frontRightBlinker.visible = rightBlinker || hazards
+    frontRightBlinker.target.updateMatrixWorld()
+    carGroupRef.current.add(frontRightBlinker)
+    carGroupRef.current.add(frontRightBlinker.target)
+
+
+    // rear Left blinker (orange)
+    rearLeftBlinkerRef.current = new SpotLight(0xffa500, 3, 8, Math.PI / 6, 0.3)
+    const rearLeftBlinker = rearLeftBlinkerRef.current
+    rearLeftBlinker.position.set(-0.5, 0.6, 1.9)
+    rearLeftBlinker.target.position.set(-0.6, 0.6, 3)
+    rearLeftBlinker.visible = leftBlinker || hazards
+    rearLeftBlinker.target.updateMatrixWorld()
+    carGroupRef.current.add(rearLeftBlinker)
+    carGroupRef.current.add(rearLeftBlinker.target)
+
+    // rear Right blinker (orange)
+    rearRightBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 6, 0.3)
+    const rearRightBlinker = rearRightBlinkerRef.current
+    rearRightBlinker.position.set(0.6, 0.6, 1.9)
+    rearRightBlinker.target.position.set(0.6, 0.6, -3)
+    rearRightBlinker.visible = rightBlinker || hazards
+    rearRightBlinker.target.updateMatrixWorld()
+    carGroupRef.current.add(rearRightBlinker)
+    carGroupRef.current.add(rearRightBlinker.target)
+
   }, [scene])
 
   const wheels = useMemo(() => {
@@ -115,8 +193,13 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
     return () => socket.off('physicsUpdate', handlePhysicsUpdate)
   }, [])
 
-  // Update chassis and wheel transforms every frame
+  // Use these to simulate timing on hazard lights
+  let blinkTimer = 0
+  let blinkState = false
+
+  // Update transformations every frame ie. chassis
   useFrame((_, delta) => {
+
     camera = getState().camera
     editor = getState().editor
     controls = getState().controls
@@ -125,12 +208,34 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
     leftLightRef.current.visible = controls.headlights
     rightLightRef.current.visible = controls.headlights
 
+    //taillights
+    leftTailLightRef.current.visible = controls.brake
+    rightTailLightRef.current.visible = controls.brake
+
+    // blinking (every ~500ms)
+    blinkTimer += delta
+    if (blinkTimer >= 0.5) {
+      blinkTimer = 0
+      blinkState = !blinkState
+    }
+
+    // Hazards override blinkers
+    // const hazards = controls.hazards
+
+    const blinkerLeft = controls.blinkerLeft
+    // const blinkerRight = controls.blinkerRight && !hazards
+
+    // frontLeftBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkState
+    // frontRightBlinkerRef.current.visible = (hazards || blinkerRight) && blinkState
+    rearLeftBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkState
+    // rearRightBlinkerRef.current.visible = (hazards || blinkerRight) && blinkState
+    // console.log(blinkerLeft)
     if (!physicsData || !carGroupRef.current) return
 
     const { chassisBody, wheelInfos } = physicsData
     const group = carGroupRef.current
 
-    // Update chassis
+    // Update vehicle body
     group.position.lerpVectors(
       group.position,
       new Vector3(
@@ -169,50 +274,45 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
 
     if (!editor) {
       if (camera === 'FIRST_PERSON') {
-        // v.set(0.3 + (Math.sin(-steeringValue) * speed) / 30, 0.4, -0.1)
+        v.set(0.3 + (Math.sin(-steeringValue) * speed) / 30, 1, -0.08)
       } else if (camera === 'DEFAULT') {
         v.set(0, 3, 6)
-        // v.set((Math.sin(steeringValue) * speed) / 2.5, 1.25 + (engineValue / 1000) * -0.5, -5 - speed / 15 + (controls.brake ? 1 : 0))
+        v.set((Math.sin(steeringValue) * speed) / 2.5, 1.25 + (engineValue / 1000) * -0.5, -5 - speed / 15 + (controls.brake ? 1 : 0))
       }
 
-      // ctrl.left-ctrl.right, up-down, near-far
+      // moves camera to user
       defaultCamera.position.lerp(v, delta)
-
-      // ctrl.left-ctrl.right swivel
       defaultCamera.rotation.z = lerp(
         defaultCamera.rotation.z,
-        (camera !== 'BIRD_EYE' ? 0 : Math.PI) + (-steeringValue * speed) / (camera === 'DEFAULT' ? 40 : 60),
+        (camera !== 'BIRD_EYE' ? 0 : Math.PI)
+        + (-steeringValue * speed) / (camera === 'DEFAULT' ? 30 : 55),
         delta,
       )
     }
 
   })
 
+  // Headlights
   useHelper(leftLightRef, SpotLightHelper, 'white')
   useHelper(rightLightRef, SpotLightHelper, 'white')
+  // Tail lights
+  useHelper(leftTailLightRef, SpotLightHelper, 'red')
+  useHelper(rightTailLightRef, SpotLightHelper, 'red')
+  //Left Blinkers
+  useHelper(frontLeftBlinkerRef, SpotLightHelper, 'orange')
+  useHelper(rearLeftBlinkerRef, SpotLightHelper, 'orange')
+  // Right Blinkers
+  // useHelper(frontRightBlinkerRef, SpotLightHelper, 'orange')
+  // useHelper(rearRightBlinkerRef, SpotLightHelper, 'orange')
 
   // console.log(scene)
-
   const ToggledAccelerateAudio = useToggle(AccelerateAudio, ['ready', 'sound'])
   const ToggledEngineAudio = useToggle(EngineAudio, ['ready', 'sound'])
 
   // useLayoutEffect(() => api.sliding.subscribe((sliding) => (mutation.sliding = sliding)), [api])
-
-  let camera: Camera
-  let editor: boolean
-  let controls: Controls
-  let engineValue = 0
-  let i = 0
-  let isBoosting = false
-  let speed = 0
-  let steeringValue = 0
-  let swaySpeed = 0
-  let swayTarget = 0
-  let swayValue = 0
-
-
   return (
     <>
+      {/* Vehicle */}
       <group ref={carGroupRef} >
         {/* <ToggledAccelerateAudio /> */}
         <BoostAudio />
@@ -223,9 +323,12 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
         {children}
       </group>
       {/* <axesHelper args={[0.5]} /> */}
+      {/* Wheels */}
       {wheels.map((wheel, i) =>
         wheel ? <primitive key={i} object={wheel} /> : null
       )}
+      <Dust />
+      <Skid />
     </>
   )
 })

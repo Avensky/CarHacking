@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<!-- saved from url=(0023)http://localhost:5173/# -->
+<html lang="en" style=""><head><meta http-equiv="Content-Type" content="text/html; charset=windows-1252">
+    <script type="module">
+import RefreshRuntime from "/@react-refresh"
+RefreshRuntime.injectIntoGlobalHook(window)
+window.$RefreshReg$ = () => {}
+window.$RefreshSig$ = () => (type) => type
+window.__vite_plugin_react_preamble_installed__ = true
+</script>
+
+    <script type="module" src="./CarSim_files/client"></script>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=landscape">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="icon" type="image/svg+xml" href="http://localhost:5173/vite.svg">
+    <link rel="manifest" href="http://localhost:5173/manifest.json">
+    <title>CarSim</title>
+  <style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/node_modules/inter-ui/inter.css">@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Thin.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 100;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-ThinItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-ExtraLight.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 200;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-ExtraLightItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Light.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 300;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-LightItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Regular.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 400;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Italic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Medium.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 500;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-MediumItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-SemiBold.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 600;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-SemiBoldItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Bold.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 700;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-BoldItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-ExtraBold.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 800;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-ExtraBoldItalic.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-Black.woff2?v=4.0") format("woff2");
+}
+@font-face {
+  font-family: "Inter";
+  font-style: italic;
+  font-weight: 900;
+  font-display: swap;
+  src: url("/node_modules/inter-ui/web/Inter-BlackItalic.woff2?v=4.0") format("woff2");
+}
+</style><style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/src/styles.css">/* @import url("https://fonts.googleapis.com/css2?family=Passion+One:wght@400;700;900&display=swap"); */
+
+@tailwind base;
+
+@tailwind components;
+
+@tailwind utilities;
+
+body {
+  margin: 0;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100vw;
+  height: 100vh;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  /* overflow: scroll; */
+}
+
+/* GLB */
+
+canvas {
+  width: 100%;
+  height: 100%;
+  display: block; /* Removes any extra space */
+}
+
+body {
+  background: #101010;
+  color: white;
+  font-family: 'Inter var', sans-serif;
+}
+
+.clock {
+  position: absolute;
+  top: 0;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 200;
+  font-size: 5em;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -5px;
+}
+
+.checkpoint {
+  position: absolute;
+  top: 28%;
+  left: 50%;
+  font-weight: 500;
+  font-size: 1em;
+  font-variant-numeric: tabular-nums;
+  width: 200px;
+  transform: translate(-50%, -50%);
+  text-align: center;
+}
+
+.checkpoint .green {
+  color: green;
+}
+
+.checkpoint .red {
+  color: red;
+}
+
+/* --------------- AUTH --------------- */
+
+.auth-providers {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+}
+
+.auth-provider {
+  font-size: 0.7em;
+  border: 1px solid transparent;
+  border-bottom: 3px solid #a0a0a0;
+  border-radius: 3px;
+  padding: 8px 12px;
+  background: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 10px;
+  width: 200px;
+  height: 45px;
+}
+
+.auth-provider:hover {
+  border-bottom: 1px solid #a0a0a0;
+}
+
+.auth-provider svg {
+  width: 24px;
+  margin-right: 10px;
+}
+
+.auth-header {
+  color: #b0b0b0;
+  font-weight: 600;
+  font-size: 1.1em;
+  text-align: center;
+}
+
+/* --------------- Leaderboard --------------- */
+
+.finished {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  text-align: center;
+  background: #101010;
+  bottom: 0;
+  position: absolute;
+  width: 100vw;
+  z-index: 10;
+}
+
+.finished-header {
+  max-height: 120px;
+}
+
+.finished-leaderboard {
+  flex: 1;
+  overflow-y: scroll;
+}
+
+.finished-auth {
+  height: auto;
+}
+
+.finished-restart {
+  align-items: center;
+  display: flex;
+  height: 60px;
+}
+
+.leaderboard-name img {
+  position: relative;
+  right: 2px;
+  margin-right: 2px;
+}
+
+.leaderboard-bottom li {
+  margin-bottom: 10px;
+  text-align: center;
+  counter-increment: listCounter;
+}
+
+.leaderboard b {
+  margin-right: 5px;
+}
+
+.leaderboard li {
+  margin-bottom: 10px;
+  text-align: center;
+  counter-increment: listCounter;
+  justify-content: space-between;
+}
+
+.leaderboard-bottom {
+  list-style: none;
+  padding: 0;
+  margin-top: 20px;
+  counter-reset: listCounter;
+  max-height: auto;
+  overflow: auto;
+}
+
+/* --------------- COLORPICKER --------------- */
+
+.pickcolor-container {
+  margin-top: 16px;
+  width: 346px;
+}
+
+/* --------------- SPEEDOMETER --------------- */
+
+.speed {
+  /* width: min-content; */
+  font-size: 2.0em;
+  font-weight: 200;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -2px;
+  display: flex;
+  align-items: start;
+  /* justify-content: end; */
+  flex-direction: column;
+  /* margin-left: 350px; */
+  padding: 2lvh 1vw;
+  position: absolute;
+  right: 0px;
+  bottom: 160px;
+  overflow: hidden;
+}
+
+.speed span {
+  font-weight: 600;
+  font-size: 1.5em;
+  letter-spacing: -5px;
+}
+
+.speed-gauge {
+  position: relative;
+  width: 200px;
+  top: 4.5vh;
+}
+
+.speed-foreground {
+  position: absolute;
+  width: 100%;
+}
+
+.speed-background {
+  position: absolute;
+  width: 100%;
+}
+
+.speed-text {
+  position: relative;
+  top: 4lvh;
+  margin-top: -4lvh;
+}
+
+.boost-bar {
+  /* position: relative; */
+  /* top: 6lvh; */
+}
+
+.boost-bg-path {
+  stroke: #132237;
+  stroke-width: 13px;
+  stroke-dasharray: 295px;
+}
+
+.boost-text {
+  color: black
+}
+
+.boost-path {
+  stroke-width: 9px;
+  stroke-dasharray: 100%;
+}
+
+.boost-path.blink {
+  animation: boostBlink 0.5s infinite;
+}
+
+@keyframes boostBlink {
+
+  100%,
+  0% {
+    stroke: #500;
+  }
+
+  60% {
+    stroke: #ff0000;
+  }
+}
+
+.boost-text {
+  stroke: #fff;
+  fill: #fff;
+  font-size: 13px;
+  letter-spacing: 0.1px;
+  font-weight: bold;
+}
+
+/* --------------- HELP --------------- */
+
+.split{
+  display: flex;
+  align-items: center;
+  text-align: center;
+  justify-self: center;
+}
+
+.Pedals {
+  padding: 0.5dvw 0.5dvh;
+  width: 280px;
+  align-items: center;
+  text-align: start;
+}
+
+.gasPedal{
+  height: 85px;
+  width: 85px;
+  background: url(/images/gasPedal.png) no-repeat;
+  background-size:contain;
+}
+
+.brakePedal{
+  height: 65px;
+  width: 65px;
+  background: url(/images/brakePedal.png) no-repeat;
+  background-size: contain;
+}
+
+/* --------------- HELP --------------- */
+
+.help {
+  position: absolute;
+  left: 1lvw;
+  top: 1lvw;
+}
+
+.popup {
+  position: fixed;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  transform: translateY(-100%);
+}
+
+.popup.open {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+.popup-close {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 101;
+}
+
+.popup-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2vh 3vw;
+  background: rgba(0, 0, 0, 0.95);
+  z-index: 100;
+  overflow: scroll;
+}
+
+.popup-item {
+  display: flex;
+  justify-content: space-between;
+  width: 274px;
+  height: 25px;
+  padding-right: 24px;
+  margin: 0em 0;
+}
+
+.popup-item:hover {
+  padding-right: 0;
+}
+
+.keys-row:hover .add-button {
+  display: flex;
+}
+
+.keys-row .add-button {
+  display: none;
+}
+
+.with-error {
+  color: rgb(112, 7, 7);
+}
+
+.popup-item-keys {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.popup-item-key {
+  position: relative;
+  min-height: auto;
+  font-size: 0.7em;
+  min-width: 24px;
+  border: 1px solid transparent;
+  border-bottom: 3px solid #a0a0a0;
+  border-radius: 3px;
+  padding: 2px 5px;
+  margin: 2px;
+  background: white;
+  color: black;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.key-button:hover:before {
+  width: 100%;
+  content: '-';
+  position: absolute;
+  background-color: #fff;
+}
+
+.hovered-item {
+  cursor: pointer;
+  background: transparent;
+  color: #999;
+  border: 1px dashed #999;
+}
+
+button {
+  min-width: 32px;
+  min-height: 32px;
+  color: inherit;
+  border: none;
+  font: inherit;
+  cursor: pointer;
+  outline: inherit;
+  background: white;
+  color: black;
+}
+
+.fullscreen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  transition: all 1s;
+  z-index: 9999;
+  overflow: scroll;
+}
+
+.stack {
+  width: 100%;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  color: #606060;
+}
+
+.bg {
+  background: #101010;
+}
+
+.fullscreen .logout {
+  background: transparent;
+  border: none;
+  width: auto;
+  color: white;
+  display: block;
+  margin: 10px auto;
+}
+
+.fullscreen .start-link {
+  text-decoration: none;
+  transition: all 1s;
+  width: 20%;
+  text-align: center;
+}
+
+.fullscreen.loading .start-link {
+  cursor: auto;
+  color: #606060;
+}
+
+.fullscreen.loaded .start-link {
+  cursor: pointer;
+  color: white;
+}
+
+.fullscreen.clicked {
+  pointer-events: none;
+  opacity: 0;
+}
+
+.pmndrs-menu {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  color: #808080;
+  padding: 40px;
+  pointer-events: none;
+  justify-content: center;
+  align-items: flex-end;
+  flex-direction: row;
+  font-size: 10px;
+  line-height: 1.5em;
+}
+
+.pmndrs-menu.left {
+  justify-content: flex-start;
+}
+
+.pmndrs-menu.right {
+  justify-content: flex-end;
+}
+
+.pmndrs-menu>div {
+  word-wrap: none;
+  word-break: none;
+  white-space: pre;
+  padding-left: 25px;
+  padding-right: 25px;
+  display: flex;
+  justify-content: flex-start;
+  align-items: flex-start;
+  flex-direction: column;
+}
+
+.pmndrs-menu>div b {
+  font-weight: 600;
+  color: #b0b0b0;
+}
+
+.pmndrs-menu a {
+  pointer-events: all;
+  cursor: pointer;
+  color: inherit;
+  text-decoration: none;
+}
+
+.pmndrs-menu a:hover {
+  text-decoration: underline;
+  color: inherit;
+}
+
+.nosound {
+  position: absolute;
+  top: 20px;
+  right: 20px;
+  height: 24px;
+  width: 24px;
+  background: url(./textures/no_sound.png) no-repeat;
+  background-size: 24px 24px;
+  opacity: 1;
+  animation: hideSoundIcon 3s forwards;
+}
+
+.key-input-wrapper {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background-color: #101010;
+  border: 1px solid #a0a0a0;
+}
+
+.key-input {
+  width: 300px;
+  height: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+@keyframes hideSoundIcon {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+@-webkit-keyframes hideSoundIcon {
+  from {
+    opacity: 1;
+  }
+
+  to {
+    opacity: 0;
+  }
+}
+
+/* MY STUFFS */
+
+.hidden {
+  display: none;
+}
+
+.wrapper {
+  /* position: relative; */
+  bottom: 0;
+}
+
+.dashboard {
+  position: absolute;
+  top: 0;
+  right: 0;
+  box-sizing: border-box;
+  /* z-index: 2; */
+  user-select: none;
+  pointer-events: none;
+  padding: 1lvh 1lvw;
+  /* display: flex; */
+  /* flex-direction: row; */
+  /* justify-content: end; */
+  align-items: start;
+  height: 100%;
+}
+
+.dash-top {
+  display: flex;
+}
+
+.dash-bottom{
+  display: flex;
+  align-items: end;
+  flex-direction: column;
+}
+
+/* fuel and temp gauge */
+
+.misc {
+  background-color: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  width: 120px;
+  height: 120px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-self: center;
+  position: relative;
+}
+
+.fuel,
+.temp {
+  position: absolute;
+}
+
+.fuel {
+  top: 0;
+}
+
+.temp {
+  bottom: 0;
+}
+
+/* 
+.three-d-container {
+  position: relative;
+  display: flex;
+  flex: 2 1;
+  width: 100%;
+}
+
+.three-d {
+  position: relative;
+  flex: 1 1;
+  width: 100%;
+} */
+
+/* button */
+
+.btn {
+  background-color: rgb(12, 42, 16);
+  /* background-image: url('../assets/binary-numbers/1921.jpg'); */
+  background-size: contain;
+  border-radius: 50%;
+  width: 45px;
+  height: 35px;
+  /* margin: .5lvh .5lvw; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: .6rem;
+  font-weight: 600;
+  color: white;
+  text-align: center;
+  text-shadow:
+    2px 2px 0 #000,
+    -2px 2px 0 #000,
+    -2px -2px 0 #000,
+    2px -2px 0 #000;
+  /* position: relative; */
+  /* filter: brightness(90%); */
+  /* opacity: 0.95; */
+  /* border: 3px solid black; */
+  /* flex: 1; */
+  border: 2px solid transparent;
+  cursor: pointer;
+}
+
+.loading {
+  /* opacity: 0.85; */
+  filter: brightness(45%);
+  border: 2px solid black;
+  pointer-events: none;
+  user-select: none;
+}
+
+.flex-row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.console {
+  height: 30dvh;
+  width: 280px;
+  z-index: 1;
+  box-sizing: border-box;
+  padding: 1lvh 1lvw;
+  display: flex;
+  flex-direction: column;
+  justify-content: end;
+  align-items: end;
+  height: 100%;
+}
+
+.disconnected {
+  background-color: #560505bc;
+}
+
+.close {
+  padding: 1lvh 1lvw;
+  margin: 1lvh 0 0;
+}
+
+.overlay {
+  position: absolute;
+  width: 100%;
+  bottom: 0;
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+}
+
+.overlay-left {
+  /* justify-content: end; */
+  /* align-items: end; */
+}
+
+.overlay-right {
+  position: absolute;
+  right: 0;
+  bottom: 0;
+  /* justify-content: end; */
+  /* align-items: end; */
+}
+
+/* fullscreen */
+
+.fullscreenPrompt {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.8);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.fullscreenPrompt button {
+  padding: 20px 40px;
+  font-size: 1.2em;
+  cursor: pointer;
+}</style><style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/src/ui/console/ConnectionState/ConnectionState.module.css">._ConnectionState_suc8y_1 {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-size: .75rem;
+    padding-left: 1lvw;
+    /* font-weight: 600; */
+    color: white;
+    text-shadow:
+        3px 3px 0 #000,
+        -3px 3px 0 #000,
+        -3px -3px 0 #000,
+        3px -3px 0 #000;
+}</style><style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/src/ui/console/ConnectionManager/ConnectionManager.module.css">._ConnectionManager_t17d7_1 {
+    display: flex;
+    flex-wrap: wrap;
+    width: 100%;
+    /* padding: 1dvh 0dvw; */
+
+}
+
+._ConnectionManager_t17d7_1 button {
+    font-size: .65rem;
+    padding: 0;
+    /* min-width: 10%; */
+    margin: 1%;
+    /* background: grey; */
+}
+
+._Grey_t17d7_17 {
+    background-color: grey;
+}
+
+._White_t17d7_21 {
+    /* style: disabled; */
+    background-color: white;
+}</style><style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/src/ui/console/Terminal/MyForm.module.css">._MyForm_1gki8_1 {
+    display: flex;
+    width: 100%;
+    /* margin: 1lvh 0lvw; */
+    box-sizing: border-box;
+    flex-wrap: wrap;
+    justify-content: start;
+}
+
+._MyForm_1gki8_1 input {
+    min-width: 75%;
+}
+
+._MyForm_1gki8_1 button {
+    min-width: 25%;
+}</style><style type="text/css" data-vite-dev-id="/Users/uri/Documents/Projects/CarHacking/frontend/src/ui/console/log/Log.module.css">._Log_ss3g4_1 {
+    color: rgba(255, 255, 255, 0.95);
+    /* overflow-y: scroll; */
+    display: flex;
+    align-items: start;
+    justify-content: flex-end;
+    flex-direction: column;
+    height: 25dvh;
+    pointer-events: all;
+    user-select: all;
+    word-break: break-all;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.663);
+}
+
+._Messages_ss3g4_16 {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow: auto;
+    font-size: .65rem;
+}</style><style></style></head>
+  <body>
+    <div id="root"><div style="position: relative; width: 100%; height: 100%; overflow: hidden; pointer-events: auto;"><div style="width: 100%; height: 100%;"><canvas data-engine="three.js r153" width="1752" height="802" style="display: block; width: 1168px; height: 535px;"></canvas></div></div><div class="clock"><span>0.00</span></div><div class="sound"></div><div class="help"><button>i</button><div class="popup "><button class="popup-close">i</button><div class="popup-content"><div><div class="keys-row popup-item"><div>Forward</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8593;</span></button><button class="key-button popup-item-key"><span>W</span></button><button class="key-button popup-item-key"><span>Z</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Backward</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8595;</span></button><button class="key-button popup-item-key"><span>S</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Left</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8592;</span></button><button class="key-button popup-item-key"><span>A</span></button><button class="key-button popup-item-key"><span>Q</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Right</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8594;</span></button><button class="key-button popup-item-key"><span>D</span></button><button class="key-button popup-item-key"><span>E</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Drift</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>Space &#9251;</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Honk</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>H</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Turbo Boost</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>Shift &#8679;</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Reset</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>R</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Editor</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>,</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Help</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>I</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Leaderboards</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>L</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Map</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>M</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Pick Car Color</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>P</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Toggle Mute</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>U</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Toggle Camera</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>C</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Headlights</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>F</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Left Blinker</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>1</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Right Blinker</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>2</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Hazards</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>3</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div></div></div></div></div><div class="speed"><div class="speed-gauge"><svg class="speed-background" width="286" height="55" viewBox="0 0 286 55" fill="none" xmlns="http://www.w3.org/2000/svg"><defs><lineargradient id="progress" x1="1" y1="0" x2="0" y2="0"><stop id="stop1" offset="1.00" stop-color="#1B3049"></stop><stop id="stop2" stop-color="#3EB4C8"></stop></lineargradient></defs><path fill-rule="evenodd" clip-rule="evenodd" d="M0 40c175.256-2.308 227.867-13.823 286-40v55H0V40z" fill="url(#progress)"></path></svg><svg class="speed-foreground" width="286" height="55" viewBox="0 0 286 55" fill="none" xmlns="http://www.w3.org/2000/svg"><path fill-rule="evenodd" clip-rule="evenodd" d="M0 40c175.256-2.308 227.867-13.823 286-40v55H0V40zm7.5 9.5v-5h9v5h-9zm24 0h-8v-5h8v5zm7-5v5h9v-5h-9zm16 0v5h9v-5h-9zm16-1v6h8v-6h-8zm16 0v6h8v-6h-8zm24 6h-9v-7h9v7zm15 0h-8v-8h8v8zm16 0h-9v-10h9v10zm16 0h-9v-11h9v11zm15 0h-9v-13l9-.5v13.5zm16 0h-9v-15l9-1v16zm15 0h-9v-17l9-1v18zm16 0h-10v-19l10-1v20zm16 0h-10v-21l10-2v23zm15.5 0h-9.5v-25L251 22v27.5zm16 0h-10v-29l10-3.5v32.5zm16 0h-10V15l10-4v38.5z" fill="#132237"></path></svg></div><div class="speed-text"><span>0</span> mph</div><div class="boost-bar"><svg width="90" height="25" viewBox="0 0 105 25" xmlns="http://www.w3.org/2000/svg"><path class="boost-bg-path" d="M13,12 L90,12"></path><path class="boost-path" d="M15,12 L80,12" style="stroke: rgb(0, 255, 0); stroke-dashoffset: 0.22;"></path><text class="boost-text" x="0" y="17px"><tspan>N</tspan></text></svg></div></div><div class="leaderboard popup "><button class="popup-close">L</button><ul class="popup-content leaderboard-bottom"></ul></div><div class="pickcolor popup "><button class="popup-close">P</button><div class="pickcolor-container popup-content"></div></div><div class="fullscreen bg loaded clicked"><div class="stack"><div class="intro-keys"><div style="padding-bottom: 20px;"><div class="keys-row popup-item"><div>Forward</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8593;</span></button><button class="key-button popup-item-key"><span>W</span></button><button class="key-button popup-item-key"><span>Z</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Backward</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8595;</span></button><button class="key-button popup-item-key"><span>S</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Left</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8592;</span></button><button class="key-button popup-item-key"><span>A</span></button><button class="key-button popup-item-key"><span>Q</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Right</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>&#8594;</span></button><button class="key-button popup-item-key"><span>D</span></button><button class="key-button popup-item-key"><span>E</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Drift</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>Space &#9251;</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Honk</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>H</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Turbo Boost</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>Shift &#8679;</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Reset</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>R</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Editor</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>,</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Help</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>I</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Leaderboards</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>L</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Map</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>M</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Pick Car Color</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>P</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Toggle Mute</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>U</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Toggle Camera</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>C</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Headlights</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>F</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Left Blinker</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>1</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Right Blinker</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>2</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div><div class="keys-row popup-item"><div>Hazards</div><div class="popup-item-keys"><button class="key-button popup-item-key"><span>3</span></button><button class="add-button popup-item-key hovered-item"><span>+</span></button></div></div></div></div><a class="start-link" href="http://localhost:5173/#">Click to start</a></div></div><div class="overlay"><div class="overlay-left"><div class="console "><div class="command"><div><div class="flex-row"><div class="btn">Start Sim</div><div class="btn">Hack Car</div><div class="btn">Reload Node</div><div class="btn">Reload UI</div><div class="btn">Abort</div></div></div></div><div class="_Log_ss3g4_1"><div class="_Messages_ss3g4_16"><div></div></div></div><form class="_MyForm_1gki8_1"><input placeholder="$"><button type="submit">Enter</button></form><div class="_ConnectionManager_t17d7_1"><button class="_Grey_t17d7_17">On</button><button class="_White_t17d7_21">Off</button><div class="_ConnectionState_suc8y_1">SocketIO Status: Live</div></div></div></div><div class="overlay-right"><div class="Pedals"><div><label for="gasPedal">Gas Pedal:</label><input type="range" id="gasPedal" min="0" max="100" value="0"><span>0%</span></div><div><label for="brakePedal">Brake Pedal:</label><input type="range" id="brakePedal" min="0" max="100" value="0"><span>0%</span></div><div class="split"><div class="brakePedal" style="background-image: url(&quot;/images/brakePedal.png&quot;);"></div><div class="gasPedal" style="background-image: url(&quot;/images/gasPedal.png&quot;);"></div></div></div></div></div></div>
+    <script type="module" src="./CarSim_files/main.tsx"></script>
+  
+
+</body></html>

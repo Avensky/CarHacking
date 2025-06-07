@@ -7,7 +7,19 @@ function setupSocketIO(io) {
     console.log('Client connected:', socket.id);
     //eslint-disable-next-line
     const vehicle = createVehicle(socket.id);
-    inputs[socket.id] = { forward: false, backward: false, left: false, right: false, brake: false };
+    inputs[socket.id] =
+    {
+      forward: false,
+      backward: false,
+      left: false,
+      right: false,
+      brake: false,
+      reset: false,
+      headlights: false,
+      blinkerLeft: false,
+      blinkerRight: false,
+      hazards: false,
+    }
 
     socket.on('controls', (data) => {
       console.log(data);
