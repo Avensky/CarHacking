@@ -150,6 +150,7 @@ type Actions = BooleanActions &
   }
 
 export interface IState extends BaseState {
+  [x: string]: any
   actions: Actions
   api: PublicApi | null
   bestCheckpoint: number
