@@ -23,6 +23,11 @@ interface PhysicsData {
     position: { x: number; y: number; z: number }
     quaternion: { x: number; y: number; z: number; w: number }
   }
+  data: {
+    speed: number
+    steeringValue: number
+
+  }
   wheelInfos: Array<{
     position: { x: number; y: number; z: number }
     quaternion: { x: number; y: number; z: number; w: number }
@@ -199,7 +204,6 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
 
   // Update transformations every frame ie. chassis
   useFrame((_, delta) => {
-
     camera = getState().camera
     editor = getState().editor
     controls = getState().controls
@@ -274,18 +278,19 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
 
     if (!editor) {
       if (camera === 'FIRST_PERSON') {
-        v.set(0.3 + (Math.sin(-steeringValue) * speed) / 30, 1, -0.08)
+        v.set(0.3, 1, .08)
+        // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
       } else if (camera === 'DEFAULT') {
         v.set(0, 3, 6)
-        v.set((Math.sin(steeringValue) * speed) / 2.5, 1.25 + (engineValue / 1000) * -0.5, -5 - speed / 15 + (controls.brake ? 1 : 0))
+        // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
       }
 
       // moves camera to user
       defaultCamera.position.lerp(v, delta)
       defaultCamera.rotation.z = lerp(
         defaultCamera.rotation.z,
-        (camera !== 'BIRD_EYE' ? 0 : Math.PI)
-        + (-steeringValue * speed) / (camera === 'DEFAULT' ? 30 : 55),
+        (camera !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+        + (-physicsData.data.steeringValue * physicsData.data.speed) / (camera === 'DEFAULT' ? 30 : 55),
         delta,
       )
     }
@@ -315,11 +320,11 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
       {/* Vehicle */}
       <group ref={carGroupRef} >
         {/* <ToggledAccelerateAudio /> */}
-        <BoostAudio />
-        <BrakeAudio />
+        {/* <BoostAudio /> */}
+        {/* <BrakeAudio /> */}
         {/* <ToggledEngineAudio /> */}
-        <HonkAudio />
-        <Boost />
+        {/* <HonkAudio /> */}
+        {/* <Boost /> */}
         {children}
       </group>
       {/* <axesHelper args={[0.5]} /> */}
@@ -327,8 +332,8 @@ export default forwardRef(function Vehicle({ children }: VehicleProps, ref: Reac
       {wheels.map((wheel, i) =>
         wheel ? <primitive key={i} object={wheel} /> : null
       )}
-      <Dust />
-      <Skid />
+      {/* <Dust /> */}
+      {/* <Skid /> */}
     </>
   )
 })

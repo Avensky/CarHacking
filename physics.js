@@ -1,5 +1,6 @@
 const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane, Quaternion } = require('cannon-es');
 
+const snapshots = {};
 // world
 const world = new World();
 world.gravity.set(0, -9.82, 0);
@@ -227,7 +228,8 @@ function updateVehicleInputs(id, control) {
   const newSteer = currentSteer + (targetSteer - currentSteer) * lerpSpeed;
 
   steeringState[id] = newSteer;
-
+  vehicle.steeringValue = newSteer
+  vehicle.engineValue = 1
   vehicle.setSteeringValue(newSteer, 0)
   vehicle.setSteeringValue(newSteer, 1)
 
@@ -277,7 +279,6 @@ function stepWorld() {
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
     // console.log("rotation", vehicle.wheelInfos[0].deltaRotation)
     const chassis = {
-      rotation: { ...chassisBody.rotation },
       position: { ...chassisBody.position },
       quaternion: { ...chassisBody.quaternion },
     };
@@ -289,14 +290,20 @@ function stepWorld() {
     // vehicle.wheelInfos.forEach((w, i) => {
     //   console.log(`wheel[${i}].isInContact =`, w.isInContact);
     // });
+    const velocity = vehicle.chassisBody.velocity;
+    speed = velocity.length(); // in meters per second (m/s)
 
     snapshots[id] = {
       chassisBody: {
         position: chassis.position,
         quaternion: chassis.quaternion,
-        rotation: chassis.rotation,
         velocity: { ...chassisBody.velocity },
         angularVelocity: { ...chassisBody.angularVelocity }
+      },
+      data: {
+        speed: speed,
+        steeringValue: vehicle.steeringValue,
+        engineValue: vehicle.engineValue,
       },
       wheelInfos
     };

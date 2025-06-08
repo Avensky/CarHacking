@@ -18,7 +18,7 @@ export function Cameras() {
         position={[0, 15, 25]} />
       <OrthographicCamera
         makeDefault={!editor && camera === 'BIRD_EYE'}
-        position={[0, 150, 0]}
+        position={[0, 50, 0]}
         rotation={[(-1 * Math.PI) / 2, 0, 0]}
         zoom={15} />
     </>
