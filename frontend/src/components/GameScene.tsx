@@ -24,7 +24,7 @@ const vehicleMap = {
     tank: Tank,
 };
 
-export default function GameScene({ vehicle: VehicleComponent, map }) {
+export default function GameScene({ vehicle: VehicleComponent, map: MapComponent }) {
 
     const layers = new Layers()
     layers.enable(levelLayer)
@@ -82,7 +82,6 @@ export default function GameScene({ vehicle: VehicleComponent, map }) {
             shadows={shadows}
             camera={{ position: [0, 5, 15], fov: 50 }}
         >
-            {/* <Suspense fallback={null}> */}
             {/* <Intro> */}
             {/* <fog attach="fog" args={['white', 50, 100]} /> */}
             {/* <color attach="background" args={['#171720']} /> */}
@@ -107,8 +106,11 @@ export default function GameScene({ vehicle: VehicleComponent, map }) {
                             position={[0, 20, 20]}
                         /> */}
             {/* <ToggledDebug> */}
-            <VehicleComponent />
-            {/* </ToggledDebug> */}
+            <Suspense fallback={null}>
+                <VehicleComponent />
+                <MapComponent />
+                {/* </ToggledDebug> */}
+            </Suspense >
 
             {/* <Environment preset="night" /> */}
             {/* <Environment files="textures/dikhololo_night_1k.hdr" /> */}
@@ -126,7 +128,6 @@ export default function GameScene({ vehicle: VehicleComponent, map }) {
             {/* <HideMouse /> */}
 
             {/* </Intro > */}
-            {/* </Suspense > */}
         </Canvas >
     </>
     )

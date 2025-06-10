@@ -7,7 +7,7 @@ import { App } from './App';
 // Preload 3D models
 useGLTF.preload('/models/city_rtx.glb');
 useGLTF.preload('/models/cars/ae86Rotated.glb');
-useGLTF.preload('/models/scene.glb');
+useGLTF.preload('/models/city_time_square.glb');
 // Render the React app
 createRoot(document.getElementById('root')!).render(<App />);
 

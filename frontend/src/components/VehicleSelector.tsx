@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { Suspense, useState } from 'react';
 import { Canvas } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import { socket } from '../socket';
@@ -49,7 +49,9 @@ export default function VehicleSelector({ playerId, onSpawn }) {
                 <ambientLight intensity={0.5} />
                 <directionalLight position={[5, 5, 5]} />
                 <OrbitControls enableZoom={false} />
-                <VehiclePreview index={selectedIndex} />
+                <Suspense fallback={null}>
+                    <VehiclePreview index={selectedIndex} />
+                </Suspense>
             </Canvas>
             {/* UI controls fixed on screen */}
             <div

@@ -39,14 +39,7 @@ let editor: boolean
 let controls: Controls
 
 // In Vehicle.tsx
-export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.Ref<Group>) {
-
-    const physics = useStore((s) => s.physicsData?.data)
-    const chassisBody = useStore((s) => s.physicsData?.chassisBody)
-    const wheelInfos = useStore((s) => s.physicsData?.wheelInfos)
-    const speed = getState().physicsData?.data.speed ?? 0;
-    const steeringValue = physics?.steeringValue ?? 0;
-    const engineValue = physics?.engineValue ?? 0; // todo: move logic to recieve from backend
+export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
     const v = new Vector3()
 
     useImperativeHandle(ref, () => carGroupRef.current, [])
@@ -63,24 +56,13 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
     const rearLeftBlinkerRef = useRef<SpotLight>(null!)
     const rearRightBlinkerRef = useRef<SpotLight>(null!)
 
-    // const controls = useControls({
-    //   stiffness: { value: 60, min: 10, max: 200 },
-    //   damping: { value: 5, min: 1, max: 10 },
-    //   restLength: { value: 0.18, min: 0.1, max: 0.4 }
-    // })
-
     const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
-    // const controls = useControls() // this activates controls
+
     const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
     const [headlightsOn, setHeadlightsOn] = useState(false);
     const [leftBlinker, setLeftBlinker] = useState(false);
     const [rightBlinker, setRightBlinker] = useState(false);
     const [hazards, setHazards] = useState(false);
-
-    // But carGroup is a raw THREE.Group created in useMemo, and it does not get attached 
-    // to the scene graph automatically via React. useMemo runs before React renders, and 
-    // carGroup doesn't retain its own stateful reference or lifecycle hooks unless you 
-    // treat it properly inside the render tree.
 
     useEffect(() => {
         const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
@@ -92,13 +74,6 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
                 carGroupRef.current.add(cloned)
             }
         })
-
-        // carGroupRef.current.traverse(obj => {
-        //   if (obj.isMesh) {
-        //     obj.material.emissive = new Color('white')
-        //     obj.material.emissiveIntensity = 2
-        //   }
-        // })
 
         // Create left headlight
         leftLightRef.current = new SpotLight(0xffffff, 3, 20, Math.PI / 6, 0.2)
@@ -119,7 +94,6 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
         rightLight.visible = headlightsOn
         carGroupRef.current.add(rightLight)
         carGroupRef.current.add(rightLight.target)
-
 
         // Left tail light
         leftTailLightRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
@@ -170,8 +144,6 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
         rearLeftBlinker.target.updateMatrixWorld()
         carGroupRef.current.add(rearLeftBlinker)
         carGroupRef.current.add(rearLeftBlinker.target)
-
-
 
         // rear Right blinker (orange)
         rearRightBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 6, 0.3)
@@ -272,8 +244,6 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
                 wheel.quaternion.w
             )
         })
-
-
         if (!editor) {
             if (camera === 'FIRST_PERSON') {
                 v.set(0.3, 1, .08)
@@ -292,7 +262,6 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
                 delta,
             )
         }
-
     })
 
     // Headlights
@@ -335,5 +304,3 @@ export default forwardRef(function Ae86({ children }: VehicleProps, ref: React.R
         </>
     )
 })
-
-useGLTF.preload('/models/cars/ae86Rotated.glb');

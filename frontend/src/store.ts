@@ -27,7 +27,7 @@ export const vehicleConfig = {
   //   steer: 0.3,
   //   force: 1000,
   //   maxBrake: 65,
-  // maxSpeed: 80,
+  //   maxSpeed: 80,
 } as const
 // types.ts
 export type Screen = 'vehicle-select' | 'map-select' | 'game';

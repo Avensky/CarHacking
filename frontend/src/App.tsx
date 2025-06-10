@@ -27,7 +27,6 @@ import socket from './socket';
 // import City from './models/City';
 // import Ground from './models/Ground';
 import * as THREE from 'three';
-const url = '/models/ccity_building_set_1.glb';
 // import { InstancedMesh } from 'three';
 // import { useMemo } from 'react';
 // import { clone } from 'lodash-es';
@@ -74,9 +73,10 @@ import Matrix from './components/Matrix';
 import Ae86 from './models/RaycastVehicle/Ae86';
 import Camaro from './models/RaycastVehicle/Camaro';
 import Tank from './models/RaycastVehicle/Tank';
-
-
-
+import Rtx from './models/environments/Rtx';
+import TimesSquare from './models/environments/TimesSquare';
+import City from './models/environments/City';
+import { map } from 'lodash-es';
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }> {
   state = { hasError: false }
@@ -94,81 +94,24 @@ class ErrorBoundary extends React.Component<{ children: ReactNode }> {
   }
 }
 
-export function City({ position, scale = 1 }: CityProps) {
-  const gltf = useGLTF('/models/ccity_building_set_1.glb');
-  const cityRef = useRef<Object3D>();
-
-
-  useEffect(() => {
-    if (cityRef.current) {
-      cityRef.current.position.set(...position);
-      cityRef.current.scale.set(scale, scale, scale);
-    }
-  }, [position, scale]);
-
-  return (
-    <primitive
-      // key={id}
-      ref={cityRef}
-      object={gltf.scene.clone()}
-    />
-
-  );
-}
-
-function TiledScene({ size, scale, tileCount }: TileProps) {
-  // Define grid parameters
-  const width = size.x * .0065; // Distance between cities
-  const depth = size.z * .0065; // Distance between cities
-  return (
-    <>
-      {[...Array(tileCount)].map((_, i) =>
-        [...Array(tileCount)].map((_, j) => (
-          <City
-            key={`${i}-${j}`}
-            scale={scale}
-            size={size}
-            position={[(i * width) + 69.55, 0, (j * depth) + 69.55]}
-          />
-        ))
-      )}
-    </>
-  );
-}
-
-
-function Pillar(props: CylinderProps) {
-  const args: CylinderArgs = [0.7, 0.7, 5, 16]
-  const [ref] = useCylinder<Mesh>(
-    () => ({
-      args,
-      mass: 10,
-      ...props,
-    }),
-    useRef<Mesh>(null),
-  )
-  return (
-    <mesh ref={ref} castShadow>
-      <cylinderGeometry args={args} />
-      <meshNormalMaterial />
-    </mesh>
-  )
-}
-
-
-
 export function App(): JSX.Element {
   const vehicleMap = {
     ae86: Ae86,
     camaro: Camaro,
     tank: Tank,
   };
+
+  const mapComponentMap = {
+    rtx: Rtx,
+    timessquare: TimesSquare,
+    city: City
+  };
   // const layers = new Layers()
   // layers.enable(levelLayer)
 
   const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
   const [screen, setScreen] = useState<Screen>("vehicle-select");
-  const [selectedVehicle, setSelectedVehicle] = useState<"ae86" | "tank" | "camaro" | null>(null);
+  const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
   const [gameMode, setGameMode] = useState<string | null>(null);
   const [light, setLight] = useState<DirectionalLight | null>(null)
@@ -181,8 +124,6 @@ export function App(): JSX.Element {
   const ToggledMap = useToggle(Minimap, 'map')
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   const ToggledStats = useToggle(Stats, 'stats')
-
-
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -210,22 +151,22 @@ export function App(): JSX.Element {
     function onCmdEvent(value: any) {
       // setCmdEvents((previous) => [...previous, value]);
     }
+    const handlePhysicsUpdate = (data: PhysicsData) => {
+      setPhysicsData(data)
+    }
+    const handleSpawnVehicle = (data: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
+      console.log('spanwn vehicle', data);
+      setSelectedVehicle(data)
+    }
 
     // socket.on('move', onMove);
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
     socket.on('cmdData', onCmdEvent);
     socket.on('error', onError);
-    const handlePhysicsUpdate = (data: PhysicsData) => {
-      setPhysicsData(data)
-    }
-    const handleSpawnVehicle = (data: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
-      console.log('data', data);
-      setSelectedVehicle(data)
-    }
-
     socket.on('physicsUpdate', handlePhysicsUpdate)
     socket.on('spawnVehicle', handleSpawnVehicle)
+
     return () => {
       socket.off('spawnVehicle', handleSpawnVehicle);
       socket.off('physicsUpdate', handlePhysicsUpdate);
@@ -242,8 +183,8 @@ export function App(): JSX.Element {
       {/* Switch canvas to Matrix upon disconnect */}
       <ErrorBoundary >
         {/* ✅ Background effect */}
-        <Matrix />
-
+        {!socket.id && (<Matrix />)}
+        {/* <Canvas camera={{ position: [0, 2, 8], fov: 50 }}> */}
         {screen === 'vehicle-select' && (
           <VehicleSelector
             playerId={socket.id}
@@ -254,23 +195,25 @@ export function App(): JSX.Element {
           />
         )}
         {screen === 'map-select' && (
-          <div style={{ position: 'absolute', width: '100%', height: '100vh' }}>
-            <Canvas camera={{ position: [0, 2, 6], fov: 50 }}>
-              <MapSelector
-                onSelect={(mapId) => {
-                  setSelectedMap(mapId);
-                  setScreen('game');
-                }}
-                onBack={() => setScreen('vehicle-select')}
-              />
-            </Canvas>
-          </div>
+          <Suspense fallback={null}>
+            <MapSelector
+              onSelect={(mapId) => {
+                console.log('mapId', mapId);
+                setSelectedMap(mapId);
+                console.log('set game screen');
+                setScreen('game');
+              }}
+              onBack={() => setScreen('vehicle-select')}
+            />
+          </Suspense>
         )}
-
         {screen === 'game' && selectedVehicle && selectedMap && (
-          <GameScene vehicle={vehicleMap[selectedVehicle]} map={selectedMap} />
+          <GameScene
+            vehicle={vehicleMap[selectedVehicle]}
+            map={mapComponentMap[selectedMap]} // ✅ Pass the component here} 
+          />
         )}
-
+        {/* </Canvas> */}
         <Keyboard />
         {/* <Dashboard physics={ physics }/> */}
         {/* <Clock /> */}
