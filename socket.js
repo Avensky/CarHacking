@@ -6,7 +6,7 @@ function setupSocketIO(io) {
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
     //eslint-disable-next-line
-    const vehicle = createVehicle(socket.id);
+
     inputs[socket.id] =
     {
       forward: false,
@@ -21,6 +21,10 @@ function setupSocketIO(io) {
       hazards: false,
     }
 
+    socket.on('spawnVehicle', (data) => {
+      console.log(data);
+      const vehicle = createVehicle(socket.id, data);
+    });
     socket.on('controls', (data) => {
       console.log(data);
       inputs[socket.id] = data;

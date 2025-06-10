@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 
-export function Matrix(): JSX.Element {
+export default function Matrix(): JSX.Element {
   const canvasRef = useRef(null)
 
   useEffect(() => {
@@ -84,5 +84,17 @@ export function Matrix(): JSX.Element {
     }
   }, [])
 
-  return <canvas className="matrix-canvas fixed top-0 left-0 z-[-1]" ref={canvasRef}></canvas>
+  return <canvas
+    className="matrix-canvas"
+    ref={canvasRef}
+    style={{
+      position: 'fixed',
+      top: 0,
+      left: 0,
+      width: '100vw',
+      height: '100vh',
+      zIndex: -1,
+      pointerEvents: 'none',
+    }}
+  />
 }

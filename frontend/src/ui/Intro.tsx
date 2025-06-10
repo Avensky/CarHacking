@@ -6,6 +6,7 @@ import type { ReactNode } from 'react'
 import { useStore } from '../store'
 import { Keys } from './Keys'
 // import { Auth } from './Auth'
+import { Html } from "@react-three/drei"
 
 export function Intro({ children }: { children: ReactNode }): JSX.Element {
   const [clicked, setClicked] = useState(false)
@@ -26,8 +27,9 @@ export function Intro({ children }: { children: ReactNode }): JSX.Element {
   }, [])
 
   return (
-    <>
-      <Suspense fallback={null}>{children}</Suspense>
+    <Html>
+      {children}
+      {/* <Suspense fallback={null}>{children}</Suspense> */}
       <div className={`fullscreen bg ${loading ? 'loading' : 'loaded'} ${clicked && 'clicked'}`}>
         <div className="stack">
           <div className="intro-keys">
@@ -46,6 +48,6 @@ export function Intro({ children }: { children: ReactNode }): JSX.Element {
           )} */}
         </div>
       </div>
-    </>
+    </Html>
   )
 }

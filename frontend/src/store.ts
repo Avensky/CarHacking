@@ -18,7 +18,7 @@ export const maxBoost = 100 as const
 export const position = [-200, 0.75, -45] as const
 // rotate plane horizontal
 export const rotation = [0, Math.PI / 2, 0] as const
-import socket from './socket'
+// import socket from './socket'
 export const vehicleConfig = {
   //   width: 1.7,
   //   height: -0.3,
@@ -29,7 +29,8 @@ export const vehicleConfig = {
   //   maxBrake: 65,
   // maxSpeed: 80,
 } as const
-
+// types.ts
+export type Screen = 'vehicle-select' | 'map-select' | 'game';
 type VehicleConfig = typeof vehicleConfig
 
 // export type WheelInfo = Required<

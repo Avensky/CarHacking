@@ -1,5 +1,5 @@
 const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane, Quaternion } = require('cannon-es');
-
+const getVehicleConfig = require('./utils/vehicleConfigs')
 const snapshots = {};
 // world
 const world = new World();
@@ -53,75 +53,35 @@ const brakeState = {}; // key: id, value: current brake force
 
 
 // Wheel Config
-const axleLocal = new Vec3(-1, 0, 0)
-const compressionFactor = .7;
-const dampingRelaxation = 6.5       // resistance during compr=ssion
-const dampingCompression = 6.5       // resistance on r=bound
-const directionLocal = new Vec3(0, -1, 0)
-const frictionSlip = 8.5
-const suspensionStiffness = 150
-const suspensionRestLength = 0.18
-const maxSuspensionForce = 100000
-const maxSuspensionTravel = 0.3
-const radius = 0.623
-const rollInfluence = 0.01
-const chassisConnectionPointLocal = new Vec3()
-const isFrontWheel = true
 
-// vehicleConfig
-const length = 4.21   // <- Match AE86 GLB
-const width = 1.92    // <- Match AE86 GLB
-const height = 1.28   // <- Match AE86 GLB
-const chassisMass = 250
-const chassisShape = new Box(new Vec3(width / 2, height / 2, length / 2));
-const indexRightAxis = 0 // X
-const indexUpAxis = 1   // Y
-const indexForwardAxis = 1 // Z
-const rideHeight = radius + suspensionRestLength * compressionFactor; // Midway compression
-const position = new Vec3(10, rideHeight, 0) // spawn
-const rotation = new Vec3(0, Math.PI, 0)
-const wheelHalfTrack = width / 2 - 0.25 // Distance from center to side
-const wheelBase = 2.41 // Distance front to back
 
-// Options
-const steer = 0.3
-const maxSteer = 0.5
-const force = 1800
-const maxBrake = 65
-const maxSpeed = 88
-const maxForce = 500;
-const maxBrakeForce = 25;
-const brakeLerpSpeed = 0.25; // Smoothing factor
-const angularVelocity = [0, 0.5, 0]
-const maxBoost = 100
-const cameras = ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE']
-const dpr = 1.5
-const levelLayer = 1
-
-function createVehicle(id) {
+function createVehicle(id, type) {
+  const config = getVehicleConfig(type);
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
 
   const wheelOptions = {
-    radius: radius,
-    directionLocal: directionLocal, // Down
-    suspensionStiffness: suspensionStiffness,
-    suspensionRestLength: suspensionRestLength,
-    frictionSlip: frictionSlip,
-    dampingRelaxation: dampingRelaxation,       // resistance during compression
-    dampingCompression: dampingCompression,       // resistance on rebound
-    maxSuspensionForce: maxSuspensionForce,
-    maxSuspensionTravel: maxSuspensionTravel,
-    rollInfluence: rollInfluence,
-    axleLocal: axleLocal, // Left
-    chassisConnectionPointLocal: chassisConnectionPointLocal, // set below
-    isFrontWheel: isFrontWheel
+    radius: config.radius,
+    directionLocal: config.directionLocal, // Down
+    suspensionStiffness: config.suspensionStiffness,
+    suspensionRestLength: config.suspensionRestLength,
+    frictionSlip: config.frictionSlip,
+    dampingRelaxation: config.dampingRelaxation,       // resistance during compression
+    dampingCompression: config.dampingCompression,       // resistance on rebound
+    maxSuspensionForce: config.maxSuspensionForce,
+    maxSuspensionTravel: config.maxSuspensionTravel,
+    rollInfluence: config.rollInfluence,
+    axleLocal: config.axleLocal, // Left
+    chassisConnectionPointLocal: config.chassisConnectionPointLocal, // set below
+    isFrontWheel: config.isFrontWheel
   }
 
+  const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
+  const rideHeight = config.radius + config.suspensionRestLength * config.compressionFactor // Midway compression
   const chassisBody = new Body({
-    mass: chassisMass,
-    position: position,
-    rotation: rotation,
+    mass: config.chassisMass,
+    position: new Vec3(0, rideHeight, 0),// spawn
+    rotation: config.rotation,
     collisionFilterGroup: 1,
     collisionFilterMask: 0,
     shape: chassisShape
@@ -129,10 +89,13 @@ function createVehicle(id) {
 
   const vehicle = new RaycastVehicle({
     chassisBody,
-    indexRightAxis: indexRightAxis, // X
-    indexUpAxis: indexUpAxis,    // Y
-    indexForwardAxis: indexForwardAxis // Z
+    indexRightAxis: config.indexRightAxis, // X
+    indexUpAxis: config.indexUpAxis,    // Y
+    indexForwardAxis: config.indexForwardAxis // Z
   });
+
+  const wheelHalfTrack = config.width / 2 - config.wheelHalfTrackOffset
+  const wheelBase = config.wheelBase
   const frontLeft = {
     ...wheelOptions,
     chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, 0, -wheelBase / 2), isFrontWheel: true
@@ -178,9 +141,10 @@ function createVehicle(id) {
 
 
 
-function updateVehicleInputs(id, control) {
+function updateVehicleInputs(id, control, type) {
   const { vehicle } = vehicles[id] || {};
   if (!vehicle) return;
+  const config = getVehicleConfig(vehicle.type);
 
   brakeState[id] = brakeState[id] || 0;
 
@@ -205,11 +169,11 @@ function updateVehicleInputs(id, control) {
   }
   // Controls
   if (control.forward) {
-    vehicle.applyEngineForce(+maxForce, 2)
-    vehicle.applyEngineForce(+maxForce, 3)
+    vehicle.applyEngineForce(+config.maxForce, 2)
+    vehicle.applyEngineForce(+config.maxForce, 3)
   } else if (control.backward) {
-    vehicle.applyEngineForce(-maxForce, 2)
-    vehicle.applyEngineForce(-maxForce, 3)
+    vehicle.applyEngineForce(-config.maxForce, 2)
+    vehicle.applyEngineForce(-config.maxForce, 3)
   } else {
     vehicle.applyEngineForce(0, 2)
     vehicle.applyEngineForce(0, 3)
@@ -217,9 +181,9 @@ function updateVehicleInputs(id, control) {
 
   let targetSteer = 0;
   if (control.left) {
-    targetSteer = +maxSteer;
+    targetSteer = +config.maxSteer;
   } else if (control.right) {
-    targetSteer = -maxSteer;
+    targetSteer = -config.maxSteer;
   }
 
   // Lerp toward target steer
@@ -234,11 +198,11 @@ function updateVehicleInputs(id, control) {
   vehicle.setSteeringValue(newSteer, 1)
 
   const braking = control.brake && !control.forward;
-  const targetBrake = braking ? maxBrakeForce : 0;
+  const targetBrake = braking ? config.maxBrakeForce : 0;
 
   // Smooth brake force application
   const currentBrake = brakeState[id] ?? 0;
-  const newBrake = currentBrake + (targetBrake - currentBrake) * brakeLerpSpeed;
+  const newBrake = currentBrake + (targetBrake - currentBrake) * config.brakeLerpSpeed;
   brakeState[id] = newBrake;
 
   //This mimics rear-wheel braking bias on older cars like the AE86.
@@ -252,7 +216,7 @@ function updateVehicleInputs(id, control) {
     vehicle.setBrake(newBrake * 0.8, i); // stronger rear brake
   }
 
-  // for handbreak
+  // for handbrake
   if (control.handbrake) {
     rearWheels.forEach(i => vehicle.setBrake(1.5 * maxBrakeForce, i));
   }

@@ -13,28 +13,33 @@ import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@reac
 import { levelLayer, useStore } from './store'
 
 import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
-import { Cameras } from './effects';
+// import { Cameras } from './effects';
 
 import { HideMouse, Keyboard } from './controls';
 // import { Vehicle } from './models/index';
 import { useToggle } from './useToggle';
-import { useToggledControl } from './use-toggled-control'
-import { Matrix } from './components/Matrix';
+// import { useToggledControl } from './use-toggled-control'
+// import { Matrix } from './components/Matrix';
 import { UI } from './ui/UI';
-import { Dashboard } from './ui/dashboard/Dashboard';
+// import { Dashboard } from './ui/dashboard/Dashboard';
 import socket from './socket';
-import Vehicle from './models/RaycastVehicle/Vehicle';
+// import Vehicle from './models/RaycastVehicle/Vehicle';
 // import City from './models/City';
 // import Ground from './models/Ground';
 import * as THREE from 'three';
 const url = '/models/ccity_building_set_1.glb';
-import { InstancedMesh } from 'three';
-import { useMemo } from 'react';
-import { clone } from 'lodash-es';
-import { connected } from 'process';
-const layers = new Layers()
-layers.enable(levelLayer)
+// import { InstancedMesh } from 'three';
+// import { useMemo } from 'react';
+// import { clone } from 'lodash-es';
+// import { connected } from 'process';
 
+// import VehicleSelector from "./components/VehicleSelector"; // update path as needed
+import MapSelector from "./components/MapSelector";
+// import GameModeSelector from "./components/GameModeSelector";
+import GameScene from "./components/GameScene"; // your main game view
+// import { Screen } from "./types";
+import { Html } from '@react-three/drei';
+type Screen = 'vehicle-select' | 'map-select' | 'game';
 
 interface CityProps {
   size: THREE.Vector3;
@@ -64,6 +69,11 @@ interface PhysicsData {
 
 import React from 'react'
 import type { ReactNode } from 'react';
+import VehicleSelector from './components/VehicleSelector';
+import Matrix from './components/Matrix';
+import Ae86 from './models/RaycastVehicle/Ae86';
+import Camaro from './models/RaycastVehicle/Camaro';
+import Tank from './models/RaycastVehicle/Tank';
 
 
 
@@ -145,7 +155,22 @@ function Pillar(props: CylinderProps) {
   )
 }
 
+
+
 export function App(): JSX.Element {
+  const vehicleMap = {
+    ae86: Ae86,
+    camaro: Camaro,
+    tank: Tank,
+  };
+  // const layers = new Layers()
+  // layers.enable(levelLayer)
+
+  const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
+  const [screen, setScreen] = useState<Screen>("vehicle-select");
+  const [selectedVehicle, setSelectedVehicle] = useState<"ae86" | "tank" | "camaro" | null>(null);
+  const [selectedMap, setSelectedMap] = useState<string | null>(null);
+  const [gameMode, setGameMode] = useState<string | null>(null);
   const [light, setLight] = useState<DirectionalLight | null>(null)
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
   // const { onCheckpoint, onFinish, onStart } = actions
@@ -157,14 +182,7 @@ export function App(): JSX.Element {
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   const ToggledStats = useToggle(Stats, 'stats')
 
-  // Calculate ground dimensions
-  const { scene } = useGLTF(url);
-  const { scene: cityScene } = useGLTF('/models/city_rtx.glb')
-  const city = useMemo(() => clone(cityScene), [cityScene])
 
-  const boundingBox = new THREE.Box3().setFromObject(scene);
-  const size = new THREE.Vector3();
-  boundingBox.getSize(size);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -198,8 +216,19 @@ export function App(): JSX.Element {
     socket.on('disconnect', onDisconnect);
     socket.on('cmdData', onCmdEvent);
     socket.on('error', onError);
+    const handlePhysicsUpdate = (data: PhysicsData) => {
+      setPhysicsData(data)
+    }
+    const handleSpawnVehicle = (data: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
+      console.log('data', data);
+      setSelectedVehicle(data)
+    }
 
+    socket.on('physicsUpdate', handlePhysicsUpdate)
+    socket.on('spawnVehicle', handleSpawnVehicle)
     return () => {
+      socket.off('spawnVehicle', handleSpawnVehicle);
+      socket.off('physicsUpdate', handlePhysicsUpdate);
       socket.off('cmdData', onCmdEvent);
       socket.off('error', onError);
       socket.off('connect', onConnect);
@@ -208,111 +237,45 @@ export function App(): JSX.Element {
     };
   }, []);
 
-
-  //  Make sure to handle disconnections and reconnections gracefully if this is intended for production.
-  let canvas;
-  if (!isConnected && process.env.NODE_ENV === 'production') {
-    canvas = <Matrix />;
-  } else {
-    canvas = (
-      <Canvas
-        key={`${dpr}${shadows}`}
-        dpr={[1, dpr]}
-        shadows={shadows}
-        camera={{ position: [0, 5, 15], fov: 50 }}
-      >
-        <fog attach="fog" args={['white', 50, 100]} />
-        {/* <color attach="background" args={['#171720']} /> */}
-        <Sky sunPosition={[100, 10, 100]} distance={1000} />
-        <ambientLight layers={layers} intensity={0.01} />
-        <directionalLight
-          ref={setLight}
-          layers={layers}
-          position={[0, 50, 150]}
-          intensity={.01}
-          shadow-bias={-0.001}
-          shadow-mapSize={[4096, 4096]}
-          shadow-camera-left={-150}
-          shadow-camera-right={150}
-          shadow-camera-top={150}
-          shadow-camera-bottom={-150}
-          castShadow
-        />
-        <PerspectiveCamera
-          makeDefault={editor}
-          fov={75}
-          position={[0, 20, 20]}
-        />
-        {/* <Physics broadphase="SAP"
-          defaultContactMaterial={{
-            contactEquationRelaxation: 4,
-            friction: 1e-3
-          }}
-          // gravity={[0, -10, 0]}
-          allowSleep={false}
-        > */}
-        <ToggledDebug>
-          {/* <Terrain /> */}
-          {/* <GroundPlane /> */}
-          {/* Render multiple cities */}
-          {/* Use InstancedMesh for performance */}
-          {/* <CityInstanced count={9} gridSize={3} spacing={100} /> */}
-          {/* <TiledScene 
-              scale = {0.0065}
-              tileCount = {1}
-              size={size}
-            /> */}
-          {/* <Pillar position={[size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-1' }} /> */}
-          {/* <Pillar position={[0, 2.5, 0]} userData={{ id: 'pillar-2' }} /> */}
-          {/* <Pillar position={[-size.x * .0065 / 2, 2.5, 0]} userData={{ id: 'pillar-3' }} /> */}
-          {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-4' }} /> */}
-          {/* <Pillar position={[0, 2.5, -1*planeWidth/2]} userData={{ id: 'pillar-3' }} /> */}
-
-          <group scale={2} position={[0, 0, 0]}>
-            <primitive object={city} />
-          </group>
-          <Vehicle>
-            {light && <primitive object={light.target} />}
-            <Cameras />
-          </Vehicle>
-        </ToggledDebug>
-        {/* </Physics> */}
-        <Environment preset="night" />
-
-        <Environment files="textures/dikhololo_night_1k.hdr" />
-        <ToggledMap />
-        <ToggledOrbitControls />
-      </Canvas >
-
-    );
-  }
-
   return (
     <>
-      <Suspense fallback={null}>
-        {/* Switch canvas to Matrix upon disconnect */}
+      {/* Switch canvas to Matrix upon disconnect */}
+      <ErrorBoundary >
+        {/* ✅ Background effect */}
+        <Matrix />
 
-        <ErrorBoundary >
+        {screen === 'vehicle-select' && (
+          <VehicleSelector
+            playerId={socket.id}
+            onSpawn={(type: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
+              setSelectedVehicle(type);
+              setScreen('map-select');
+            }}
+          />
+        )}
+        {screen === 'map-select' && (
+          <div style={{ position: 'absolute', width: '100%', height: '100vh' }}>
+            <Canvas camera={{ position: [0, 2, 6], fov: 50 }}>
+              <MapSelector
+                onSelect={(mapId) => {
+                  setSelectedMap(mapId);
+                  setScreen('game');
+                }}
+                onBack={() => setScreen('vehicle-select')}
+              />
+            </Canvas>
+          </div>
+        )}
 
-          <Intro>
-            {canvas}
-            <Clock />
-            <ToggledEditor />
-            <ToggledFinished />
-            <Help />
-            <Speed />
-            <ToggledStats />
-            {/* <ToggledCheckpoint /> */}
-            <LeaderBoard />
-            <PickColor />
-            <HideMouse />
-            <Keyboard />
-          </Intro>
-        </ErrorBoundary>
+        {screen === 'game' && selectedVehicle && selectedMap && (
+          <GameScene vehicle={vehicleMap[selectedVehicle]} map={selectedMap} />
+        )}
+
+        <Keyboard />
         {/* <Dashboard physics={ physics }/> */}
         {/* <Clock /> */}
-        <UI cmdEvents={cmdEvents} isConnected={isConnected} />
-      </Suspense>
+        {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
+      </ErrorBoundary>
     </>
   );
 }

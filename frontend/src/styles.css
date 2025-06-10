@@ -12,7 +12,9 @@ body {
 
 
 
-*, *::before, *::after {
+*,
+*::before,
+*::after {
   box-sizing: border-box;
 }
 
@@ -26,11 +28,13 @@ body,
   overflow: hidden;
   /* overflow: scroll; */
 }
+
 /* GLB */
 canvas {
   width: 100%;
   height: 100%;
-  display: block; /* Removes any extra space */
+  display: block;
+  /* Removes any extra space */
 }
 
 body {
@@ -280,12 +284,13 @@ body {
 }
 
 /* --------------- HELP --------------- */
-.split{
+.split {
   display: flex;
   align-items: center;
   text-align: center;
   justify-self: center;
 }
+
 .Pedals {
   padding: 0.5dvw 0.5dvh;
   width: 280px;
@@ -293,19 +298,20 @@ body {
   text-align: start;
 }
 
-.gasPedal{
+.gasPedal {
   height: 85px;
   width: 85px;
   background: url(/images/gasPedal.png) no-repeat;
-  background-size:contain;
+  background-size: contain;
 }
 
-.brakePedal{
+.brakePedal {
   height: 65px;
   width: 65px;
   background: url(/images/brakePedal.png) no-repeat;
   background-size: contain;
 }
+
 /* --------------- HELP --------------- */
 
 .help {
@@ -614,7 +620,7 @@ button {
   display: flex;
 }
 
-.dash-bottom{
+.dash-bottom {
   display: flex;
   align-items: end;
   flex-direction: column;
@@ -767,5 +773,18 @@ button {
 .fullscreenPrompt button {
   padding: 20px 40px;
   font-size: 1.2em;
+  cursor: pointer;
+}
+
+
+/* Optional: Tailwind or plain CSS */
+.vehicle-selector button {
+  font-size: 18px;
+  padding: 8px 16px;
+  margin: 0 10px;
+  background: #222;
+  color: white;
+  border: 1px solid #555;
+  border-radius: 4px;
   cursor: pointer;
 }

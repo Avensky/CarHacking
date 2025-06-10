@@ -5,11 +5,9 @@ import './styles.css';
 import { App } from './App';
 
 // Preload 3D models
-useGLTF.preload('/models/ccity_building_set_1.glb');
-useGLTF.preload('/models/track-draco.glb');
-useGLTF.preload('/models/chassis-draco.glb');
-useGLTF.preload('/models/wheel-draco.glb');
-
+useGLTF.preload('/models/city_rtx.glb');
+useGLTF.preload('/models/cars/ae86Rotated.glb');
+useGLTF.preload('/models/scene.glb');
 // Render the React app
 createRoot(document.getElementById('root')!).render(<App />);
 
