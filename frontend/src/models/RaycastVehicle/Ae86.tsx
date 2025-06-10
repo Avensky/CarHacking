@@ -1,12 +1,12 @@
 // Packages
 import { forwardRef, useImperativeHandle, useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react'
-import { Vector3, Group, SpotLightHelper, Color } from 'three'
+import { Vector3, Group, SpotLightHelper, Color, DirectionalLight } from 'three'
 import { useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { clone } from 'lodash-es'
 import { SpotLight } from 'three'
 import { useHelper } from '@react-three/drei'
-import { AccelerateAudio, BoostAudio, Boost, BrakeAudio, Dust, EngineAudio, HonkAudio, Skid } from '../../effects'
+import { AccelerateAudio, BoostAudio, Boost, BrakeAudio, Dust, EngineAudio, HonkAudio, Skid, Cameras } from '../../effects'
 import type { PropsWithChildren } from 'react'
 import { BoxProps } from '@react-three/cannon'
 import { useToggle } from '../../useToggle'
@@ -41,10 +41,11 @@ let controls: Controls
 // In Vehicle.tsx
 export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
     const v = new Vector3()
-
+    const screen = useStore((s) => s.screen)
+    if (screen === 'vehicle-select') {
+    }
     useImperativeHandle(ref, () => carGroupRef.current, [])
     const defaultCamera = useThree((state) => state.camera)
-
     // Ref's are used for movements
     const carGroupRef = useRef<Group>(null!)
     const leftLightRef = useRef<SpotLight>(null!)
@@ -57,12 +58,11 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
     const rearRightBlinkerRef = useRef<SpotLight>(null!)
 
     const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
-
-    const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
     const [headlightsOn, setHeadlightsOn] = useState(false);
     const [leftBlinker, setLeftBlinker] = useState(false);
     const [rightBlinker, setRightBlinker] = useState(false);
     const [hazards, setHazards] = useState(false);
+    const physicsData = getState().physicsData
 
     useEffect(() => {
         const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
@@ -76,7 +76,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         })
 
         // Create left headlight
-        leftLightRef.current = new SpotLight(0xffffff, 3, 20, Math.PI / 6, 0.2)
+        leftLightRef.current = new SpotLight(0xffffff, 5, 40, Math.PI / 6, 0.2)
         const leftLight = leftLightRef.current
         leftLight.position.set(-.5, 0.7, -1.8) // relative to headlight mesh center
         leftLight.target.position.set(-0.4, -0.6, -5)
@@ -86,7 +86,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(leftLight.target)
 
         // Create right headlight
-        rightLightRef.current = new SpotLight(0xffffff, 3, 20, Math.PI / 6, 0.2)
+        rightLightRef.current = new SpotLight(0xffffff, 5, 40, Math.PI / 6, 0.2)
         const rightLight = rightLightRef.current
         rightLight.position.set(.55, 0.7, -1.8)
         rightLight.target.position.set(0.4, -0.6, -5)
@@ -116,7 +116,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(rightTail.target)
 
         // front Left blinker (orange)
-        frontLeftBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 4, 0.3)
+        frontLeftBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
         const frontLeftBlinker = frontLeftBlinkerRef.current
         frontLeftBlinker.position.set(-0.7, 0.6, -1.9)
         frontLeftBlinker.target.position.set(-0.85, 0.6, -3)
@@ -126,7 +126,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(frontLeftBlinker.target)
 
         // front Right blinker (orange)
-        frontRightBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 4, 0.3)
+        frontRightBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
         const frontRightBlinker = frontRightBlinkerRef.current
         frontRightBlinker.position.set(0.7, 0.6, -1.9)
         frontRightBlinker.target.position.set(0.9, 0.6, -3)
@@ -136,19 +136,19 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(frontRightBlinker.target)
 
         // rear Left blinker (orange)
-        rearLeftBlinkerRef.current = new SpotLight(0xffa500, 3, 8, Math.PI / 6, 0.5)
+        rearLeftBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
         const rearLeftBlinker = rearLeftBlinkerRef.current
-        rearLeftBlinker.position.set(-0.7, 0.6, 1.9)
-        rearLeftBlinker.target.position.set(-0.85, 0.6, 3)
+        rearLeftBlinker.position.set(-0.5, 0.6, 1.9)
+        rearLeftBlinker.target.position.set(-0.9, 0.6, 3)
         rearLeftBlinker.visible = leftBlinker || hazards
         rearLeftBlinker.target.updateMatrixWorld()
         carGroupRef.current.add(rearLeftBlinker)
         carGroupRef.current.add(rearLeftBlinker.target)
 
         // rear Right blinker (orange)
-        rearRightBlinkerRef.current = new SpotLight(0xffa500, 2.5, 6, Math.PI / 6, 0.3)
+        rearRightBlinkerRef.current = new SpotLight(0xffa500, 12, 18, Math.PI / 8, 0.2)
         const rearRightBlinker = rearRightBlinkerRef.current
-        rearRightBlinker.position.set(0.7, 0.6, 1.9)
+        rearRightBlinker.position.set(0.5, 0.6, 1.9)
         rearRightBlinker.target.position.set(0.9, 0.6, 3)
         rearRightBlinker.visible = rightBlinker || hazards
         rearRightBlinker.target.updateMatrixWorld()
@@ -171,7 +171,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
 
     // Update transformations every frame ie. chassis
     useFrame((_, delta) => {
-        if (!physicsData || !carGroupRef.current) return
+        if (!carGroupRef.current) return
         camera = getState().camera
         editor = getState().editor
         controls = getState().controls
@@ -206,63 +206,67 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         // console.log(blinkerLeft)
         // console.log('Blink state:', blinkState.current)
 
-        const { chassisBody, wheelInfos } = physicsData
-        const group = carGroupRef.current
+        if (physicsData) {
+            const { chassisBody, wheelInfos } = physicsData
+            const group = carGroupRef.current
 
-        // Update vehicle body
-        group.position.lerpVectors(
-            group.position,
-            new Vector3(
-                chassisBody.position.x,
-                chassisBody.position.y - 0.77,
-                chassisBody.position.z
-            ),
-            0.5 // ← smoothing factor
-        )
-        group.quaternion.set(
-            chassisBody.quaternion.x,
-            chassisBody.quaternion.y,
-            chassisBody.quaternion.z,
-            chassisBody.quaternion.w
-        )
-        // Update wheels
-        wheelInfos.forEach((wheel, i) => {
-            if (!wheels[i]) return
-            wheels[i].position.lerpVectors(
-                wheels[i].position,
+            // Update vehicle body
+            group.position.lerpVectors(
+                group.position,
                 new Vector3(
-                    wheel.position.x,
-                    wheel.position.y - .34, // <-- lower slightly
-                    wheel.position.z
+                    chassisBody.position.x,
+                    chassisBody.position.y - 0.77,
+                    chassisBody.position.z
                 ),
-                .5 // ← smoothing factor
+                0.5 // ← smoothing factor
             )
-            wheels[i].quaternion.set(
-                wheel.quaternion.x,
-                wheel.quaternion.y,
-                wheel.quaternion.z,
-                wheel.quaternion.w
+            group.quaternion.set(
+                chassisBody.quaternion.x,
+                chassisBody.quaternion.y,
+                chassisBody.quaternion.z,
+                chassisBody.quaternion.w
             )
-        })
-        if (!editor) {
-            if (camera === 'FIRST_PERSON') {
-                v.set(0.3, 1, .08)
-                // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
-            } else if (camera === 'DEFAULT') {
-                v.set(0, 3, 6)
-                // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
-            }
+            // Update wheels
+            wheelInfos.forEach((wheel, i) => {
+                if (!wheels[i]) return
+                wheels[i].position.lerpVectors(
+                    wheels[i].position,
+                    new Vector3(
+                        wheel.position.x,
+                        wheel.position.y - .34, // <-- lower slightly
+                        wheel.position.z
+                    ),
+                    .5 // ← smoothing factor
+                )
+                wheels[i].quaternion.set(
+                    wheel.quaternion.x,
+                    wheel.quaternion.y,
+                    wheel.quaternion.z,
+                    wheel.quaternion.w
+                )
+            })
+            if (!editor) {
+                if (camera === 'FIRST_PERSON') {
+                    v.set(0.3, 1, .08)
+                    // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
+                } else if (camera === 'DEFAULT') {
+                    v.set(0, 3, 6)
+                    // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
+                }
 
-            // moves camera to user
-            defaultCamera.position.lerp(v, delta)
-            defaultCamera.rotation.z = lerp(
-                defaultCamera.rotation.z,
-                (camera !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-                + (-physicsData.data.steeringValue * physicsData.data.speed) / (camera === 'DEFAULT' ? 30 : 55),
-                delta,
-            )
+                // moves camera to user
+                defaultCamera.position.lerp(v, delta)
+                defaultCamera.rotation.z = lerp(
+                    defaultCamera.rotation.z,
+                    (camera !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+                    + (-physicsData.data.steeringValue * physicsData.data.speed) / (camera === 'DEFAULT' ? 30 : 55),
+                    delta,
+                )
+            }
         }
     })
+
+
 
     // Headlights
     useHelper(leftLightRef, SpotLightHelper, 'white')

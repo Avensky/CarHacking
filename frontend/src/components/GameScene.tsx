@@ -33,7 +33,7 @@ export default function GameScene({ vehicle: VehicleComponent, map: MapComponent
     // const [selectedVehicle, setSelectedVehicle] = useState<"ae86" | "camaro" | "tank" | null>(null);
     // const [selectedMap, setSelectedMap] = useState<string | null>(null);
     // const [gameMode, setGameMode] = useState<string | null>(null);
-    // const [light, setLight] = useState<DirectionalLight | null>(null)
+    const [light, setLight] = useState<DirectionalLight | null>(null)
     const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
     // const { onCheckpoint, onFinish, onStart } = actions
     // const ToggledCheckpoint = useToggle(Checkpoint, 'checkpoint')
@@ -41,19 +41,12 @@ export default function GameScene({ vehicle: VehicleComponent, map: MapComponent
     // const ToggledEditor = useToggle(Editor, 'editor')
     // const ToggledFinished = useToggle(Finished, 'finished')
     // const ToggledMap = useToggle(Minimap, 'map')
-    // const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
+    const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
     // const ToggledStats = useToggle(Stats, 'stats')
 
 
 
     // Calculate ground dimensions
-    // const { scene } = useGLTF('/models/city_rtx.glb');
-    // const { scene: cityScene } = useGLTF('/models/city_rtx.glb')
-    // const city = useMemo(() => clone(cityScene), [cityScene])
-    // const boundingBox = new Box3().setFromObject(city);
-    // const size = new Vector3();
-    // boundingBox.getSize(size);
-
     // useEffect(() => {
     //     const playerId = socket.id;
     //     socket.emit("spawnVehicle", { id: playerId, type: vehicleType });
@@ -85,26 +78,26 @@ export default function GameScene({ vehicle: VehicleComponent, map: MapComponent
             {/* <Intro> */}
             {/* <fog attach="fog" args={['white', 50, 100]} /> */}
             {/* <color attach="background" args={['#171720']} /> */}
-            {/* <Sky sunPosition={[100, 10, 100]} distance={1000} /> */}
-            {/* <ambientLight layers={layers} intensity={0.01} /> */}
-            {/* <directionalLight
-                            ref={setLight}
-                            layers={layers}
-                            position={[0, 50, 150]}
-                            intensity={.01}
-                            shadow-bias={-0.001}
-                            shadow-mapSize={[4096, 4096]}
-                            shadow-camera-left={-150}
-                            shadow-camera-right={150}
-                            shadow-camera-top={150}
-                            shadow-camera-bottom={-150}
-                            castShadow
-                        /> */}
-            {/* <PerspectiveCamera
-                            makeDefault={editor}
-                            fov={75}
-                            position={[0, 20, 20]}
-                        /> */}
+            {/* <Sky sunPosition={[100, 10, 100]} distance={1000} />
+            <ambientLight layers={layers} intensity={0.01} />
+            <directionalLight
+                ref={setLight}
+                layers={layers}
+                position={[0, 50, 150]}
+                intensity={.01}
+                shadow-bias={-0.001}
+                shadow-mapSize={[4096, 4096]}
+                shadow-camera-left={-150}
+                shadow-camera-right={150}
+                shadow-camera-top={150}
+                shadow-camera-bottom={-150}
+                castShadow
+            /> */}
+            <PerspectiveCamera
+                makeDefault={editor}
+                fov={75}
+                position={[0, 20, 20]}
+            />
             {/* <ToggledDebug> */}
             <Suspense fallback={null}>
                 <VehicleComponent />
@@ -112,8 +105,7 @@ export default function GameScene({ vehicle: VehicleComponent, map: MapComponent
                 {/* </ToggledDebug> */}
             </Suspense >
 
-            {/* <Environment preset="night" /> */}
-            {/* <Environment files="textures/dikhololo_night_1k.hdr" /> */}
+
             {/* <ToggledMap /> */}
             {/* <ToggledOrbitControls /> */}
             {/* <Clock /> */}

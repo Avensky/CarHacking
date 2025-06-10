@@ -13,7 +13,7 @@ import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@reac
 import { levelLayer, useStore } from './store'
 
 import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
-// import { Cameras } from './effects';
+import { Cameras } from './effects';
 
 import { HideMouse, Keyboard } from './controls';
 // import { Vehicle } from './models/index';
@@ -76,7 +76,7 @@ import Tank from './models/RaycastVehicle/Tank';
 import Rtx from './models/environments/Rtx';
 import TimesSquare from './models/environments/TimesSquare';
 import City from './models/environments/City';
-import { map } from 'lodash-es';
+
 
 class ErrorBoundary extends React.Component<{ children: ReactNode }> {
   state = { hasError: false }
@@ -110,11 +110,11 @@ export function App(): JSX.Element {
   // layers.enable(levelLayer)
 
   const [physicsData, setPhysicsData] = useState<PhysicsData | null>(null)
+  const [light, setLight] = useState<DirectionalLight | null>(null)
   const [screen, setScreen] = useState<Screen>("vehicle-select");
   const [selectedVehicle, setSelectedVehicle] = useState<string | null>(null);
   const [selectedMap, setSelectedMap] = useState<string | null>(null);
   const [gameMode, setGameMode] = useState<string | null>(null);
-  const [light, setLight] = useState<DirectionalLight | null>(null)
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
   // const { onCheckpoint, onFinish, onStart } = actions
   // const ToggledCheckpoint = useToggle(Checkpoint, 'checkpoint')
@@ -131,7 +131,7 @@ export function App(): JSX.Element {
 
   // Manage data received from backend
   const [isConnected, setIsConnected] = useState(socket.connected);
-  const [cmdEvents, setCmdEvents] = useState<CmdEvent[]>([]);
+  // const [cmdEvents, setCmdEvents] = useState<CmdEvent[]>([]);
   // const [socketPosition, setSocketPosition] = useState();
   // const [physics, setPhysics] = useState({});
 
@@ -181,44 +181,48 @@ export function App(): JSX.Element {
   return (
     <>
       {/* Switch canvas to Matrix upon disconnect */}
-      <ErrorBoundary >
-        {/* ✅ Background effect */}
-        {!socket.id && (<Matrix />)}
-        {/* <Canvas camera={{ position: [0, 2, 8], fov: 50 }}> */}
-        {screen === 'vehicle-select' && (
-          <VehicleSelector
-            playerId={socket.id}
-            onSpawn={(type: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
-              setSelectedVehicle(type);
-              setScreen('map-select');
+      {/* <ErrorBoundary > */}
+      {/* ✅ Background effect */}
+      {/* {!socket.id && (<Matrix />)} */}
+      {/* <Canvas camera={{ position: [0, 2, 8], fov: 50 }}> */}
+      {screen === 'vehicle-select' && (
+        <VehicleSelector
+          playerId={socket.id}
+          onSpawn={(type: string | ((prevState: "ae86" | "tank" | "camaro" | null) => "ae86" | "tank" | "camaro" | null) | null) => {
+            setSelectedVehicle(type);
+            setScreen('map-select');
+          }}
+        >
+          {/* {light && <primitive object={light.target} />} */}
+          {/* <Cameras /> */}
+        </VehicleSelector>
+      )}
+      {screen === 'map-select' && (
+        <Suspense fallback={null}>
+          <MapSelector
+            onSelect={(mapId) => {
+              console.log('mapId', mapId);
+              setSelectedMap(mapId);
+              console.log('set game screen');
+              setScreen('game');
             }}
+            onBack={() => setScreen('vehicle-select')}
           />
-        )}
-        {screen === 'map-select' && (
-          <Suspense fallback={null}>
-            <MapSelector
-              onSelect={(mapId) => {
-                console.log('mapId', mapId);
-                setSelectedMap(mapId);
-                console.log('set game screen');
-                setScreen('game');
-              }}
-              onBack={() => setScreen('vehicle-select')}
-            />
-          </Suspense>
-        )}
-        {screen === 'game' && selectedVehicle && selectedMap && (
-          <GameScene
-            vehicle={vehicleMap[selectedVehicle]}
-            map={mapComponentMap[selectedMap]} // ✅ Pass the component here} 
-          />
-        )}
-        {/* </Canvas> */}
-        <Keyboard />
-        {/* <Dashboard physics={ physics }/> */}
-        {/* <Clock /> */}
-        {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
-      </ErrorBoundary>
+        </Suspense>
+      )}
+      {screen === 'game' && selectedVehicle && selectedMap && (
+        <GameScene
+          vehicle={vehicleMap[selectedVehicle]}
+          map={mapComponentMap[selectedMap]} // ✅ Pass the component here} 
+        />
+      )}
+      {/* </Canvas> */}
+      <HideMouse />
+      <Keyboard />
+      {/* <Dashboard physics={ physics }/> */}
+      {/* <Clock /> */}
+      {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
+      {/* </ErrorBoundary> */}
     </>
   );
 }
