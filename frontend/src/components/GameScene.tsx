@@ -102,8 +102,8 @@ export default function GameScene({ vehicle: VehicleComponent, map: MapComponent
             <Suspense fallback={null}>
                 <VehicleComponent />
                 <MapComponent />
-                {/* </ToggledDebug> */}
             </Suspense >
+            {/* </ToggledDebug> */}
 
 
             {/* <ToggledMap /> */}

@@ -8,17 +8,25 @@ import Camaro from '../models/RaycastVehicle/Camaro';
 import { Html } from '@react-three/drei'
 import { DirectionalLight, Layers } from 'three';
 import { dpr, levelLayer, useStore } from "../store";
-import Rtx from '../models/environments/Rtx';
 import { RotatingCamera } from '../effects/RotatingCamera'; // adjust path
 import useIdleTimer from '../hooks/useIdleTimer';
 import { useRef } from 'react';
 import { useFrame } from '@react-three/fiber';
+import TimesSquare from '../models/environments/TimesSquare';
+import City from '../models/environments/City';
+import Rtx from '../models/environments/Rtx';
 
 // Add more vehicle types here
 const vehicleOptions = [
     { type: 'ae86', name: 'AE86', component: Ae86 },
     { type: 'camaro', name: 'Camaro Zl1', component: Camaro },
     { type: 'tank', name: 'Tank', component: Tank },
+];
+
+const mapOptions = [
+    { type: 'rtx', name: 'Night Life', component: Rtx },
+    { type: 'timesquare', name: 'Time Square', component: TimesSquare },
+    { type: 'city', name: 'Urban City', component: City },
 ];
 
 function VehiclePreview({ index }: { index: number }) {
@@ -30,27 +38,31 @@ function VehiclePreview({ index }: { index: number }) {
     )
 }
 
+function MapBackground({ index }: { index: number }) {
+    const MapComponent = mapOptions[index].component;
+    return <MapComponent scale={8} position={[0, -0.001, 0]} />;
+}
+
 export default function VehicleSelector({ playerId, onSpawn }) {
     const layers = new Layers()
     layers.enable(levelLayer)
 
     const [light, setLight] = useState<DirectionalLight | null>(null)
     const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
-    const [selectedIndex, setSelectedIndex] = useState(0);
-    const selectedVehicle = vehicleOptions[selectedIndex];
+    const [vehicleIndex, setVehicleIndex] = useState(0);
+    const [mapIndex, setMapIndex] = useState(0);
+    const selectedVehicle = vehicleOptions[vehicleIndex];
+    const selectedMap = mapOptions[mapIndex];
 
-    const handleNext = () => {
-        setSelectedIndex((prev) => (prev + 1) % vehicleOptions.length);
-    };
+    const handleVehicleNext = () => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length);
+    const handleVehiclePrev = () => setVehicleIndex((prev) => (prev - 1 + vehicleOptions.length) % vehicleOptions.length);
 
-    const handlePrev = () => {
-        setSelectedIndex((prev) =>
-            (prev - 1 + vehicleOptions.length) % vehicleOptions.length
-        );
-    };
+    const handleMapNext = () => setMapIndex((prev) => (prev + 1) % mapOptions.length);
+    const handleMapPrev = () => setMapIndex((prev) => (prev - 1 + mapOptions.length) % mapOptions.length);
+
 
     const handleSpawn = () => {
-        onSpawn?.(selectedVehicle.type);
+        onSpawn?.({ vehicle: selectedVehicle.type, map: selectedMap.type });
     };
 
     const controlsRef = useRef();
@@ -101,9 +113,8 @@ export default function VehicleSelector({ playerId, onSpawn }) {
                 <Suspense fallback={null}>
                     <Environment preset="night" />
                     <Rtx scale={8} position={[0, -0.001, 0]} />
-                    <VehiclePreview
-                        index={selectedIndex}
-                    />
+                    <MapBackground index={mapIndex} />
+                    <VehiclePreview index={vehicleIndex} />
                 </Suspense>
             </Canvas>
             {/* UI controls fixed on screen */}
@@ -119,12 +130,19 @@ export default function VehicleSelector({ playerId, onSpawn }) {
                 }}
             >
                 <h2>{selectedVehicle.name}</h2>
-                <div style={{ marginTop: '1rem', display: "flex", justifyContent: 'center', alignItems: 'center' }}>
-                    <button onClick={handlePrev}>←</button>
+                <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <button onClick={handleVehiclePrev}>←</button>
                     <span style={{ margin: '0 1rem', width: 100 }}>{selectedVehicle.name}</span>
-                    <button onClick={handleNext}>→</button>
+                    <button onClick={handleVehicleNext}>→</button>
                 </div>
-                <button onClick={handleSpawn} style={{ marginTop: 10 }}>Select Vehicle</button>
+
+                <h3 style={{ marginTop: '2rem' }}>{selectedMap.name}</h3>
+                <div style={{ marginTop: '0.5rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+                    <button onClick={handleMapPrev}>←</button>
+                    <span style={{ margin: '0 1rem', width: 100 }}>{selectedMap.name}</span>
+                    <button onClick={handleMapNext}>→</button>
+                </div>
+                <button onClick={handleSpawn} style={{ marginTop: 20 }}>Start Game</button>
             </div>
         </div>
     );

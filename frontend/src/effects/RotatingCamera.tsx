@@ -53,7 +53,11 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
         const z = radius * Math.cos(angle);
         const desiredPos = new THREE.Vector3(x, height, z);
 
-        camera.position.lerp(desiredPos, 0.02);
+
+        const lerpAlpha = Math.min(0.02, desiredPos.distanceTo(camera.position) * 0.05);
+        camera.position.lerp(desiredPos, lerpAlpha);
+
+        // camera.position.lerp(desiredPos, 0.02);
         camera.lookAt(0, 0, 0);
     });
 
