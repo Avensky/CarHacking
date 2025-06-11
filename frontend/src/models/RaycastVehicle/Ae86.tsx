@@ -227,7 +227,7 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
                 chassisBody.quaternion.w
             )
             // Update wheels
-            wheelInfos.forEach((wheel, i) => {
+            wheelInfos.forEach((wheel, i: number) => {
                 if (!wheels[i]) return
                 wheels[i].position.lerpVectors(
                     wheels[i].position,

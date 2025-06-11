@@ -83,7 +83,7 @@ export default function VehicleSelector({ playerId, onSpawn }) {
                     minPolarAngle={0} // from straight above
                     enableZoom={true}
                     minDistance={5}
-                    maxDistance={10}
+                    maxDistance={13}
                 // onStart={() => useIdleTimer()} // Optional: call this to delay camera rig
 
                 />
@@ -91,7 +91,7 @@ export default function VehicleSelector({ playerId, onSpawn }) {
                 {/* Auto camera orbit */}
                 <RotatingCamera
                     orbitRef={controlsRef}
-                    radius={5} speed={0.2} height={2}
+                    radius={7} speed={0.2} height={3}
                     resumeDuration={5}
                 />
 

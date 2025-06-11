@@ -33,7 +33,6 @@ import * as THREE from 'three';
 // import { connected } from 'process';
 
 // import VehicleSelector from "./components/VehicleSelector"; // update path as needed
-import MapSelector from "./components/MapSelector";
 // import GameModeSelector from "./components/GameModeSelector";
 import GameScene from "./components/GameScene"; // your main game view
 // import { Screen } from "./types";

@@ -1,7 +1,7 @@
 // Packages
 import { forwardRef, useImperativeHandle, useEffect, useMemo, useRef, useState, useLayoutEffect } from 'react'
 import { Vector3, Group, SpotLightHelper, Color } from 'three'
-import { useFrame, useThree } from '@react-three/fiber'
+import { GroupProps, useFrame, useThree } from '@react-three/fiber'
 import { useGLTF } from '@react-three/drei'
 import { clone } from 'lodash-es'
 import { SpotLight } from 'three'
@@ -37,47 +37,31 @@ let editor: boolean
 let controls: Controls
 
 // In Vehicle.tsx
-export default forwardRef(function Tank({ children }: VehicleProps, ref: React.Ref<Group>) {
+export default forwardRef(function TankModel({ children, turretRotation = 0, cannonElevation = 0, ...props }: GroupProps & {
+    turretRotation?: number;
+    cannonElevation?: number;
+}, ref: React.Ref<Group>) {
     const group = useRef<Group>();
-    const { scene } = useGLTF('/models/cars/tank.glb');
+    const { scene }: any = useGLTF('/models/cars/tank.glb');
+    console.log(scene); // Check what's actually in the GLB
+
     useImperativeHandle(ref, () => vehicleGroupRef.current, [])
     const defaultCamera = useThree((state) => state.camera)
 
     // Ref's are used for movements
     const vehicleGroupRef = useRef<Group>(null!)
 
+
     // Extract key parts by name or node hierarchy
-    // const turret = scene.getObjectByName('Object_15'); // Example name, adjust as needed
-    // const cannon = scene.getObjectByName('Object_14');
-    // const tracks = scene.getObjectByName('Object_23');
-    // const chassis = scene.getObjectByName('Object_17');
     useEffect(() => {
         const parts = [
-            // 'Object_2',
-            // 'Object_3',
-            // 'Object_4',
-            // 'Object_5',
-            // 'Object_6',
-            // 'Object_7',
-            // 'Object_8',
-            // 'Object_9',
-            // 'Object_10',
-            // 'Object_11',
-            // 'Object_12',
-            // 'Object_13',
-            'Object_14', // cannon
-            'Object_15', // turret
-            // 'Object_16',
-            'Object_17', // chassis
-            // 'Object_18',
-            // 'Object_19',
-            // 'Object_20',
-            // 'Object_21',
-            // 'Object_22',
-            'Object_23', // tracks
-            // 'Object_24',
-            // 'Object_25',
-            // 'Object_26',
+            'Hull',
+            'Breech',
+            'Tracks',
+            'CrewCompartment',
+            'Interior_CrewCompartment',
+            'Hatch_Front_Hatch_Hull'
+            // 'Tank_Body_Non_Modular',
         ]
 
         parts.forEach(name => {
@@ -87,16 +71,55 @@ export default forwardRef(function Tank({ children }: VehicleProps, ref: React.R
                 vehicleGroupRef.current.add(cloned)
             }
         })
-
+        console.log('scene children:', scene.children.map((c: { name: any }) => c.name));
     }, [scene])
+
+
+    // rotation
+    const turretRef = useRef<THREE.Group>(null)
+    const cannonRef = useRef<THREE.Group>(null)
+    const wheelsRef = useRef<THREE.Group>(null)
+
 
     const wheels = useMemo(() => {
-        const names = ['Object_4', 'Object_5', 'Object_6', 'Object_7', 'Object_8', 'Object_9'] // <- update if needed
-        return names.map(name => {
-            const original = scene.getObjectByName(name)
-            return original ? clone(original) : null
-        })
+        return [
+            'Idlers',
+            'DriveSprockets',
+            'Roadwheel_L2_R2',
+            'Roadwheel_L1_R1',
+            'Roadwheel_L2_R2',
+            'Roadwheel_L3',
+            'Roadwheel_L4',
+            'Roadwheel_L5',
+            'Roadwheel_R3',
+            'Roadwheel_R4',
+            'Roadwheel_R5'
+        ].map(name => scene.getObjectByName(name))
+            .filter((obj): obj is THREE.Object3D => !!obj)
+            .map(obj => obj.clone(true));
     }, [scene])
+
+    {/* Turret with rotation */ }
+    const turret = useMemo(() => {
+        return [
+            'Turret',
+            'TurretBasket',
+            'Interior_TurretBasket',
+            'Hatch_Hull',
+            'Hatch_Small',
+            'Hatch_Small2',
+        ].map(name => scene.getObjectByName(name))
+            .filter((obj): obj is THREE.Object3D => !!obj)
+            .map(obj => obj.clone(true));
+    }, [scene])
+
+    {/* Cannon with elevation */ }
+    const cannon = useMemo(() => {
+        return ['Cannon', 'Breech']
+            .map(name => scene.getObjectByName(name))
+            .filter((obj): obj is THREE.Object3D => !!obj)
+            .map(obj => obj.clone(true));
+    }, [scene]);
 
     const physics = useStore((s) => s.physicsData?.data)
     const v = new Vector3()
@@ -136,19 +159,44 @@ export default forwardRef(function Tank({ children }: VehicleProps, ref: React.R
 
     // useLayoutEffect(() => api.sliding.subscribe((sliding) => (mutation.sliding = sliding)), [api])
     return (
-        <>
-            {/* Vehicle */}
-            <group ref={vehicleGroupRef} dispose={null} scale={0.5} position={[0, -0.5, 0]} >
+        <group scale={.7} >
+            {/* Hull */}
+            <group ref={vehicleGroupRef} dispose={null} position={[0, 0, 0]}>
                 {children}
             </group>
-            {/* <axesHelper args={[0.5]} /> */}
+
             {/* Wheels */}
-            {wheels.map((wheel, i) =>
-                wheel ? <primitive key={i} object={wheel} /> : null
-            )}
+
+            <group ref={wheelsRef} rotation={[0, turretRotation, 0]}>
+                {wheels
+                    .filter((part): part is THREE.Object3D => !!part)
+                    .map((part, i) => (
+                        <primitive key={`cannon-${i}`} object={part} />
+                    ))}
+            </group>
+            {/* Turret with rotation */}
+            <group ref={turretRef} rotation={[0, turretRotation, 0]}>
+                {turret
+                    .filter((part): part is THREE.Object3D => !!part)
+                    .map((part, i) => (
+                        <primitive key={`cannon-${i}`} object={part} />
+                    ))}
+
+                {/* Cannon with elevation */}
+                <group ref={cannonRef} rotation={[cannonElevation, 0, 0]}>
+                    {cannon
+                        .filter((part): part is THREE.Object3D => !!part)
+                        .map((part, i) => (
+                            <primitive key={`cannon-${i}`} object={part} />
+                        ))}
+                </group>
+
+                {/* Remaining parts of turret like TurretBasket, etc. */}
+
+            </group>
             {/* <Dust /> */}
             {/* <Skid /> */}
-        </>
+        </group>
     )
 })
 
