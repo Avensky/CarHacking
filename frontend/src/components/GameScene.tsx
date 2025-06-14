@@ -1,16 +1,9 @@
 import { Suspense, useEffect, useMemo, useRef, useState } from "react";
 import { Environment, OrbitControls, PerspectiveCamera, Sky, Stats, useGLTF } from '@react-three/drei';
-import { Box3, DirectionalLight, Layers, Vector3 } from "three";
 import { Intro } from "../ui/Intro";
-import Camaro from "../models/RaycastVehicle/Camaro";
-import Tank from "../models/RaycastVehicle/Tank";
-import { Cameras } from "../effects";
 import { dpr, levelLayer, useStore } from "../store";
 import { Help, Speed, LeaderBoard, PickColor, Editor, Finished, Minimap, Clock } from "../ui";
 import { useToggle } from "../useToggle";
-import Ae86 from "../models/RaycastVehicle/Ae86";
-import Rtx from "../models/environments/Rtx";
-import TimesSquare from "../models/environments/TimesSquare";
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib';
 
 export default function GameScene({ playerId, children, VehicleComponent, MapComponent }: { playerId: any, children: any, VehicleComponent: any, MapComponent: any }) {

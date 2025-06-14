@@ -177,7 +177,6 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
         const blinkerRight = controls.blinkerRight && !hazards
         const blinkOn = blinkState.current
 
-
         //headlights
         leftLightRef.current.visible = controls.headlights
         rightLightRef.current.visible = controls.headlights
