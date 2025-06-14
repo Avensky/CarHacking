@@ -161,7 +161,9 @@ export default forwardRef(function TankModel({ children, turretRotation = 0, can
     return (
         <group scale={.7} >
             {/* Hull */}
-            <group ref={vehicleGroupRef} dispose={null} position={[0, 0, 0]}>
+            <group ref={vehicleGroupRef} dispose={null} position={[0, 0, 0]}
+                scale={[1, 1, 1]
+                }>
                 {children}
             </group>
 
@@ -194,6 +196,7 @@ export default forwardRef(function TankModel({ children, turretRotation = 0, can
                 {/* Remaining parts of turret like TurretBasket, etc. */}
 
             </group>
+            {children}
             {/* <Dust /> */}
             {/* <Skid /> */}
         </group>

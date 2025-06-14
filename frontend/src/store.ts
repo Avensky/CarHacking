@@ -11,6 +11,7 @@ import { keys } from './keys'
 // speed
 export const angularVelocity = [0, 0.5, 0] as const
 export const cameras = ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE'] as const
+
 export const dpr = 1.5 as const
 export const levelLayer = 1 as const
 export const maxBoost = 100 as const
@@ -32,6 +33,24 @@ export const vehicleConfig = {
 // types.ts
 export type Screen = 'vehicle-select' | 'map-select' | 'game';
 type VehicleConfig = typeof vehicleConfig
+
+
+export type PhysicsData = {
+  chassisBody: {
+    position: { x: number; y: number; z: number }
+    quaternion: { x: number; y: number; z: number; w: number }
+  }
+  data: {
+    speed: number
+    steeringValue: number
+
+  }
+  wheelInfos: Array<{
+    position: { x: number; y: number; z: number }
+    quaternion: { x: number; y: number; z: number; w: number }
+  }>
+}
+
 
 // export type WheelInfo = Required<
 //   Pick<
@@ -156,7 +175,7 @@ export interface IState extends BaseState {
   api: PublicApi | null
   bestCheckpoint: number
   camera: Camera
-  chassisBody: RefObject<Group>
+  // chassisBody: RefObject<Group>
   checkpoint: number
   color: string
   controls: Controls
@@ -169,6 +188,7 @@ export interface IState extends BaseState {
   // session: Session | null
   set: Setter
   start: number
+
   vehiclePosition?: { x: number; y: number; z: number }
   setVehiclePosition: (pos: { x: number; y: number; z: number }) => void
   vehicleConfig: VehicleConfig
@@ -182,9 +202,7 @@ const setExclusiveBoolean = (set: Setter, boolean: ExclusiveBoolean) => () =>
 
 const useStoreImpl = create<IState>(
   (set: SetState<IState>, get: GetState<IState>) => {
-
     const toggleCooldowns: Record<string, number> = {}
-
     const controlActions = keys(controls).reduce<Record<Control, (value: boolean) => void>>((o, control) => {
       o[control] = (value: boolean) => {
         if (toggledControls.includes(control)) {
@@ -213,7 +231,6 @@ const useStoreImpl = create<IState>(
       }
       return o
     }, {} as Record<Control, (value: boolean) => void>)
-
     const booleanActions = keys(booleans).reduce<Record<Booleans, () => void>>((o, boolean) => {
       o[boolean] = isExclusiveBoolean(boolean) ? setExclusiveBoolean(set, boolean) : () => set((state) => ({ ...state, [boolean]: !state[boolean] }))
       return o
@@ -258,7 +275,7 @@ const useStoreImpl = create<IState>(
       api: null,
       bestCheckpoint: 0,
       camera: cameras[0],
-      chassisBody: createRef<Group>(),
+      // chassisBody: createRef<Group>(),
       checkpoint: 0,
       color: '#FFFF00',
       controls,
@@ -271,6 +288,8 @@ const useStoreImpl = create<IState>(
       session: null,
       set,
       start: 0,
+      physicsData: null,
+      setPhysicsData: (data: { data: any }) => set({ physicsData: data }),
       vehiclePosition: undefined,
       setVehiclePosition: (pos) => set({ vehiclePosition: pos }),
       vehicleConfig,

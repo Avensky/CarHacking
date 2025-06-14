@@ -7,63 +7,47 @@ import { clone } from 'lodash-es'
 import { SpotLight } from 'three'
 import { useHelper } from '@react-three/drei'
 import { AccelerateAudio, BoostAudio, Boost, BrakeAudio, Dust, EngineAudio, HonkAudio, Skid, Cameras } from '../../effects'
-import type { PropsWithChildren } from 'react'
-import { BoxProps } from '@react-three/cannon'
 import { useToggle } from '../../useToggle'
 import { lerp } from 'three/src/math/MathUtils'
 import {
-    getState, useStore, type Camera, type Controls //. type WheelInfo 
+    getState, PhysicsData, useStore, type Camera, type Controls //. type WheelInfo 
 } from '../../store'
-import socket from '../../socket'
-
-// Define type of data used - Typescript requirement
-type VehicleProps = PropsWithChildren<Pick<BoxProps, 'angularVelocity' | 'position' | 'rotation'>>
-interface PhysicsData {
-    chassisBody: {
-        position: { x: number; y: number; z: number }
-        quaternion: { x: number; y: number; z: number; w: number }
-    }
-    data: {
-        speed: number
-        steeringValue: number
-
-    }
-    wheelInfos: Array<{
-        position: { x: number; y: number; z: number }
-        quaternion: { x: number; y: number; z: number; w: number }
-    }>
-}
-
-let camera: Camera
-let editor: boolean
-let controls: Controls
 
 // In Vehicle.tsx
-export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
+export default forwardRef(function Ae86({ playerId, children }: { playerId: string, children: any }, ref: React.Ref<Group>) {
+
+    // multiplayer support
+    // const vehicleId = useStore(state => state.vehicleId); // or prop/socket
+    // const isLocalPlayer = playerId === vehicleId;
     const v = new Vector3()
-    const screen = useStore((s) => s.screen)
-    if (screen === 'vehicle-select') {
-    }
+    const camera = useThree((s) => s.camera)
+    const carGroupRef = useRef<Group>(null!)
+
+    // Simulate hazard lights
+    const blinkTimer = useRef(0)
+    const blinkState = useRef(false)
+
+    // Ref's are used for movements    
+    const leftLightRef = useRef<any>(null!)
+    const rightLightRef = useRef<any>(null!)
+    const leftTailRef = useRef<any>(null!)
+    const rightTailRef = useRef<any>(null!)
+    const flBlinkerRef = useRef<any>(null!)
+    const frBlinkerRef = useRef<any>(null!)
+    const rlBlinkerRef = useRef<any>(null!)
+    const rrBlinkerRef = useRef<any>(null!)
+
     useImperativeHandle(ref, () => carGroupRef.current, [])
     const defaultCamera = useThree((state) => state.camera)
-    // Ref's are used for movements
-    const carGroupRef = useRef<Group>(null!)
-    const leftLightRef = useRef<SpotLight>(null!)
-    const rightLightRef = useRef<SpotLight>(null!)
-    const leftTailLightRef = useRef<SpotLight>(null!)
-    const rightTailLightRef = useRef<SpotLight>(null!)
-    const frontLeftBlinkerRef = useRef<SpotLight>(null!)
-    const frontRightBlinkerRef = useRef<SpotLight>(null!)
-    const rearLeftBlinkerRef = useRef<SpotLight>(null!)
-    const rearRightBlinkerRef = useRef<SpotLight>(null!)
+
 
     const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
     const [headlightsOn, setHeadlightsOn] = useState(false);
     const [leftBlinker, setLeftBlinker] = useState(false);
     const [rightBlinker, setRightBlinker] = useState(false);
     const [hazards, setHazards] = useState(false);
-    const physicsData = getState().physicsData
-
+    // console.log('PhysicsData', physicsData);
+    // console.log('controlsData', controls);
     useEffect(() => {
         const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
 
@@ -96,8 +80,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(rightLight.target)
 
         // Left tail light
-        leftTailLightRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
-        const leftTail = leftTailLightRef.current
+        leftTailRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+        const leftTail = leftTailRef.current
         leftTail.position.set(-0.5, 0.6, 1.9) // Rear of the car (x,y,z)
         leftTail.target.position.set(-0.5, 0.5, 3)
         leftTail.target.updateMatrixWorld()
@@ -106,8 +90,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(leftTail.target)
 
         // Front Right tail light
-        rightTailLightRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
-        const rightTail = rightTailLightRef.current
+        rightTailRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+        const rightTail = rightTailRef.current
         rightTail.position.set(0.57, 0.6, 1.8)
         rightTail.target.position.set(0.57, 0.5, 3)
         rightTail.target.updateMatrixWorld()
@@ -116,8 +100,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(rightTail.target)
 
         // front Left blinker (orange)
-        frontLeftBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
-        const frontLeftBlinker = frontLeftBlinkerRef.current
+        flBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const frontLeftBlinker = flBlinkerRef.current
         frontLeftBlinker.position.set(-0.7, 0.6, -1.9)
         frontLeftBlinker.target.position.set(-0.85, 0.6, -3)
         frontLeftBlinker.visible = leftBlinker || hazards
@@ -126,8 +110,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(frontLeftBlinker.target)
 
         // front Right blinker (orange)
-        frontRightBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
-        const frontRightBlinker = frontRightBlinkerRef.current
+        frBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const frontRightBlinker = frBlinkerRef.current
         frontRightBlinker.position.set(0.7, 0.6, -1.9)
         frontRightBlinker.target.position.set(0.9, 0.6, -3)
         frontRightBlinker.visible = rightBlinker || hazards
@@ -136,8 +120,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(frontRightBlinker.target)
 
         // rear Left blinker (orange)
-        rearLeftBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
-        const rearLeftBlinker = rearLeftBlinkerRef.current
+        rlBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const rearLeftBlinker = rlBlinkerRef.current
         rearLeftBlinker.position.set(-0.5, 0.6, 1.9)
         rearLeftBlinker.target.position.set(-0.9, 0.6, 3)
         rearLeftBlinker.visible = leftBlinker || hazards
@@ -146,8 +130,8 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         carGroupRef.current.add(rearLeftBlinker.target)
 
         // rear Right blinker (orange)
-        rearRightBlinkerRef.current = new SpotLight(0xffa500, 12, 18, Math.PI / 8, 0.2)
-        const rearRightBlinker = rearRightBlinkerRef.current
+        rrBlinkerRef.current = new SpotLight(0xffa500, 12, 18, Math.PI / 8, 0.2)
+        const rearRightBlinker = rrBlinkerRef.current
         rearRightBlinker.position.set(0.5, 0.6, 1.9)
         rearRightBlinker.target.position.set(0.9, 0.6, 3)
         rearRightBlinker.visible = rightBlinker || hazards
@@ -165,105 +149,112 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
         })
     }, [scene])
 
-    // Use these to simulate timing on hazard lights
-    const blinkTimer = useRef(0)
-    const blinkState = useRef(false)
-
     // Update transformations every frame ie. chassis
     useFrame((_, delta) => {
-        if (!carGroupRef.current) return
-        camera = getState().camera
-        editor = getState().editor
-        controls = getState().controls
+        // get state on frame
+        const store = getState()
+        const controls = store.controls
+        const physicsData = store.physicsData
+        const camMode = store.camera
+        const isEditor = store.editor
 
-        //headlights
-        leftLightRef.current.visible = controls.headlights
-        rightLightRef.current.visible = controls.headlights
-
-        //taillights
-        leftTailLightRef.current.visible = controls.brake
-        rightTailLightRef.current.visible = controls.brake
-
-        // blinking (every ~500ms)
-        // Update blink timer (persisting across frames)
+        // Update blink state every 0.5s
         blinkTimer.current += delta
         if (blinkTimer.current >= 0.5) {
             blinkTimer.current = 0
             blinkState.current = !blinkState.current
         }
 
-        // Hazards override blinkers
-        const hazards = controls.hazards
+        // Lights visibility
+        if (leftLightRef.current) leftLightRef.current.visible = controls.headlights
+        if (rightLightRef.current) rightLightRef.current.visible = controls.headlights
 
+        if (leftTailRef.current) leftTailRef.current.visible = controls.brake
+        if (rightTailRef.current) rightTailRef.current.visible = controls.brake
+
+        const hazards = controls.hazards
         const blinkerLeft = controls.blinkerLeft
         const blinkerRight = controls.blinkerRight && !hazards
-        // console.log('blink left', blinkerLeft);
-        // These should now flicker every ~0.5s
-        frontLeftBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkState.current
-        frontRightBlinkerRef.current.visible = (hazards || blinkerRight) && blinkState.current
-        rearLeftBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkState.current
-        rearRightBlinkerRef.current.visible = (hazards || blinkerRight) && blinkState.current
-        // console.log(blinkerLeft)
-        // console.log('Blink state:', blinkState.current)
+        const blinkOn = blinkState.current
 
-        if (physicsData) {
-            const { chassisBody, wheelInfos } = physicsData
-            const group = carGroupRef.current
 
-            // Update vehicle body
-            group.position.lerpVectors(
-                group.position,
+        //headlights
+        leftLightRef.current.visible = controls.headlights
+        rightLightRef.current.visible = controls.headlights
+
+        //taillights
+        leftTailRef.current.visible = controls.brake
+        rightTailRef.current.visible = controls.brake
+
+        if (flBlinkerRef.current) flBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkOn
+        if (frBlinkerRef.current) frBlinkerRef.current.visible = (hazards || blinkerRight) && blinkOn
+        if (rlBlinkerRef.current) rlBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkOn
+        if (rrBlinkerRef.current) rrBlinkerRef.current.visible = (hazards || blinkerRight) && blinkOn
+
+        if (!physicsData) return
+
+        // console.log('engaging physicsData')
+        const { chassisBody, wheelInfos } = physicsData
+        const group = carGroupRef.current
+
+        // Update vehicle body
+        group.position.lerpVectors(
+            group.position,
+            new Vector3(
+                chassisBody.position.x,
+                chassisBody.position.y - .55,
+                chassisBody.position.z
+            ),
+            0.5 // ← smoothing factor
+        )
+        group.quaternion.set(
+            chassisBody.quaternion.x,
+            chassisBody.quaternion.y,
+            chassisBody.quaternion.z,
+            chassisBody.quaternion.w
+        )
+
+        // Update wheels
+        wheelInfos.forEach((wheel: any, i: number) => {
+            if (!wheels[i]) return
+            wheels[i].position.lerpVectors(
+                wheels[i].position,
                 new Vector3(
-                    chassisBody.position.x,
-                    chassisBody.position.y - 0.77,
-                    chassisBody.position.z
+                    wheel.position.x,
+                    wheel.position.y, // <-- lower slightly
+                    wheel.position.z
                 ),
-                0.5 // ← smoothing factor
+                .5 // ← smoothing factor
             )
-            group.quaternion.set(
-                chassisBody.quaternion.x,
-                chassisBody.quaternion.y,
-                chassisBody.quaternion.z,
-                chassisBody.quaternion.w
+            wheels[i].quaternion.set(
+                wheel.quaternion.x,
+                wheel.quaternion.y,
+                wheel.quaternion.z,
+                wheel.quaternion.w
             )
-            // Update wheels
-            wheelInfos.forEach((wheel, i: number) => {
-                if (!wheels[i]) return
-                wheels[i].position.lerpVectors(
-                    wheels[i].position,
-                    new Vector3(
-                        wheel.position.x,
-                        wheel.position.y - .34, // <-- lower slightly
-                        wheel.position.z
-                    ),
-                    .5 // ← smoothing factor
-                )
-                wheels[i].quaternion.set(
-                    wheel.quaternion.x,
-                    wheel.quaternion.y,
-                    wheel.quaternion.z,
-                    wheel.quaternion.w
-                )
-            })
-            if (!editor) {
-                if (camera === 'FIRST_PERSON') {
-                    v.set(0.3, 1, .08)
-                    // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
-                } else if (camera === 'DEFAULT') {
-                    v.set(0, 3, 6)
-                    // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
-                }
+        })
 
-                // moves camera to user
-                defaultCamera.position.lerp(v, delta)
-                defaultCamera.rotation.z = lerp(
-                    defaultCamera.rotation.z,
-                    (camera !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-                    + (-physicsData.data.steeringValue * physicsData.data.speed) / (camera === 'DEFAULT' ? 30 : 55),
-                    delta,
-                )
+        if (!isEditor) {
+            if (camMode === 'FIRST_PERSON') {
+                v.set(0.3, 1.05, .08)
+                // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
+            } else if (camMode === 'DEFAULT') {
+                v.set(0, 3, 6)
+                // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
             }
+
+            // moves camera to user
+            defaultCamera.position.lerp(v, delta)
+            defaultCamera.rotation.z = lerp(
+                // defaultCamera.position.lerp(v, delta)
+                // defaultCamera.rotation.z = lerp(
+                defaultCamera.rotation.z,
+                (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+                + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
+                delta,
+            )
         }
+
     })
 
 
@@ -272,14 +263,14 @@ export default forwardRef(function Ae86({ children }, ref: React.Ref<Group>) {
     useHelper(leftLightRef, SpotLightHelper, 'white')
     useHelper(rightLightRef, SpotLightHelper, 'white')
     // Tail lights
-    useHelper(leftTailLightRef, SpotLightHelper, 'red')
-    useHelper(rightTailLightRef, SpotLightHelper, 'red')
+    useHelper(leftTailRef, SpotLightHelper, 'red')
+    useHelper(rightTailRef, SpotLightHelper, 'red')
     //Left Blinkers
-    useHelper(frontLeftBlinkerRef, SpotLightHelper, 'orange')
-    useHelper(rearLeftBlinkerRef, SpotLightHelper, 'orange')
+    useHelper(flBlinkerRef, SpotLightHelper, 'orange')
+    useHelper(rlBlinkerRef, SpotLightHelper, 'orange')
     // Right Blinkers
-    useHelper(frontRightBlinkerRef, SpotLightHelper, 'orange')
-    useHelper(rearRightBlinkerRef, SpotLightHelper, 'orange')
+    useHelper(frBlinkerRef, SpotLightHelper, 'orange')
+    useHelper(rrBlinkerRef, SpotLightHelper, 'orange')
 
     // console.log(scene)
     const ToggledAccelerateAudio = useToggle(AccelerateAudio, ['ready', 'sound'])

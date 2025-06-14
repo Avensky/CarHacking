@@ -1,4 +1,4 @@
-import { PerspectiveCamera, OrthographicCamera, OrbitControls } from '@react-three/drei'
+import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
 import { useStore } from '../store'
 
 export function Cameras() {
