@@ -1,4 +1,4 @@
-import { PerspectiveCamera, OrthographicCamera } from '@react-three/drei'
+import { PerspectiveCamera, OrthographicCamera, OrbitControls } from '@react-three/drei'
 import { useStore } from '../store'
 
 export function Cameras() {
@@ -18,9 +18,9 @@ export function Cameras() {
         position={[0, 15, 25]} />
       <OrthographicCamera
         makeDefault={!editor && camera === 'BIRD_EYE'}
-        position={[0, 50, 0]}
-        rotation={[(-1 * Math.PI) / 2, 0, 0]}
-        zoom={15} />
+        // position={[0, 1, 0]}
+        rotation={[(-1 * Math.PI) / 2, 0, Math.PI / 2]}
+        zoom={1} />
     </>
   )
 }

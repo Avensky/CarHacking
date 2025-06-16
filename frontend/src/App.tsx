@@ -122,6 +122,7 @@ export function App(): JSX.Element {
         key={`${dpr}${shadows}`}
         dpr={[1, dpr]}
         shadows
+        gl={{ toneMapping: THREE.ACESFilmicToneMapping }}
         camera={{ fov: 60, position: [2, 5, 10] }}
       >
         <Suspense fallback={null}>

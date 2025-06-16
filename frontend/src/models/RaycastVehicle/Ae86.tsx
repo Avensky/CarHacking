@@ -235,7 +235,7 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
 
         if (!isEditor) {
             if (camMode === 'FIRST_PERSON') {
-                v.set(0.3, 1.05, .08)
+                v.set(0.3, 1.06, .01)
                 // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
             } else if (camMode === 'DEFAULT') {
                 v.set(0, 3, 6)
@@ -255,8 +255,6 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
         }
 
     })
-
-
 
     // Headlights
     useHelper(leftLightRef, SpotLightHelper, 'white')

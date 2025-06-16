@@ -192,11 +192,8 @@ export default forwardRef(function TankModel({ children, turretRotation = 0, can
                             <primitive key={`cannon-${i}`} object={part} />
                         ))}
                 </group>
-
                 {/* Remaining parts of turret like TurretBasket, etc. */}
-
             </group>
-            {children}
             {/* <Dust /> */}
             {/* <Skid /> */}
         </group>
