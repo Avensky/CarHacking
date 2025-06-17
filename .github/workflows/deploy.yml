@@ -15,6 +15,7 @@ jobs:
         uses: actions/checkout@v4
       - name: Install and rebuild with Node 18.20.3
         run: |
+          pm2 stop CarHacking
           export NVM_DIR="$HOME/.nvm"
           source "$NVM_DIR/nvm.sh"
           nvm install 18.20.3
@@ -87,12 +88,11 @@ jobs:
         run: |
           cd frontend
           npm run build
-  restartServer:
-    needs: build
-    runs-on: self-hosted
-    steps:
-      - run: |
-          pm2 stop CarHacking
-          pm2 start CarHacking --update-env
-          pm2 save
-          sudo service nginx restart
+  # restartServer:
+  #   needs: build
+  #   runs-on: self-hosted
+  #   steps:
+  #     - run: |
+  #         pm2 start CarHacking --update-env
+  #         pm2 save
+  #         sudo service nginx restart
