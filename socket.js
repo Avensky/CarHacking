@@ -71,7 +71,7 @@ function setupSocketIO(io) {
     Object.entries(snapshots).forEach(([id, data]) => {
       io.to(id).emit('physicsUpdate', data);
 
-      if (channel) {
+      if (typeof channel !== "undefined") {
         // default values
         let msg = {
           id: 0x123,
@@ -95,7 +95,7 @@ function setupSocketIO(io) {
         buff.writeUIntBE(data.speed, 4, 2)
         buff.writeUIntBE(canData.fuel, 6, 2)
 
-        console.log('physics', data)
+        // console.log('physics', data)
         console.log('can', buff)
         out.id = msg.id
         out.data = buff
