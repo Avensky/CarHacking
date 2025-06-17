@@ -93,6 +93,15 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
+      - name: Verify PM2 is using Node 18.20.3
+        run: |
+          PM2_NODE=$(pm2 show CarHacking | grep "Interpreter" | awk '{print $4}')
+          PM2_VERSION=$($PM2_NODE -v)
+          echo "PM2 is using Node $PM2_VERSION"
+          if [[ "$PM2_VERSION" != "v18.20.3" ]]; then
+            echo "❌ PM2 is not using the expected Node version. Found: $PM2_VERSION"
+            exit 1
+          fi
       - run: |
           pm2 stop CarHacking
           pm2 start CarHacking --update-env
