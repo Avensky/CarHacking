@@ -19,7 +19,7 @@ export function Boost({ count = 12, opacity = 0.5, size = 0.1 }: BoostProps): JS
   const ref = useRef<InstancedMesh>(null)
 
   let i: number
-  let isBoosting = false
+  const isBoosting = false
   let j: number
   let n: number
   let progress: number

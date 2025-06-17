@@ -141,7 +141,7 @@ function createVehicle(id, type) {
 
 
 
-function updateVehicleInputs(id, control, type) {
+function updateVehicleInputs(id, control) {
   const { vehicle } = vehicles[id] || {};
   if (!vehicle) return;
   const config = getVehicleConfig(vehicle.type);
@@ -218,7 +218,7 @@ function updateVehicleInputs(id, control, type) {
 
   // for handbrake
   if (control.handbrake) {
-    rearWheels.forEach(i => vehicle.setBrake(1.5 * maxBrakeForce, i));
+    rearWheels.forEach(i => vehicle.setBrake(1.5 * config.maxBrakeForce, i));
   }
 
 }
@@ -238,7 +238,6 @@ function resetVehicle(vehicle) {
 
 function stepWorld() {
   world.step(1 / 60);
-  const snapshots = {};
 
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
     // console.log("rotation", vehicle.wheelInfos[0].deltaRotation)
@@ -254,8 +253,8 @@ function stepWorld() {
     // vehicle.wheelInfos.forEach((w, i) => {
     //   console.log(`wheel[${i}].isInContact =`, w.isInContact);
     // });
-    const velocity = vehicle.chassisBody.velocity;
-    speed = velocity.length(); // in meters per second (m/s)
+    // const velocity = vehicle.chassisBody.velocity;
+    // speed = velocity.length(); // in meters per second (m/s)
 
     snapshots[id] = {
       chassisBody: {
@@ -265,7 +264,7 @@ function stepWorld() {
         angularVelocity: { ...chassisBody.angularVelocity }
       },
       data: {
-        speed: speed,
+        speed: vehicle.chassisBody.velocity.length(),
         steeringValue: vehicle.steeringValue,
         engineValue: vehicle.engineValue,
       },

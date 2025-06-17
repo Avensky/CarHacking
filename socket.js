@@ -5,7 +5,7 @@ const inputs = {};
 function setupSocketIO(io) {
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
-    //eslint-disable-next-line
+     
     inputs[socket.id] =
     {
       forward: false,
