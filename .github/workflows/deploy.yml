@@ -88,11 +88,6 @@ jobs:
         run: |
           cd frontend
           npm run build
-  # restartServer:
-  #   needs: build
-  #   runs-on: self-hosted
-  #   steps:
-  #     - run: |
-  #         pm2 start CarHacking --update-env
-  #         pm2 save
-  #         sudo service nginx restart
+          pm2 start CarHacking --update-env
+          pm2 save
+          sudo service nginx restart
