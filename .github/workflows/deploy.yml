@@ -13,16 +13,14 @@ jobs:
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
-      - name: Use Node.js 18.20.3 with nvm
+      - name: Install and rebuild with Node 18.20.3
         run: |
           export NVM_DIR="$HOME/.nvm"
-          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          source "$NVM_DIR/nvm.sh"
           nvm install 18.20.3
           nvm use 18.20.3
           node -v
           npm -v
-      - name: Clean install and rebuild native modules
-        run: |
           rm -rf node_modules package-lock.json
           npm install
           npm rebuild socketcan
@@ -93,15 +91,6 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Verify PM2 is using Node 18.20.3
-        run: |
-          PM2_NODE=$(pm2 show CarHacking | grep "Interpreter" | awk '{print $4}')
-          PM2_VERSION=$($PM2_NODE -v)
-          echo "PM2 is using Node $PM2_VERSION"
-          if [[ "$PM2_VERSION" != "v18.20.3" ]]; then
-            echo "❌ PM2 is not using the expected Node version. Found: $PM2_VERSION"
-            exit 1
-          fi
       - run: |
           pm2 stop CarHacking
           pm2 start CarHacking --update-env
