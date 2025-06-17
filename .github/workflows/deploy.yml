@@ -13,18 +13,26 @@ jobs:
     steps:
       - name: Checkout to the repository
         uses: actions/checkout@v4
-      - name: Install and rebuild with Node 18.20.3
+      - name: Set up NodeJS environment
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18.20.3
+      - name: Cache node modules
+        id: cache-backend
+        uses: actions/cache@v4
+        env:
+          cache-name: cache-node-modules
+        with:
+          path: node_modules
+          key: ${{runner.os}}-${{ env.cache-name }}-${{ hashFiles('package-lock.json')}}
+          restore-keys: |
+            ${{ runner.os }}-${{ env.cache-name }}-
+            ${{ runner.os }}-
+      - name: Install Dependencies
+        if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
           pm2 stop CarHacking
-          export NVM_DIR="$HOME/.nvm"
-          source "$NVM_DIR/nvm.sh"
-          nvm install 18.20.3
-          nvm use 18.20.3
-          node -v
-          npm -v
-          rm -rf node_modules package-lock.json
-          npm install
-          npm rebuild socketcan
+          npm i
       - name: Check linting and formatting
         run: npm run lint
       - name: Execute test cases
