@@ -22,6 +22,8 @@ jobs:
           rm -rf node_modules package-lock.json
           npm i
           npx node-gyp rebuild || true
+          cd node_modules/socketcan
+          node-gyp rebuild
       - name: Check linting and formatting
         run: npm run lint
       - name: Execute test cases
@@ -106,5 +108,3 @@ jobs:
           sudo service nginx restart
       - name: Check vcan0 status
         run: ip a | grep vcan0
-      - name: Print last 20 PM2 logs
-        run: pm2 logs --lines 20 || true
