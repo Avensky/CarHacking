@@ -108,16 +108,11 @@ jobs:
           fi
           sudo ip link set up vcan0
   
-      - name: Clean and install backend dependencies
+      - name: Reinstall backend dependencies and rebuild
         run: |
           rm -rf node_modules package-lock.json
           npm install
-  
-      - name: Rebuild native modules (including socketcan)
-        run: |
-          cd node_modules/socketcan
           npx node-gyp rebuild || true
-          cd ../../
   
       - name: Restart PM2 with updated env
         run: |
