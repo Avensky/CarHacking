@@ -11,20 +11,21 @@ jobs:
   backend:
     runs-on: self-hosted
     steps:
-      - name: Stop PM2
-        run: |
-          pm2 stop CarHacking || true
       - name: Checkout to the repository
         uses: actions/checkout@v4
-      - name: Set up NodeJS environment
-        uses: actions/setup-node@v4
-        with:
-          node-version: 18.20.3
-      - name: Reinstall backend dependencies and rebuild
+      - name: Use Node.js 18.20.3 with nvm
+        run: |
+          export NVM_DIR="$HOME/.nvm"
+          [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"
+          nvm install 18.20.3
+          nvm use 18.20.3
+          node -v
+          npm -v
+      - name: Clean install and rebuild native modules
         run: |
           rm -rf node_modules package-lock.json
-          npm i
-          npm rebuild socketcan || true
+          npm install
+          npm rebuild socketcan
       - name: Check linting and formatting
         run: npm run lint
       - name: Execute test cases
@@ -92,20 +93,8 @@ jobs:
     needs: build
     runs-on: self-hosted
     steps:
-      - name: Ensure vcan0 is active
-        run: |
-          sudo modprobe can
-          sudo modprobe vcan
-          sudo modprobe can_raw
-          if ! ip link show vcan0 > /dev/null 2>&1; then
-            sudo ip link add dev vcan0 type vcan
-          fi
-          sudo ip link set up vcan0  
-      - name: Check vcan0 status
-        run: ip a | grep vcan0
-      - name: Restart PM2 with updated env
-        run: |
+      - run: |
+          pm2 stop CarHacking
           pm2 start CarHacking --update-env
           pm2 save
           sudo service nginx restart
-
