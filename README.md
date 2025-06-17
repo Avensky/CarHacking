@@ -159,6 +159,9 @@ Then boot the Pi and connect via:
 
 ```bash
 ssh pi@<IP_ADDRESS>
+or 
+
+ssh -o IPQoS=throughput uri@192.168.1.175
 ```
 
 ### Save a Key Fingerprint
@@ -417,6 +420,17 @@ npm install -g pm2
 pm2 start /var/www/CarHacking/_work/CarHacking/CarHacking/server.js --name CarHacking
 pm2 startup
 ```
+
+
+fixing pipeline errors
+
+pm2 delete all
+pm2 unstartup
+pm2 startup
+pm2 save
+
+
+NODE_ENV=production node var/www/CarHacking/_work/CarHacking/CarHacking/server.js 
 
 To finalize the startup script:
 
