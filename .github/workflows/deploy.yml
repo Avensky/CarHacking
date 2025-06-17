@@ -107,20 +107,27 @@ jobs:
             sudo ip link add dev vcan0 type vcan
           fi
           sudo ip link set up vcan0
-
-      - name: Rebuild native modules (like socketcan)
+  
+      - name: Clean and install backend dependencies
         run: |
-          npm rebuild || true
-
+          rm -rf node_modules package-lock.json
+          npm install
+  
+      - name: Rebuild native modules (including socketcan)
+        run: |
+          cd node_modules/socketcan
+          npx node-gyp rebuild || true
+          cd ../../
+  
       - name: Restart PM2 with updated env
         run: |
           pm2 stop CarHacking || true
           pm2 start CarHacking --update-env
           pm2 save
           sudo service nginx restart
-
+  
       - name: Check vcan0 status
         run: ip a | grep vcan0
-
+  
       - name: Print last 20 PM2 logs
         run: pm2 logs --lines 20 || true
