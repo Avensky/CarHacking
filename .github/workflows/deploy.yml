@@ -11,6 +11,8 @@ jobs:
   backend:
     runs-on: self-hosted
     steps:
+      - name: Stop the server
+        run: pm2 stop CarHacking
       - name: Checkout to the repository
         uses: actions/checkout@v4
       - name: Set up NodeJS environment
@@ -31,7 +33,6 @@ jobs:
       - name: Install Dependencies
         if: steps.cache-backend.outputs.cache-hit != 'true'
         run: |
-          pm2 stop CarHacking
           npm i
       - name: Check linting and formatting
         run: npm run lint
