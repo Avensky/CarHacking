@@ -11,6 +11,9 @@ jobs:
   backend:
     runs-on: self-hosted
     steps:
+      - name: Stop PM2
+        run: |
+          pm2 stop CarHacking || true
       - name: Checkout to the repository
         uses: actions/checkout@v4
       - name: Set up NodeJS environment
@@ -98,11 +101,11 @@ jobs:
             sudo ip link add dev vcan0 type vcan
           fi
           sudo ip link set up vcan0  
+      - name: Check vcan0 status
+        run: ip a | grep vcan0
       - name: Restart PM2 with updated env
         run: |
-          pm2 stop CarHacking || true
           pm2 start CarHacking --update-env
           pm2 save
           sudo service nginx restart
-      - name: Check vcan0 status
-        run: ip a | grep vcan0
+
