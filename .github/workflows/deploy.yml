@@ -21,9 +21,7 @@ jobs:
         run: |
           rm -rf node_modules package-lock.json
           npm i
-          npx node-gyp rebuild || true
-          cd node_modules/socketcan
-          node-gyp rebuild
+          npm rebuild socketcan || true
       - name: Check linting and formatting
         run: npm run lint
       - name: Execute test cases
