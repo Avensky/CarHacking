@@ -1,53 +1,34 @@
 import { FuelTemp } from './FuelTemp'
 import { Speed } from './Speed'
 import { Rpms } from './Rpms'
-import { mutation } from '../../store'
+import { getState, subscribe } from '../../store'
 import { useEffect, useState } from 'react'
-import { addEffect } from '@react-three/fiber'
-import { Boost } from './Boost'
 
-const getSpeed = () => mutation.speed
-const getRpms = () => mutation.rpmTarget
-const getFuel = () => mutation.fuel
-const getTemp = () => mutation.temp
-export function Dashboard(physics:any): JSX.Element {
-  // console.log('physics: ', physics)
-  // console.log('speed: ', carSim.speed)
-  // console.log('speed: ', mutation.speed)
-  // console.log('rpmTarget: ', mutation.rpmTarget)
-  // console.log('rpms: ', carSim.rpms)
-  // console.log('fuel: ', carSim.fuel)
-  const [speed, setSpeed] = useState(getSpeed())
-  const [rpms, setRpms] = useState(getRpms() * 1000)
-  const [fuel, setFuel] = useState(getFuel())
-  const [temp, setTemp] = useState(getTemp())
+export function Dashboard(): JSX.Element {
+  const [physicsData, setPhysicsData] = useState(() => getState().physicsData)
 
   useEffect(() => {
-    const unsubscribe = addEffect(() => {
-      const newSpeed = getSpeed()
-      setSpeed(newSpeed) // Update state instead of props directly
-      // console.log("addEffect: ", newSpeed)
-      const newRevs = getRpms() * 10
-      setRpms(newRevs)
-      const newFuel = getFuel()
-      setFuel(newFuel)
-      const newTemp = getTemp()
-      setTemp(newTemp)
+    // subscribe to store updates
+    const unsub = subscribe(() => {
+      const next = getState().physicsData
+      setPhysicsData(next)
     })
 
-    return () => unsubscribe() // Clean up on component unmount
+    // clean up on unmount
+    return () => unsub()
   }, [])
 
+  if (!physicsData || !physicsData.data) return <></>
+
+  const { speed, engineRpm, fuel, temp } = physicsData.data
+  // console.log('dashboard loaded');
   return (
     <div className="dashboard">
-      <div className='dash-top'>
-        <Speed speed={physics.velocity} />
-        <Rpms rpms={physics.rpmTarget} />
-        <FuelTemp fuel={physics.fuel} temp={physics.temp} />
+      <div className="dash-top">
+        <Speed speed={speed} />
+        <Rpms rpms={engineRpm / 1000} />
+        <FuelTemp fuel={fuel} temp={temp} />
       </div>
-      {/* <div className="dash-bottom">
-        <Boost />
-      </div> */}
     </div>
   )
 }

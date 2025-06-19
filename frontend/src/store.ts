@@ -117,6 +117,7 @@ const controls = {
   blinkerRight: false,
   hazards: false,
   reset: false,
+  engineOn: false,
 }
 export type Controls = typeof controls
 type Control = keyof Controls
@@ -128,7 +129,7 @@ export type BindableActionName = Control | ExclusiveBoolean | Extract<Booleans,
 
 export type ActionInputMap = Record<BindableActionName, string[]>
 // toggle-style inputs
-const toggledControls: Control[] = ['headlights', 'blinkerLeft', 'blinkerRight', 'hazards']
+const toggledControls: Control[] = ['headlights', 'blinkerLeft', 'blinkerRight', 'hazards', 'engineOn']
 
 const actionInputMap: ActionInputMap = {
   backward: ['arrowdown', 's'],
@@ -149,7 +150,8 @@ const actionInputMap: ActionInputMap = {
   sound: ['u'],
   blinkerLeft: ['1'],
   blinkerRight: ['2'],
-  hazards: ['3']
+  hazards: ['3'],
+  engineOn: ['4']
 
 }
 
@@ -323,11 +325,12 @@ export const mutation: Mutation = {
 
 // Make the store shallow compare by default
 const useStore = <T>(sel: StateSelector<IState, T>) => useStoreImpl(sel, shallow)
+
 Object.assign(useStore, useStoreImpl)
 
-const { getState, setState } = useStoreImpl
+const { getState, setState, subscribe } = useStoreImpl
 
 export const isToggledControl = (c: string): c is Control =>
   toggledControls.includes(c as Control)
 
-export { getState, setState, useStore }
+export { getState, setState, useStore, subscribe }

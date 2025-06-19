@@ -1,4 +1,4 @@
-const { createVehicle, stepWorld, updateVehicleInputs } = require('./physics');
+const { createVehicle, stepWorld, updateVehicleControls } = require('./physics');
 
 let channel
 if (process.env.NODE_ENV === "production") {
@@ -15,13 +15,13 @@ if (process.env.NODE_ENV === "production") {
   channel.start();
 
 }
-const inputs = {};
+const controlMap = {};
 
 function setupSocketIO(io) {
   io.on('connection', (socket) => {
     console.log('Client connected:', socket.id);
 
-    inputs[socket.id] =
+    controlMap[socket.id] =
     {
       forward: false,
       backward: false,
@@ -33,6 +33,7 @@ function setupSocketIO(io) {
       blinkerLeft: false,
       blinkerRight: false,
       hazards: false,
+      engineOn: false,
     }
 
     socket.on('spawnPlayer', (data) => {
@@ -44,13 +45,13 @@ function setupSocketIO(io) {
 
 
     socket.on('controls', (data) => {
-      // console.log(data);
-      inputs[socket.id] = data;
+      console.log(data.engineOn);
+      controlMap[socket.id] = data;
     });
 
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
-      delete inputs[socket.id];
+      delete controlMap[socket.id];
     });
   });
 
@@ -63,50 +64,67 @@ function setupSocketIO(io) {
   // 0x104	Diagnostics
 
   setInterval(() => {
-    Object.entries(inputs).forEach(([id, control]) => {
-      updateVehicleInputs(id, control);
+    Object.entries(controlMap).forEach(([id, control]) => {
+      updateVehicleControls(id, control);
     });
 
-    const snapshots = stepWorld();
+    const snapshots = stepWorld(controlMap);
     Object.entries(snapshots).forEach(([id, data]) => {
       io.to(id).emit('physicsUpdate', data);
 
-      if (typeof channel !== "undefined") {
-        // default values
-        let msg = {
-          id: 0x123,
-          data: Buffer.from([0xAA, 0xBB, 0xCC])
-        };
+      //   if (typeof channel !== "undefined") {
+      //     // default values
+      //     let msg = {
+      //       id: 0x123,
+      //       data: Buffer.from([0xAA, 0xBB, 0xCC])
+      //     };
 
-        const canData = {
-          speed: 0,
-          revs: 0,
-          up: true,
-          fuel: 500,
-          gear: 1,
-          index: 0,
-        }
+      //     // send data 
+      //     var out = {}
+      //     var buff = Buffer.alloc(8)
 
-        // send data 
-        var out = {}
-        var buff = Buffer.alloc(8)
+      //     buff.writeUIntBE(data.revs, 0, 4)
+      //     buff.writeUIntBE(data.speed, 4, 2)
+      //     buff.writeUIntBE(data.fuel, 6, 2)
 
-        buff.writeUIntBE(canData.revs, 0, 4)
-        buff.writeUIntBE(data.speed, 4, 2)
-        buff.writeUIntBE(canData.fuel, 6, 2)
+      //     // console.log('physics', data)
+      //     console.log('can', buff)
+      //     const now = new Date().toISOString();
+      //     const speed = (data.speed).toFixed(1); // assuming speed is m/s
+      //     const revs = canData.revs;
+      //     const fuelPct = ((canData.fuel / 1023) * 100).toFixed(1); // assuming 10-bit fuel sensor
+      //     const gear = canData.gear;
 
-        // console.log('physics', data)
-        console.log('can', buff)
-        out.id = msg.id
-        out.data = buff
-        channel.send(out);
-      }
+      //     console.log(`[${now}] CAN ID 0x${msg.id.toString(16).toUpperCase()} | RPM: ${revs} | Speed: ${speed} m/s | Fuel: ${fuelPct}% | Gear: ${gear}`);
+      //     out.id = msg.id
+      //     out.data = buff
+      //     const stateFlags = [
+      //       control.brake ? 'Brake' : '',
+      //       control.headlights ? 'Lights' : '',
+      //       control.blinkerLeft ? '←' : '',
+      //       control.blinkerRight ? '→' : '',
+      //     ].filter(Boolean).join(' | ');
 
-      io.to(id).emit('canData', {
-        id: out.id,
-        data: Array.from(buff), // easier to send over WebSocket
-      });
+      //     console.log(`[${now}] ... ${stateFlags}`);
+      //     channel.send(out);
+
+      //     io.to(id).emit('canData', {
+      //       timestamp: Date.now(),
+      //       canId: `0x${out.id.toString(16).toUpperCase()}`,
+      //       rpm: canData.revs,
+      //       speed: +(data.speed * 3.6).toFixed(1),  // km/h
+      //       fuel: +((canData.fuel / 1023) * 100).toFixed(1), // percentage
+      //       gear: canData.gear,
+      //       flags: {
+      //         brake: controlMap[id]?.brake ?? false,
+      //         lights: controlMap[id]?.headlights ?? false,
+      //         leftBlinker: controlMap[id]?.blinkerLeft ?? false,
+      //         rightBlinker: controlMap[id]?.blinkerRight ?? false,
+      //       }
+      //     });
+      //   }
     });
+
   }, 1000 / 60);
 }
 

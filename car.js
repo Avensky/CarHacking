@@ -127,7 +127,6 @@ const engine = () => {
     buff.writeUIntBE(now.revs, 0, 4)
     buff.writeUIntBE(now.speed, 4, 2)
     buff.writeUIntBE(now.fuel, 6, 2)
-
     console.log(buff)
     out.id = msg.id
     out.data = buff

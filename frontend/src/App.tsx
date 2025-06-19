@@ -4,7 +4,7 @@ import { Suspense, useRef, useState, useEffect } from 'react';
 import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
 import { getState, levelLayer, useStore } from './store'
 // import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
-// import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
+import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { HideMouse, Keyboard } from './controls';
 // import { useToggle } from './useToggle';
 import socket from './socket';
@@ -20,6 +20,7 @@ import Ae86 from './models/RaycastVehicle/Ae86';
 import Camaro from './models/RaycastVehicle/Camaro';
 import Tank from './models/RaycastVehicle/Tank';
 import { Cameras } from './effects';
+import { Dashboard } from './ui/dashboard/Dashboard';
 type Screen = 'selection-screen' | 'game-screen';
 
 // Define the type of cmdEvents. For example, if they are objects:
@@ -118,6 +119,7 @@ export function App(): JSX.Element {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+
       <Canvas
         key={`${dpr}${shadows}`}
         dpr={[1, dpr]}
@@ -162,9 +164,9 @@ export function App(): JSX.Element {
           }
         />
       )}
+      <Dashboard />
       <HideMouse />
       <Keyboard />
-      {/* <Dashboard physics={ physics }/> */}
       {/* <Clock /> */}
       {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
     </div>

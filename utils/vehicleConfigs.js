@@ -8,6 +8,7 @@ const carConfig = {
     dampingRelaxation: 6.5,       // resistance during compr:ssion
     dampingCompression: 6.5,       // resistance on r:bound
     directionLocal: new Vec3(0, -1, 0),
+
     frictionSlip: 8.5,
     suspensionStiffness: 150,
     suspensionRestLength: 0.18,
@@ -41,6 +42,14 @@ const carConfig = {
     cameras: ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE'],
     dpr: 1.5,
     levelLayer: 1,
+    engineValue: 0, // engine off
+
+    gearRatios: [0, 3.6, 2.19, 1.41, 1.0, 0.83, .074], // gears 1–6
+    finalDrive: 3.9,
+    idleRpm: 700,
+    maxRpm: 7000,
+    shiftUpRpm: 6500,
+    shiftDownRpm: 2500,
 }
 const tankConfig = {
     wheelCount: 2, // or 6+ if tracked

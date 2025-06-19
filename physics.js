@@ -1,6 +1,5 @@
 const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane, Quaternion } = require('cannon-es');
-const getVehicleConfig = require('./utils/vehicleConfigs')
-const snapshots = {};
+const getVehicleConfig = require('./utils/vehicleConfigs');
 // world
 const world = new World();
 world.gravity.set(0, -9.82, 0);
@@ -44,21 +43,30 @@ const wheel_ground = new ContactMaterial(wheelMaterial, groundMaterial, {
 })
 world.addContactMaterial(wheel_ground)
 
-// store all vehicles
-const vehicles = {};
-
 // state
 const steeringState = {}; // key: id, value: current steer angle
+const gearboxState = {};
 const brakeState = {}; // key: id, value: current brake force
+const snapshots = {};
+const vehicles = {};// store all vehicles
 
 
 // Wheel Config
-
-
 function createVehicle(id, type) {
   const config = getVehicleConfig(type);
+
+  gearboxState[id] = {
+    gear: 0,
+    rpm: 0,
+    clutchEngaged: false,
+    engineOn: false,
+    _prevGear: 0,
+    clutchSlip: 0, // assume fully disengaged until it starts moving, 0 = fully disengaged, 1 = fully locked
+  };
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
+
+  console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
 
   const wheelOptions = {
     radius: config.radius,
@@ -119,7 +127,6 @@ function createVehicle(id, type) {
   vehicle.addToWorld(world);
 
   vehicles[id] = { vehicle, chassisBody };
-
   // Add the wheel bodies
   const wheelBodies = []
   vehicle.wheelInfos.forEach((wheel) => {
@@ -139,46 +146,58 @@ function createVehicle(id, type) {
   return vehicle;
 }
 
-
-
-function updateVehicleInputs(id, control) {
+function updateVehicleControls(id, control) {
   const { vehicle } = vehicles[id] || {};
   if (!vehicle) return;
+  // console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
   const config = getVehicleConfig(vehicle.type);
 
-  brakeState[id] = brakeState[id] || 0;
-
-  // Reset
-  // console.log(
-  //   'updateVechicleInputs', control.reset
-  // )
   if (control.reset) {
-    resetVehicle(vehicle); // ← implement this
+    resetVehicle(vehicle); // reset position to start
   }
 
+  // Reset steering
   vehicle.setSteeringValue(0, 0);
   vehicle.setSteeringValue(0, 1);
 
-  // driveWheels.forEach(i => vehicle.applyEngineForce(0, i));
-  // steeringWheels.forEach(i => vehicle.setSteeringValue(0, i));
-  // [0, 1, 2, 3].forEach(i => vehicle.setBrake(0, i));
-
+  // Reset breaks
   if (control.forward || control.backward) {
     for (let i = 0; i < 4; i++) vehicle.setBrake(0, i);
     brakeState[id] = 0; // reset cached brake state
   }
+
+  const {
+    gearRatios, // gears 1–6
+    finalDrive,
+    idleRpm,
+    maxRpm,
+    shiftUpRpm,
+    shiftDownRpm,
+  } = config
+
+  const gearRatio = gearRatios[gearboxState[id].gear] ?? 1;
   // Controls
+  const forwardForce = config.maxForce * (gearRatio / gearRatios[1]); // normalized to 1st gear
+
+  // Enforce rev limiter
+  // if (gearboxState[id].rpm >= maxRpm) {
+  //   // simulate cut-off (optional)
+  //   vehicle.applyEngineForce(0, 2);
+  //   vehicle.applyEngineForce(0, 3);
+  // }
   if (control.forward) {
-    vehicle.applyEngineForce(+config.maxForce, 2)
-    vehicle.applyEngineForce(+config.maxForce, 3)
+
+    vehicle.applyEngineForce(+forwardForce, 2);
+    vehicle.applyEngineForce(+forwardForce, 3);
   } else if (control.backward) {
-    vehicle.applyEngineForce(-config.maxForce, 2)
-    vehicle.applyEngineForce(-config.maxForce, 3)
+    vehicle.applyEngineForce(-forwardForce, 2);
+    vehicle.applyEngineForce(-forwardForce, 3);
   } else {
-    vehicle.applyEngineForce(0, 2)
-    vehicle.applyEngineForce(0, 3)
+    vehicle.applyEngineForce(0, 2);
+    vehicle.applyEngineForce(0, 3);
   }
 
+  // steering 
   let targetSteer = 0;
   if (control.left) {
     targetSteer = +config.maxSteer;
@@ -193,7 +212,6 @@ function updateVehicleInputs(id, control) {
 
   steeringState[id] = newSteer;
   vehicle.steeringValue = newSteer
-  vehicle.engineValue = 1
   vehicle.setSteeringValue(newSteer, 0)
   vehicle.setSteeringValue(newSteer, 1)
 
@@ -215,13 +233,14 @@ function updateVehicleInputs(id, control) {
   for (const i of rearWheels) {
     vehicle.setBrake(newBrake * 0.8, i); // stronger rear brake
   }
-
   // for handbrake
   if (control.handbrake) {
     rearWheels.forEach(i => vehicle.setBrake(1.5 * config.maxBrakeForce, i));
   }
-
 }
+
+
+
 
 // console.log(world.bodies.length)
 // world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
@@ -236,11 +255,49 @@ function resetVehicle(vehicle) {
   vehicle.chassisBody.angularVelocity.set(0, 0, 0)
 }
 
-function stepWorld() {
+
+
+
+
+
+
+
+function stepWorld(controlMap = {}) {
   world.step(1 / 60);
 
+  // Update all vehicles
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
-    // console.log("rotation", vehicle.wheelInfos[0].deltaRotation)
+    const control = controlMap[id] || {};
+    const config = getVehicleConfig(vehicle.type);
+    const state = gearboxState[id];
+
+    // Clamp gear between 0 and max
+    if (state.gear >= config.gearRatios.length) state.gear = 0;
+    if (state.gear < 0) state.gear = 0;
+
+    const {
+      gearRatios,
+      finalDrive,
+      idleRpm,
+      maxRpm,
+      shiftUpRpm,
+      shiftDownRpm
+    } = config;
+
+    // const gearRatio = gearRatios[state.gear] ?? 1;
+    // const slipLerpSpeed = 0.1;
+    // const idleThrottle = 0.25; // when clutch disengaged, engineValue fallback
+
+    // ENGINE CONTROL
+    if (control.engineOn && !state.engineOn) {
+      console.log(`Engine turned on for ${id}`);
+      state.engineOn = true;
+    } else if (!control.engineOn && state.engineOn) {
+      console.log(`Engine turned off for ${id}`);
+      state.engineOn = false;
+    }
+
+    // get physics data
     const chassis = {
       position: { ...chassisBody.position },
       quaternion: { ...chassisBody.quaternion },
@@ -250,11 +307,14 @@ function stepWorld() {
       position: { ...w.worldTransform.position },
       quaternion: { ...w.worldTransform.quaternion },
     }));
-    // vehicle.wheelInfos.forEach((w, i) => {
-    //   console.log(`wheel[${i}].isInContact =`, w.isInContact);
-    // });
-    // const velocity = vehicle.chassisBody.velocity;
-    // speed = velocity.length(); // in meters per second (m/s)
+
+    // simulate idle rmps
+    if (!state.engineOn) {
+      state.rpm = 0;
+    } else if (state.gear === 0) {
+      const fluctuation = Math.sin(Date.now() * 0.01 + id.length) * 50; // wiggle ±50 rpm
+      state.rpm = config.idleRpm + fluctuation;
+    }
 
     snapshots[id] = {
       chassisBody: {
@@ -264,14 +324,72 @@ function stepWorld() {
         angularVelocity: { ...chassisBody.angularVelocity }
       },
       data: {
-        speed: vehicle.chassisBody.velocity.length(),
+        speed: chassisBody.velocity.length(),
         steeringValue: vehicle.steeringValue,
-        engineValue: vehicle.engineValue,
+        engineRpm: Math.round(state.rpm),
+        gear: state.gear,
       },
       wheelInfos
     };
+
+    if (state.gear === 0 || !state.engineOn) continue;
+
+
+    // VEHICLE STATE
+    // const state = gearboxState[id];
+    // state.gear = Math.min(Math.max(state.gear, 1), gearRatios.length - 1);
+
+    // // if (state.gear >= gearRatios.length) state.gear = 1; // clamp
+    // // if (state.gear < 1) state.gear = 1;
+    // const vehicleSpeed = chassisBody.velocity.length();
+
+    // // Rear wheel angular velocity → RPM
+    // let avgOmega = 0;
+    // for (const i of [2, 3]) {
+    //   avgOmega += vehicle.wheelInfos[i].deltaRotation / (1 / 60);
+    // }
+    // avgOmega /= 2;
+
+    // const wheelRpm = (avgOmega * 60) / (2 * Math.PI);
+    // const drivenRpm = wheelRpm * gearRatio * finalDrive;
+
+    // // Blend clutch slip
+    // const clutchTarget = state.clutchEngaged ? 1.0 : 0.0;
+    // state.clutchSlip += (clutchTarget - state.clutchSlip) * slipLerpSpeed;
+
+    // // Simulated throttle RPM (when clutch disengaged)
+    // const throttleInput = Math.max(vehicle.engineValue || 0, idleThrottle);
+    // const throttleRpm = idleRpm + (maxRpm - idleRpm) * throttleInput;
+
+    // // Final engine RPM
+    // let engineRpm = drivenRpm * state.clutchSlip + throttleRpm * (1 - state.clutchSlip);
+    // engineRpm = Math.min(maxRpm, Math.max(idleRpm, engineRpm));
+
+    // const previousGear = state._prevGear ?? state.gear; // fallback for first frame
+    // const isShifting = state.gear !== previousGear;
+    // state.clutchEngaged = !(isShifting || vehicleSpeed < 1);
+
+    // // Auto shift logic
+    // if (vehicle.engineValue > 0 && engineRpm > shiftUpRpm && state.gear < gearRatios.length - 1) {
+    //   state.gear++;
+    // } else if (vehicle.engineValue > 0 && engineRpm < shiftDownRpm && state.gear > 1) {
+    //   state.gear--;
+    // }
+
+    // state._prevGear = state.gear;
+
+    // // Update state
+    // // state.rpm = Math.max(idleRpm, engineRpm);
+    // if (state._prevGear !== state.gear) {
+    //   console.log(`Gear change for ${id}: ${state._prevGear} → ${state.gear}`);
+    // }
+    // state.rpm = engineRpm;
+    // gearboxState[id] = state;
+    // console.log('rpm', Math.round(state.rpm))
+    // console.log('gear', state.gear)
+
   }
 
   return snapshots;
 }
-module.exports = { createVehicle, updateVehicleInputs, stepWorld };
+module.exports = { createVehicle, updateVehicleControls, stepWorld };

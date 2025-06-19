@@ -23,6 +23,7 @@ const inputDisplayNameMap = {
   blinkerLeft: '1',
   blinkerRight: '2',
   hazards: '3',
+  engineOn: '4',
   reset: 'r',
 } as const
 
@@ -40,6 +41,7 @@ const actionDisplayMap: Record<BindableActionName, { displayName: string; order:
   blinkerLeft: { displayName: 'Left Blinker', order: 16 },
   blinkerRight: { displayName: 'Right Blinker', order: 17 },
   hazards: { displayName: 'Hazards', order: 18 },
+  engineOn: { displayName: 'engineOn', order: 19 },
   help: { displayName: 'Help', order: 9 },
   honk: { displayName: 'Honk', order: 5 },
   leaderboard: { displayName: 'Leaderboards', order: 10 },

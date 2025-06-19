@@ -194,12 +194,12 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
 
             // moves camera to user
             defaultCamera.position.lerp(v, delta)
-            defaultCamera.rotation.z = lerp(
-                defaultCamera.rotation.z,
-                (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-                + (-steeringValue * speed) / (camMode === 'DEFAULT' ? 10 : 35),
-                delta
-            )
+            // defaultCamera.rotation.z = lerp(
+            //     defaultCamera.rotation.z,
+            //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+            //     + (-steeringValue * speed) / (camMode === 'DEFAULT' ? 10 : 35),
+            //     delta
+            // )
         }
     })
 

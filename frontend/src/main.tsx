@@ -8,7 +8,6 @@ import { App } from './App';
 useGLTF.preload('/models/cars/ae86Rotated.glb');
 useGLTF.preload('/models/cars/tank.glb');
 useGLTF.preload('/models/cars/camaro2017.glb');
-
 useGLTF.preload('/models/city_rtx.glb');
 useGLTF.preload('/models/city_time_square.glb');
 

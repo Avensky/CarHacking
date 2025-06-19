@@ -244,14 +244,14 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
 
             // moves camera to user
             defaultCamera.position.lerp(v, delta)
-            defaultCamera.rotation.z = lerp(
-                // defaultCamera.position.lerp(v, delta)
-                // defaultCamera.rotation.z = lerp(
-                defaultCamera.rotation.z,
-                (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-                + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
-                delta,
-            )
+            // defaultCamera.rotation.z = lerp(
+            //     // defaultCamera.position.lerp(v, delta)
+            //     // defaultCamera.rotation.z = lerp(
+            //     defaultCamera.rotation.z,
+            //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+            //     + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
+            //     delta,
+            // )
         }
 
     })
