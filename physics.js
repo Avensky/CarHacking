@@ -65,7 +65,8 @@ function createVehicle(id, type) {
     engineShuttingDown: false,
     lastShiftTime: 0,
     _prevGear: 0,
-    clutchSlip: 0, // assume fully disengaged until it starts moving, 0 = fully disengaged, 1 = fully locked
+    clutchSlip: 0, // 0 = fully disengaged, 1 = fully locked
+    engineTemp: config.engineTemp.min,
   };
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
@@ -192,13 +193,29 @@ function updateVehicleControls(id, control) {
   //   vehicle.applyEngineForce(0, 2);
   //   vehicle.applyEngineForce(0, 3);
   // }
-  if (control.forward) {
+  const temp = gearboxState[id].engineTemp;
+  const overheat = config.engineTemp.overheat;
+  const critical = config.engineTemp.critical;
 
-    vehicle.applyEngineForce(+forwardForce, 2);
-    vehicle.applyEngineForce(+forwardForce, 3);
+  let powerMultiplier = 1.0;
+
+  if (temp >= critical) {
+    // console.log(`ENGINE BLOCKED: CRITICAL TEMPERATURE for ${id}`);
+    powerMultiplier = 0;
+  } else if (temp >= overheat) {
+    const t = (temp - overheat) / (critical - overheat);
+    powerMultiplier = 1 - 0.5 * t; // fades from 1.0 to 0.5
+    // console.log(`ENGINE POWER REDUCED: OVERHEAT for ${id}`);
+  }
+
+  const adjustedForce = forwardForce * powerMultiplier;
+
+  if (control.forward && gearboxState[id].engineOn) {
+    vehicle.applyEngineForce(+adjustedForce, 2);
+    vehicle.applyEngineForce(+adjustedForce, 3);
   } else if (control.backward) {
-    vehicle.applyEngineForce(-forwardForce, 2);
-    vehicle.applyEngineForce(-forwardForce, 3);
+    vehicle.applyEngineForce(-adjustedForce, 2);
+    vehicle.applyEngineForce(-adjustedForce, 3);
   } else {
     vehicle.applyEngineForce(0, 2);
     vehicle.applyEngineForce(0, 3);
@@ -312,7 +329,7 @@ function stepWorld(controlMap = {}) {
     const fuel = fuelState[id];
 
     // Simulate engine crank
-    if (control.engineOn && !state.engineOn && !state.engineStarting) {
+    if (control.engineOn && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
       state.engineStarting = true;
       state.engineStartTime = Date.now();
       state.rpm = 300; // cranking sound
@@ -493,6 +510,64 @@ function stepWorld(controlMap = {}) {
 
 
 
+
+
+
+
+
+
+
+    const tempCfg = config.engineTemp;
+
+    if (state.engineOn) {
+      if (control.forward || control.backward) {
+        state.engineTemp += tempCfg.heatRate;
+
+        // Simulate harder heating at high RPM
+        const rpmFactor = state.rpm / config.maxRpm;
+        state.engineTemp += tempCfg.heatRate * rpmFactor * 0.2;
+      } else {
+        state.engineTemp -= tempCfg.coolRate;
+      }
+    } else {
+      // passive cooling when off
+      state.engineTemp -= tempCfg.coolRate * 2;
+    }
+
+    // Clamp temperature
+    state.engineTemp = Math.max(tempCfg.min, Math.min(tempCfg.critical, state.engineTemp));
+
+
+    // Engine overheating behavior
+    if (state.engineTemp >= tempCfg.critical) {
+      if (!state.engineShuttingDown) {
+        // console.log(`ENGINE CRITICAL: shutting down for ${id}`);
+        state.engineShuttingDown = true;
+      }
+
+      // Begin decaying RPM only if it's still running
+      if (state.rpm > idleRpm) {
+        state.rpm -= tempCfg.coolRate * 5; // crank down faster than idle decay
+      } else {
+        state.rpm = idleRpm;
+        state.engineOn = false;
+        state.engineShuttingDown = false;
+      }
+    } else if (state.engineTemp >= tempCfg.overheat) {
+      // Optional: Reduce power/force if overheated
+      // console.log(`ENGINE OVERHEATING for ${id}`);
+      // e.g., reduce engineForce in updateVehicleControls()
+    }
+
+
+
+
+
+
+
+
+
+
     // send physics snapshot to frontend
     snapshots[id] = {
       chassisBody: {
@@ -508,6 +583,7 @@ function stepWorld(controlMap = {}) {
         engineStarting: state.engineStarting,
         gear: state.gear,
         fuel: fuel.fuel,
+        temp: Math.round(state.engineTemp),
       },
       wheelInfos
     };

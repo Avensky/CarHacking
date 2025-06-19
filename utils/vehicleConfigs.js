@@ -54,6 +54,15 @@ const carConfig = {
     maxRpm: 7000,
     shiftUpRpm: 6500,
     shiftDownRpm: 2500,
+
+    engineTemp: {
+        min: 160,           // °F when idle
+        max: 250,           // °F max safe temp
+        overheat: 240,      // °F begins overheating behavior
+        critical: 260,      // °F critical, engine shuts off
+        heatRate: 0.08,     // per tick when under throttle
+        coolRate: 0.03,     // per tick when idle
+    },
 }
 const tankConfig = {
     wheelCount: 2, // or 6+ if tracked

@@ -15,7 +15,7 @@ interface FuelTempProps {
 }
 // export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
 export function FuelTemp({ fuel, temp, fuelCapacity }: FuelTempProps): JSX.Element {
-  console.log('Fuel', fuel)
+  // console.log('Fuel', fuel)
   // console.log('FuelCapacity', fuelCapacity)
 
   // Ensure values are valid and within expected ranges
