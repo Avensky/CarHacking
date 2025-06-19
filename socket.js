@@ -1,4 +1,5 @@
 const { createVehicle, stepWorld, updateVehicleControls } = require('./physics');
+const getVehicleConfig = require('./utils/vehicleConfigs');
 
 let channel
 if (process.env.NODE_ENV === "production") {
@@ -37,6 +38,8 @@ function setupSocketIO(io) {
     }
 
     socket.on('spawnPlayer', (data) => {
+      const config = getVehicleConfig(data.vehicle);
+      data.vehicleConfig = config
       console.log(data);
       socket.emit('spawnPlayer', data);
       createVehicle(socket.id, data.vehicle);

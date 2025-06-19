@@ -28,6 +28,8 @@ const carConfig = {
     indexForwardAxis: 1, // Z
     wheelHalfTrackOffset: 0.25, // Distance from center to side
     wheelBase: 2.41, // Distance front to back
+    fuelCapacity: 45,          // Liters
+    baseConsumption: 0.004,   // Liters per tick per gear (baseline)
 
     // Options
     steer: 0.3,

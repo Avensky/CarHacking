@@ -48,8 +48,8 @@ const steeringState = {}; // key: id, value: current steer angle
 const gearboxState = {};
 const brakeState = {}; // key: id, value: current brake force
 const snapshots = {};
+const fuelState = {}; // key: id, value: { fuel: number }
 const vehicles = {};// store all vehicles
-
 
 // Wheel Config
 function createVehicle(id, type) {
@@ -69,6 +69,9 @@ function createVehicle(id, type) {
   };
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
+  fuelState[id] = {
+    fuel: config.fuelCapacity,
+  };
 
   console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
 
@@ -306,7 +309,7 @@ function stepWorld(controlMap = {}) {
 
     const speed = chassisBody.velocity.length();
 
-
+    const fuel = fuelState[id];
 
     // Simulate engine crank
     if (control.engineOn && !state.engineOn && !state.engineStarting) {
@@ -324,10 +327,12 @@ function stepWorld(controlMap = {}) {
       state.rpm = 300 + crankPulse;
 
       if (elapsed > 1300) { // 1.3 second delay
-        state.engineOn = true; // turn the engine on
+        if (fuel.fuel !== 0) {
+          state.engineOn = true; // turn the engine on
+          state.rpm = config.idleRpm;
+          console.log(`Engine turned on for ${id}`);
+        }
         state.engineStarting = false;
-        state.rpm = config.idleRpm;
-        console.log(`Engine turned on for ${id}`);
       }
 
 
@@ -459,6 +464,33 @@ function stepWorld(controlMap = {}) {
 
 
 
+    // Fuel consumption logic
+    if (state.engineOn && fuel.fuel > 0) {
+      const gearMultiplier = state.gear;
+      const throttle = control.forward || control.backward ? 1 : 0.2; // higher burn under load
+      const rpmFactor = state.rpm / config.maxRpm;
+      let burn = config.baseConsumption
+
+      // burn less fuel in neutral 
+      gearMultiplier === 0
+        ? burn = burn * rpmFactor * throttle
+        : burn = burn * rpmFactor * throttle * gearMultiplier;
+
+
+      fuel.fuel = Math.max(0, fuel.fuel - burn);
+
+      if (fuel.fuel === 0) {
+        state.engineOn = false;
+        state.engineShuttingDown = true;
+        state.gear = 0;
+        console.log(`Fuel empty — engine shutting off for ${id}`);
+      }
+    }
+
+    if (control.refuel) {
+      fuel.fuel = Math.min(1.0, fuel + 0.01); // simulate refueling
+    }
+
 
 
     // send physics snapshot to frontend
@@ -475,6 +507,7 @@ function stepWorld(controlMap = {}) {
         engineRpm: Math.round(state.rpm),
         engineStarting: state.engineStarting,
         gear: state.gear,
+        fuel: fuel.fuel,
       },
       wheelInfos
     };

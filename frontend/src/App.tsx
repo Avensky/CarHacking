@@ -2,7 +2,7 @@
 import SelectionScreen from './components/SelectionScreen';
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
-import { getState, levelLayer, useStore } from './store'
+import { getState, levelLayer, useStore, VehicleConfig } from './store'
 // import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { HideMouse, Keyboard } from './controls';
@@ -91,8 +91,9 @@ export function App(): JSX.Element {
       getState().setPhysicsData(data); // <--- this must be implemented in store
     }
 
-    function handleSpawnPlayer(data: { vehicle: string, map: string }) {
+    function handleSpawnPlayer(data: { vehicle: string, map: string, vehicleConfig: VehicleConfig }) {
       console.log('🚗 Player Spawned:', data);
+      getState().setVehicleConfig(data.vehicleConfig);
       setSelectedVehicle(data.vehicle);
       setSelectedMap(data.map);
       setScreen('game-screen');

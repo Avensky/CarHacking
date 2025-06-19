@@ -7,6 +7,7 @@ import type { PublicApi, WheelInfoOptions } from '@react-three/cannon'
 import type { Group } from 'three'
 import type { GetState, SetState, StateSelector } from 'zustand'
 import { keys } from './keys'
+import { Vec3 } from 'cannon-es'
 
 // speed
 export const angularVelocity = [0, 0.5, 0] as const
@@ -20,19 +21,66 @@ export const position = [-200, 0.75, -45] as const
 // rotate plane horizontal
 export const rotation = [0, Math.PI / 2, 0] as const
 // import socket from './socket'
-export const vehicleConfig = {
-  //   width: 1.7,
-  //   height: -0.3,
-  //   front: 1.35,
-  //   back: -1.3,
-  //   steer: 0.3,
-  //   force: 1000,
-  //   maxBrake: 65,
-  //   maxSpeed: 80,
-} as const
+
 // types.ts
 export type Screen = 'vehicle-select' | 'map-select' | 'game';
-type VehicleConfig = typeof vehicleConfig
+
+export type VehicleConfig = {
+  wheelCount: number,
+  radius: number,
+  isTank: boolean,
+  axleLocal: Vec3,
+  compressionFactor: number,
+  dampingRelaxation: number,       // resistance during compr:ssion
+  dampingCompression: number,       // resistance on r:bound
+  directionLocal: Vec3,
+
+  frictionSlip: number,
+  suspensionStiffness: number,
+  suspensionRestLength: number,
+  maxSuspensionForce: number,
+  maxSuspensionTravel: number,
+  rollInfluence: number,
+  chassisConnectionPointLocal: Vec3,
+  isFrontWheel: boolean,
+
+  // vehicleConfig
+  length: number,   // <- Match AE86 GLB
+  width: number,    // <- Match AE86 GLB
+  height: number,   // <- Match AE86 GLB
+  chassisMass: number,
+  indexRightAxis: number, // X
+  indexUpAxis: number,   // Y
+  indexForwardAxis: number, // Z
+  wheelHalfTrackOffset: number, // Distance from center to side
+  wheelBase: number, // Distance front to back
+  fuelCapacity: number,          // Liters
+  baseConsumption: number,   // Liters per tick per gear (baseline)
+
+  // Options
+  steer: number,
+  maxSteer: number,
+  maxBrake: number,
+  maxSpeed: number,
+  maxForce: number,
+  maxBrakeForce: number,
+  brakeLerpSpeed: number, // Smoothing factor
+  angularVelocity: number[],
+  maxBoost: number,
+  cameras: string[],
+  dpr: number,
+  levelLayer: number,
+  engineValue: number, // engine off
+
+  gearRatios: number[], // gears 1–6
+  shiftUpSpeeds: number[],// m/s
+  shiftDownSpeeds: number[],
+  finalDrive: number,
+  idleRpm: number,
+  maxRpm: number,
+  shiftUpRpm: number,
+  shiftDownRpm: number,
+}
 
 
 export type PhysicsData = {
@@ -193,7 +241,6 @@ export interface IState extends BaseState {
 
   vehiclePosition?: { x: number; y: number; z: number }
   setVehiclePosition: (pos: { x: number; y: number; z: number }) => void
-  vehicleConfig: VehicleConfig
   // wheelInfo: WheelInfo
   wheels: [RefObject<Group>, RefObject<Group>, RefObject<Group>, RefObject<Group>]
   keyInput: string | null
@@ -294,7 +341,8 @@ const useStoreImpl = create<IState>(
       setPhysicsData: (data: { data: any }) => set({ physicsData: data }),
       vehiclePosition: undefined,
       setVehiclePosition: (pos) => set({ vehiclePosition: pos }),
-      vehicleConfig,
+      vehicleConfig: null,
+      setVehicleConfig: (data: { data: any }) => set({ vehicleConfig: data }),
       // wheelInfo,
       wheels: [createRef<Group>(), createRef<Group>(), createRef<Group>(), createRef<Group>()],
     }
