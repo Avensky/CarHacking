@@ -45,7 +45,7 @@ function setupSocketIO(io) {
 
 
     socket.on('controls', (data) => {
-      console.log(data.engineOn);
+      // console.log(data.engineOn);
       controlMap[socket.id] = data;
     });
 

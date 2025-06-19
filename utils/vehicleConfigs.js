@@ -33,7 +33,7 @@ const carConfig = {
     steer: 0.3,
     maxSteer: 0.5,
     maxBrake: 65,
-    maxSpeed: 88,
+    maxSpeed: 120,
     maxForce: 500,
     maxBrakeForce: 25,
     brakeLerpSpeed: 0.25, // Smoothing factor
@@ -45,8 +45,10 @@ const carConfig = {
     engineValue: 0, // engine off
 
     gearRatios: [0, 3.6, 2.19, 1.41, 1.0, 0.83, .074], // gears 1–6
+    shiftUpSpeeds: [0, 15, 30, 50, 70, 90],// m/s
+    shiftDownSpeeds: [0, 10, 25, 45, 65, 85],
     finalDrive: 3.9,
-    idleRpm: 700,
+    idleRpm: 850,
     maxRpm: 7000,
     shiftUpRpm: 6500,
     shiftDownRpm: 2500,

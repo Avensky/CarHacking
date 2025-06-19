@@ -60,6 +60,10 @@ function createVehicle(id, type) {
     rpm: 0,
     clutchEngaged: false,
     engineOn: false,
+    engineStart: false,
+    engineStartTime: 0,
+    engineShuttingDown: false,
+    lastShiftTime: 0,
     _prevGear: 0,
     clutchSlip: 0, // assume fully disengaged until it starts moving, 0 = fully disengaged, 1 = fully locked
   };
@@ -267,11 +271,12 @@ function stepWorld(controlMap = {}) {
 
   // Update all vehicles
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
+    // config
     const control = controlMap[id] || {};
     const config = getVehicleConfig(vehicle.type);
     const state = gearboxState[id];
 
-    // Clamp gear between 0 and max
+    // clamp gear between 0 and max
     if (state.gear >= config.gearRatios.length) state.gear = 0;
     if (state.gear < 0) state.gear = 0;
 
@@ -288,15 +293,6 @@ function stepWorld(controlMap = {}) {
     // const slipLerpSpeed = 0.1;
     // const idleThrottle = 0.25; // when clutch disengaged, engineValue fallback
 
-    // ENGINE CONTROL
-    if (control.engineOn && !state.engineOn) {
-      console.log(`Engine turned on for ${id}`);
-      state.engineOn = true;
-    } else if (!control.engineOn && state.engineOn) {
-      console.log(`Engine turned off for ${id}`);
-      state.engineOn = false;
-    }
-
     // get physics data
     const chassis = {
       position: { ...chassisBody.position },
@@ -308,14 +304,164 @@ function stepWorld(controlMap = {}) {
       quaternion: { ...w.worldTransform.quaternion },
     }));
 
+    const speed = chassisBody.velocity.length();
+
+
+
+    // Simulate engine crank
+    if (control.engineOn && !state.engineOn && !state.engineStarting) {
+      state.engineStarting = true;
+      state.engineStartTime = Date.now();
+      state.rpm = 300; // cranking sound
+      console.log(`Engine cranking for ${id}`);
+    }
+    // Simulate engine starting with delay
+    if (state.engineStarting) {
+      const elapsed = Date.now() - state.engineStartTime;
+
+      // Animate cranking RPMs during startup
+      const crankPulse = Math.sin(Date.now() * 0.02 + id.length) * 150;
+      state.rpm = 300 + crankPulse;
+
+      if (elapsed > 1300) { // 1.3 second delay
+        state.engineOn = true; // turn the engine on
+        state.engineStarting = false;
+        state.rpm = config.idleRpm;
+        console.log(`Engine turned on for ${id}`);
+      }
+
+
+
+    }
+
     // simulate idle rmps
-    if (!state.engineOn) {
-      state.rpm = 0;
-    } else if (state.gear === 0) {
+    if (state.gear === 0 && state.engineOn) {
       const fluctuation = Math.sin(Date.now() * 0.01 + id.length) * 50; // wiggle ±50 rpm
       state.rpm = config.idleRpm + fluctuation;
     }
 
+    // simulate engine shut off 
+    if (!control.engineOn) {
+      if (state.engineOn) {
+        // engine is being turned off
+        state.engineOn = false;
+        state.engineShuttingDown = true;
+        console.log(`Engine shutting down on for ${id}`);
+      }
+
+      if (state.engineShuttingDown) {
+        // decay rpm gradually
+        state.rpm = Math.max(0, state.rpm - 25); // reduce 50 rpm per frame (~3000rpm in 1 sec at 60fps)
+        if (state.rpm === 0) {
+          state.engineShuttingDown = false;
+          state.gear = 0; // ✅ RESET GEAR TO NEUTRAL
+          console.log(`Engine fully off, gear reset to 0 for ${id}`);
+        }
+      }
+    }
+
+
+
+
+
+    // Gear engagement and movement
+    if (state.engineOn && state.gear === 0 && control.forward) {
+      state.gear = 1;
+      state.clutchEngaged = true;
+      state._prevGear = 0;
+      console.log(`Gear engaged to 1 for ${id}`);
+    }
+    if (state.engineOn && state.gear === 0 && control.backward) {
+      state.gear = 1;
+      state.clutchEngaged = true;
+      state._prevGear = 0;
+      console.log(`Gear engaged to R for ${id}`);
+    }
+
+    // simulate rpms while gears are engaged
+    if (state.engineOn && state.gear !== 0) {
+      const effectiveRatio = gearRatios[state.gear] * finalDrive;
+      if (control.forward || control.backward) {
+        // Increase RPMs as speed increases
+        const speedRatio = Math.min(chassisBody.velocity.length() / config.maxSpeed, 1);
+
+        // Gear Ratio Weighting
+        const normalizedRatio = effectiveRatio / gearRatios[1]; // relative to 1st gear
+        const rpmTarget = idleRpm + (maxRpm - idleRpm) * Math.pow(speedRatio * normalizedRatio, 0.5);
+        const rpmResponsiveness = 0.1; // increase from 0.1 to 0.3
+        state.rpm += (rpmTarget - state.rpm) * rpmResponsiveness;
+      } else {
+        // Let RPM settle toward wheel-driven RPM (simulating engine braking)
+        // Simulate engine braking, but do not drop below idle RPM
+        const wheelRpm = (speed * effectiveRatio * 60) / (2 * Math.PI);
+        const decelRate = 0.05;
+        const target = Math.max(idleRpm, wheelRpm);
+        state.rpm += (target - state.rpm) * decelRate;
+      }
+      // If in gear and idle, add light rpm fluctuation to simulate torque converter drag
+      if (!control.forward && !control.backward) {
+        const torqueFluctuation = Math.sin(Date.now() * 0.01 + id.length) * 40; // small wiggle
+        state.rpm += torqueFluctuation * 0.1; // dampen the effect
+      }
+    }
+
+    // Automatic gear shifting based on speed
+    if (!state.lastShiftTime) state.lastShiftTime = 0;
+    const now = Date.now();
+
+    if (state.engineOn && state.gear > 0 && now - state.lastShiftTime > 800) {
+      const rpm = state.rpm;
+      const nextGear = state.gear + 1;
+      const prevGear = state.gear - 1;
+
+      const upSpeed = config.shiftUpSpeeds[state.gear] || Infinity;
+      const downSpeed = config.shiftDownSpeeds[state.gear] || 0;
+
+      const shouldUpshift =
+        nextGear < config.gearRatios.length &&
+        rpm > config.shiftUpRpm &&
+        speed > upSpeed;
+
+      const shouldDownshift =
+        prevGear > 0 &&
+        (rpm < config.shiftDownRpm || speed < downSpeed);
+
+      if (shouldUpshift) {
+        console.log(`Upshifting ${id}: ${state.gear} → ${nextGear}`);
+        state._prevGear = state.gear;
+        state.gear = nextGear;
+        state.lastShiftTime = now;
+      } else if (shouldDownshift) {
+        console.log(`Downshifting ${id}: ${state.gear} → ${prevGear}`);
+        state._prevGear = state.gear;
+        state.gear = prevGear;
+        state.lastShiftTime = now;
+      }
+    }
+
+
+
+
+
+    // Automatic clutch logic
+    const isShifting = state._prevGear !== state.gear;
+    const isTryingToLaunch = control.forward && speed < 1;
+    const shouldDisengage = !state.engineOn || isShifting || isTryingToLaunch;
+
+    if (shouldDisengage) {
+      state.clutchEngaged = false;
+      const bitePoint = 0.3; // partial slip during launch or shift
+      state.clutchSlip += (bitePoint - state.clutchSlip) * 0.15;
+    } else {
+      state.clutchEngaged = true;
+      state.clutchSlip += (1.0 - state.clutchSlip) * 0.1; // smoothly lock
+    }
+
+
+
+
+
+    // send physics snapshot to frontend
     snapshots[id] = {
       chassisBody: {
         position: chassis.position,
@@ -327,68 +473,13 @@ function stepWorld(controlMap = {}) {
         speed: chassisBody.velocity.length(),
         steeringValue: vehicle.steeringValue,
         engineRpm: Math.round(state.rpm),
+        engineStarting: state.engineStarting,
         gear: state.gear,
       },
       wheelInfos
     };
 
-    if (state.gear === 0 || !state.engineOn) continue;
-
-
-    // VEHICLE STATE
-    // const state = gearboxState[id];
-    // state.gear = Math.min(Math.max(state.gear, 1), gearRatios.length - 1);
-
-    // // if (state.gear >= gearRatios.length) state.gear = 1; // clamp
-    // // if (state.gear < 1) state.gear = 1;
-    // const vehicleSpeed = chassisBody.velocity.length();
-
-    // // Rear wheel angular velocity → RPM
-    // let avgOmega = 0;
-    // for (const i of [2, 3]) {
-    //   avgOmega += vehicle.wheelInfos[i].deltaRotation / (1 / 60);
-    // }
-    // avgOmega /= 2;
-
-    // const wheelRpm = (avgOmega * 60) / (2 * Math.PI);
-    // const drivenRpm = wheelRpm * gearRatio * finalDrive;
-
-    // // Blend clutch slip
-    // const clutchTarget = state.clutchEngaged ? 1.0 : 0.0;
-    // state.clutchSlip += (clutchTarget - state.clutchSlip) * slipLerpSpeed;
-
-    // // Simulated throttle RPM (when clutch disengaged)
-    // const throttleInput = Math.max(vehicle.engineValue || 0, idleThrottle);
-    // const throttleRpm = idleRpm + (maxRpm - idleRpm) * throttleInput;
-
-    // // Final engine RPM
-    // let engineRpm = drivenRpm * state.clutchSlip + throttleRpm * (1 - state.clutchSlip);
-    // engineRpm = Math.min(maxRpm, Math.max(idleRpm, engineRpm));
-
-    // const previousGear = state._prevGear ?? state.gear; // fallback for first frame
-    // const isShifting = state.gear !== previousGear;
-    // state.clutchEngaged = !(isShifting || vehicleSpeed < 1);
-
-    // // Auto shift logic
-    // if (vehicle.engineValue > 0 && engineRpm > shiftUpRpm && state.gear < gearRatios.length - 1) {
-    //   state.gear++;
-    // } else if (vehicle.engineValue > 0 && engineRpm < shiftDownRpm && state.gear > 1) {
-    //   state.gear--;
-    // }
-
-    // state._prevGear = state.gear;
-
-    // // Update state
-    // // state.rpm = Math.max(idleRpm, engineRpm);
-    // if (state._prevGear !== state.gear) {
-    //   console.log(`Gear change for ${id}: ${state._prevGear} → ${state.gear}`);
-    // }
-    // state.rpm = engineRpm;
-    // gearboxState[id] = state;
-    // console.log('rpm', Math.round(state.rpm))
-    // console.log('gear', state.gear)
-
-  }
+  } // end for loop
 
   return snapshots;
 }
