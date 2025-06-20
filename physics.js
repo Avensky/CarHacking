@@ -67,6 +67,7 @@ function createVehicle(id, type) {
     _prevGear: 0,
     clutchSlip: 0, // 0 = fully disengaged, 1 = fully locked
     engineTemp: config.engineTemp.min,
+    justDownshifted: false
   };
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
@@ -174,15 +175,7 @@ function updateVehicleControls(id, control) {
     brakeState[id] = 0; // reset cached brake state
   }
 
-  const {
-    gearRatios, // gears 1–6
-    finalDrive,
-    idleRpm,
-    maxRpm,
-    shiftUpRpm,
-    shiftDownRpm,
-  } = config
-
+  const { gearRatios } = config
   const gearRatio = gearRatios[gearboxState[id].gear] ?? 1;
   // Controls
   const forwardForce = config.maxForce * (gearRatio / gearRatios[1]); // normalized to 1st gear
@@ -210,10 +203,10 @@ function updateVehicleControls(id, control) {
 
   const adjustedForce = forwardForce * powerMultiplier;
 
-  if (control.forward && gearboxState[id].engineOn) {
+  if (control.forward && gearboxState[id].engineOn && (fuelState[id].fuel !== 0)) {
     vehicle.applyEngineForce(+adjustedForce, 2);
     vehicle.applyEngineForce(+adjustedForce, 3);
-  } else if (control.backward) {
+  } else if (control.backward && (fuelState[id].fuel !== 0)) {
     vehicle.applyEngineForce(-adjustedForce, 2);
     vehicle.applyEngineForce(-adjustedForce, 3);
   } else {
@@ -256,6 +249,7 @@ function updateVehicleControls(id, control) {
   }
   for (const i of rearWheels) {
     vehicle.setBrake(newBrake * 0.8, i); // stronger rear brake
+    // gearboxState[id].rpm -= (gearboxState[id].rpm) * 0.02; // drag RPM back toward wheel RPM
   }
   // for handbrake
   if (control.handbrake) {
@@ -325,22 +319,29 @@ function stepWorld(controlMap = {}) {
     }));
 
     const speed = chassisBody.velocity.length();
-
     const fuel = fuelState[id];
+    const now = Date.now();
+
+
+
+
 
     // Simulate engine crank
     if (control.engineOn && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
       state.engineStarting = true;
-      state.engineStartTime = Date.now();
+      state.engineStartTime = now;
       state.rpm = 300; // cranking sound
       console.log(`Engine cranking for ${id}`);
     }
+
+
+
     // Simulate engine starting with delay
     if (state.engineStarting) {
-      const elapsed = Date.now() - state.engineStartTime;
+      const elapsed = now - state.engineStartTime;
 
       // Animate cranking RPMs during startup
-      const crankPulse = Math.sin(Date.now() * 0.02 + id.length) * 150;
+      const crankPulse = Math.sin(now * 0.02 + id.length) * 150;
       state.rpm = 300 + crankPulse;
 
       if (elapsed > 1300) { // 1.3 second delay
@@ -351,16 +352,22 @@ function stepWorld(controlMap = {}) {
         }
         state.engineStarting = false;
       }
-
-
-
     }
 
-    // simulate idle rmps
-    if (state.gear === 0 && state.engineOn) {
-      const fluctuation = Math.sin(Date.now() * 0.01 + id.length) * 50; // wiggle ±50 rpm
+
+
+
+
+    // simulate idle rmps in neutral
+    if (state.gear === 0 && state.engineOn && (fuelState[id].fuel !== 0)) {
+      const fluctuation = Math.sin(now * 0.01 + id.length) * 50; // wiggle ±50 rpm
       state.rpm = config.idleRpm + fluctuation;
     }
+
+
+
+
+
 
     // simulate engine shut off 
     if (!control.engineOn) {
@@ -386,24 +393,28 @@ function stepWorld(controlMap = {}) {
 
 
 
-    // Gear engagement and movement
-    if (state.engineOn && state.gear === 0 && control.forward) {
+    // Turn on first gear when controls move forward
+    if (state.engineOn && state.gear === 0 && (control.forward || control.backward) && (fuelState[id].fuel !== 0)) {
       state.gear = 1;
       state.clutchEngaged = true;
       state._prevGear = 0;
       console.log(`Gear engaged to 1 for ${id}`);
     }
-    if (state.engineOn && state.gear === 0 && control.backward) {
-      state.gear = 1;
-      state.clutchEngaged = true;
-      state._prevGear = 0;
-      console.log(`Gear engaged to R for ${id}`);
-    }
+    // if (state.engineOn && state.gear === 0 && control.backward && (fuelState[id].fuel !== 0)) {
+    //   state.gear = 1; // change to reverse?
+    //   state.clutchEngaged = true;
+    //   state._prevGear = 0;
+    //   console.log(`Gear engaged to R for ${id}`);
+    // }
 
+
+
+
+
+    const effectiveRatio = gearRatios[state.gear] * finalDrive;
     // simulate rpms while gears are engaged
-    if (state.engineOn && state.gear !== 0) {
-      const effectiveRatio = gearRatios[state.gear] * finalDrive;
-      if (control.forward || control.backward) {
+    if (state.engineOn && state.gear !== 0 && (fuelState[id].fuel !== 0)) {
+      if (control.forward || control.backward && (fuelState[id].fuel !== 0)) {
         // Increase RPMs as speed increases
         const speedRatio = Math.min(chassisBody.velocity.length() / config.maxSpeed, 1);
 
@@ -412,54 +423,98 @@ function stepWorld(controlMap = {}) {
         const rpmTarget = idleRpm + (maxRpm - idleRpm) * Math.pow(speedRatio * normalizedRatio, 0.5);
         const rpmResponsiveness = 0.1; // increase from 0.1 to 0.3
         state.rpm += (rpmTarget - state.rpm) * rpmResponsiveness;
-      } else {
+
+      } else if (control.brake && (fuelState[id].fuel !== 0)) {
         // Let RPM settle toward wheel-driven RPM (simulating engine braking)
         // Simulate engine braking, but do not drop below idle RPM
         const wheelRpm = (speed * effectiveRatio * 60) / (2 * Math.PI);
         const decelRate = 0.05;
         const target = Math.max(idleRpm, wheelRpm);
         state.rpm += (target - state.rpm) * decelRate;
+      } else { //cruising
+        const wheelRpm = (speed * effectiveRatio * 60) / (2 * Math.PI);
+        const decelRate = 0.005;
+
+        const target = Math.max(idleRpm, wheelRpm);
+        state.rpm += (target - state.rpm) * decelRate;
+
       }
-      // If in gear and idle, add light rpm fluctuation to simulate torque converter drag
-      if (!control.forward && !control.backward) {
-        const torqueFluctuation = Math.sin(Date.now() * 0.01 + id.length) * 40; // small wiggle
+      // If in no in gear and idle, add light rpm fluctuation to simulate torque converter drag
+      if ((!control.forward && !control.backward) && (fuelState[id].fuel !== 0)) {
+        const torqueFluctuation = Math.sin(now * 0.01 + id.length) * 40; // small wiggle
         state.rpm += torqueFluctuation * 0.1; // dampen the effect
       }
     }
 
-    // Automatic gear shifting based on speed
-    if (!state.lastShiftTime) state.lastShiftTime = 0;
-    const now = Date.now();
 
-    if (state.engineOn && state.gear > 0 && now - state.lastShiftTime > 800) {
+    if (fuelState[id].fuel === 0) {
+      state.rpm -= (state.rpm) * 0.005;
+    }
+
+
+
+
+
+
+
+
+
+    // Automatic gear shifting with hysteresis and rpm
+    if (!state.lastShiftTime) state.lastShiftTime = 0;
+    const timeSinceLastShift = now - state.lastShiftTime;
+
+    if (state.engineOn && state.gear > 0 && timeSinceLastShift > 1000) {
       const rpm = state.rpm;
       const nextGear = state.gear + 1;
       const prevGear = state.gear - 1;
 
-      const upSpeed = config.shiftUpSpeeds[state.gear] || Infinity;
+      // const upSpeed = config.shiftUpSpeeds[state.gear] || Infinity;
       const downSpeed = config.shiftDownSpeeds[state.gear] || 0;
 
-      const shouldUpshift =
-        nextGear < config.gearRatios.length &&
-        rpm > config.shiftUpRpm &&
-        speed > upSpeed;
+      const shouldUpshift = nextGear < config.gearRatios.length && (rpm > shiftUpRpm);
+      // (rpm > config.shiftUpRpm || speed > upSpeed);
 
       const shouldDownshift =
         prevGear > 0 &&
-        (rpm < config.shiftDownRpm || speed < downSpeed);
+        (rpm < shiftDownRpm || speed < downSpeed);
 
       if (shouldUpshift) {
         console.log(`Upshifting ${id}: ${state.gear} → ${nextGear}`);
         state._prevGear = state.gear;
         state.gear = nextGear;
         state.lastShiftTime = now;
+        state.rpm -= 3000;
       } else if (shouldDownshift) {
-        console.log(`Downshifting ${id}: ${state.gear} → ${prevGear}`);
-        state._prevGear = state.gear;
-        state.gear = prevGear;
-        state.lastShiftTime = now;
+
+        // Find best gear for current speed (speed in m/s)
+        let bestGear = 0;
+        for (let g = config.shiftDownSpeeds.length - 1; g > 0; g--) {
+          if (speed >= config.shiftDownSpeeds[g]) {
+            bestGear = g;
+            break;
+          }
+        }
+
+        // Only shift if better than current
+        if (bestGear < state.gear) {
+          console.log(`Downshifting ${id}: ${state.gear} → ${bestGear}`);
+          state._prevGear = state.gear;
+          state.gear = bestGear;
+          state.lastShiftTime = now;
+
+          // Optional: simulate rev match jump
+          const ratioBefore = gearRatios[state._prevGear] * finalDrive;
+          const ratioAfter = gearRatios[state.gear] * finalDrive;
+          const rpmBoost = state.rpm * (ratioAfter / ratioBefore);
+          state.rpm = Math.min(rpmBoost, config.maxRpm);
+        }
       }
     }
+
+
+
+
+
 
 
 
@@ -481,6 +536,38 @@ function stepWorld(controlMap = {}) {
 
 
 
+
+
+
+
+
+
+
+
+
+    // // Simulate engine braking when decelerating in gear
+    // const isDecelerating = !control.forward && !control.backward && state.engineOn;
+    // const isInGear = state.gear > 0;
+    // const clutchIsLocked = state.clutchSlip > 0.95; // engine and wheels tightly linked
+
+    // if (isInGear && isDecelerating) {
+    //   const engineBraking = .1 * config.maxBrakeForce * (state.rpm / config.maxRpm);
+    //   console.log(`Engine Braking for ${id}: Gear ${state.gear}, RPM ${Math.round(state.rpm)}, Brake ${engineBraking.toFixed(2)}`);
+
+    //   // Directly set brake on rear wheels
+    //   vehicle.wheelInfos[2].brake = engineBraking;
+    //   vehicle.wheelInfos[3].brake = engineBraking;
+    // }
+
+
+
+
+
+
+
+
+
+
     // Fuel consumption logic
     if (state.engineOn && fuel.fuel > 0) {
       const gearMultiplier = state.gear;
@@ -497,11 +584,14 @@ function stepWorld(controlMap = {}) {
       fuel.fuel = Math.max(0, fuel.fuel - burn);
 
       if (fuel.fuel === 0) {
-        state.engineOn = false;
+        // state.engineOn = false;
         state.engineShuttingDown = true;
-        state.gear = 0;
         console.log(`Fuel empty — engine shutting off for ${id}`);
       }
+    }
+
+    if ((fuel.fuel === 0) && (state.rpms === 0)) {
+      state.engineOn = false;
     }
 
     if (control.refuel) {
@@ -549,7 +639,7 @@ function stepWorld(controlMap = {}) {
       if (state.rpm > idleRpm) {
         state.rpm -= tempCfg.coolRate * 5; // crank down faster than idle decay
       } else {
-        state.rpm = idleRpm;
+        // state.rpm = idleRpm;
         state.engineOn = false;
         state.engineShuttingDown = false;
       }
@@ -558,9 +648,6 @@ function stepWorld(controlMap = {}) {
       // console.log(`ENGINE OVERHEATING for ${id}`);
       // e.g., reduce engineForce in updateVehicleControls()
     }
-
-
-
 
 
 
@@ -577,7 +664,7 @@ function stepWorld(controlMap = {}) {
         angularVelocity: { ...chassisBody.angularVelocity }
       },
       data: {
-        speed: chassisBody.velocity.length(),
+        speed: chassisBody.velocity.length() * 2.23694, //convert to mph
         steeringValue: vehicle.steeringValue,
         engineRpm: Math.round(state.rpm),
         engineStarting: state.engineStarting,

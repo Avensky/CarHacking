@@ -35,7 +35,7 @@ const carConfig = {
     steer: 0.3,
     maxSteer: 0.5,
     maxBrake: 65,
-    maxSpeed: 120,
+    maxSpeed: 60, // m/s ~216 km/h
     maxForce: 500,
     maxBrakeForce: 25,
     brakeLerpSpeed: 0.25, // Smoothing factor
@@ -46,12 +46,12 @@ const carConfig = {
     levelLayer: 1,
     engineValue: 0, // engine off
 
-    gearRatios: [0, 3.6, 2.19, 1.41, 1.0, 0.83, .074], // gears 1–6
-    shiftUpSpeeds: [0, 15, 30, 50, 70, 90],// m/s
-    shiftDownSpeeds: [0, 10, 25, 45, 65, 85],
+    gearRatios: [0, 4.2, 3.2, 2.4, 1.8, 1.3, 1.0],// gears 1–6
+    // shiftUpSpeeds:   [0, 7, 15, 25, 35, 45],// m/s
+    shiftDownSpeeds: [0, 3, 8, 13, 18, 25],
     finalDrive: 3.9,
     idleRpm: 850,
-    maxRpm: 7000,
+    maxRpm: 7200,
     shiftUpRpm: 6500,
     shiftDownRpm: 2500,
 
@@ -60,7 +60,7 @@ const carConfig = {
         max: 250,           // °F max safe temp
         overheat: 240,      // °F begins overheating behavior
         critical: 260,      // °F critical, engine shuts off
-        heatRate: 0.08,     // per tick when under throttle
+        heatRate: 0.05,     // per tick when under throttle
         coolRate: 0.03,     // per tick when idle
     },
 }

@@ -22,14 +22,14 @@ export function Dashboard(): JSX.Element {
   if (!physicsData || !physicsData.data || !vehicleConfig) return <></>
   // console.log('vehicleConfig', vehicleConfig);
 
-  const { speed, engineRpm, fuel, temp } = physicsData.data
+  const { speed, engineRpm, fuel, temp, gear } = physicsData.data
   const fuelCapacity = vehicleConfig.fuelCapacity
   // console.log('dashboard loaded');
   return (
     <div className="dashboard">
       <div className="dash-top">
         <Speed speed={speed} />
-        <Rpms rpms={engineRpm / 1000} />
+        <Rpms rpms={engineRpm / 1000} gear={gear} />
         <FuelTemp fuel={fuel} fuelCapacity={fuelCapacity} temp={temp} />
       </div>
     </div>

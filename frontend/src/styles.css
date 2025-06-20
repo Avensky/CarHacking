@@ -618,6 +618,23 @@ button {
 
 .dash-top {
   display: flex;
+  position: relative;
+}
+
+.rpms {
+  position: relative;
+}
+
+.gear {
+  position: absolute;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6em;
+  /* font-weight: bold; */
+  color: white;
+  pointer-events: none;
+  font-family: squada-one;
 }
 
 .dash-bottom {
