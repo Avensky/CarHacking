@@ -14,11 +14,9 @@ import {
 } from '../../store'
 
 // In Vehicle.tsx
-export default forwardRef(function Ae86({ playerId, children }: { playerId: string, children: any }, ref: React.Ref<Group>) {
+export default forwardRef(function Ae86({ children }: { children: any }, ref: React.Ref<Group>) {
 
-    // multiplayer support
-    // const vehicleId = useStore(state => state.vehicleId); // or prop/socket
-    // const isLocalPlayer = playerId === vehicleId;
+    const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
     const v = new Vector3()
     const camera = useThree((s) => s.camera)
     const carGroupRef = useRef<Group>(null!)
@@ -38,16 +36,11 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
     const rrBlinkerRef = useRef<any>(null!)
 
     useImperativeHandle(ref, () => carGroupRef.current, [])
-    const defaultCamera = useThree((state) => state.camera)
-
-
-    const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
     const [headlightsOn, setHeadlightsOn] = useState(false);
     const [leftBlinker, setLeftBlinker] = useState(false);
     const [rightBlinker, setRightBlinker] = useState(false);
     const [hazards, setHazards] = useState(false);
-    // console.log('PhysicsData', physicsData);
-    // console.log('controlsData', controls);
+
     useEffect(() => {
         const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
 
@@ -191,8 +184,6 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
         if (rrBlinkerRef.current) rrBlinkerRef.current.visible = (hazards || blinkerRight) && blinkOn
 
         if (!physicsData) return
-
-        // console.log('engaging physicsData')
         const { chassisBody, wheelInfos } = physicsData
         const group = carGroupRef.current
 
@@ -241,13 +232,12 @@ export default forwardRef(function Ae86({ playerId, children }: { playerId: stri
                 v.set(0, 3, 6)
                 // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
             }
-
             // moves camera to user
-            defaultCamera.position.lerp(v, delta)
-            // defaultCamera.rotation.z = lerp(
-            //     // defaultCamera.position.lerp(v, delta)
-            //     // defaultCamera.rotation.z = lerp(
-            //     defaultCamera.rotation.z,
+            camera.position.lerp(v, delta)
+            // camera.rotation.z = lerp(
+            //     // camera.position.lerp(v, delta)
+            //     // camera.rotation.z = lerp(
+            //     camera.rotation.z,
             //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
             //     + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
             //     delta,

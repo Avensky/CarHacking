@@ -1,4 +1,3 @@
-import React from 'react';
 
 export default function SelectionUI(
     {
@@ -23,7 +22,7 @@ export default function SelectionUI(
             style={{
                 position: 'absolute', // ✅ Changed
                 pointerEvents: 'auto', // ✅ Ensures buttons work
-                bottom: 0,
+                bottom: '5%',
                 left: '50%',
                 userSelect: 'none',
                 textAlign: 'center',

@@ -131,10 +131,10 @@ export function App(): JSX.Element {
         <Suspense fallback={null}>
           {screen === 'selection-screen' && (
             <SelectionScreen
+              playerId={socket.id}
               VehicleComponent={vehicleOptions[vehicleIndex].component}
               MapComponent={mapOptions[mapIndex].component}
             >
-              {light && <primitive object={light.target} />}
               <Cameras />
             </SelectionScreen>
           )}

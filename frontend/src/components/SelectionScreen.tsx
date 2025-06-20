@@ -5,7 +5,7 @@ import { OrbitControls } from '@react-three/drei';
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib';
 
 
-export default function SelectionScreen({ children, VehicleComponent, MapComponent }: { children: any, VehicleComponent: any, MapComponent: any }) {
+export default function SelectionScreen({ playerId, children, VehicleComponent, MapComponent }: { playerId: any, children: any, VehicleComponent: any, MapComponent: any }) {
     const controlsRef = useRef<ThreeOrbitControls | null>(null)
     return (
         <>
@@ -22,7 +22,7 @@ export default function SelectionScreen({ children, VehicleComponent, MapCompone
                 resumeDuration={5}
             />
             <Suspense fallback={null}>
-                <group ><VehicleComponent /></group>
+                <VehicleComponent playerId={playerId} />
                 <MapComponent />
             </Suspense>
         </>

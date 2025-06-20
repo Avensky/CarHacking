@@ -1,19 +1,41 @@
 // Camaro.tsx
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
-import { Group, Vector3 } from 'three';
+import { Group, SpotLight, Vector3 } from 'three';
 import { GroupProps, useFrame, useThree } from '@react-three/fiber';
 import { Camera, Controls, getState, PhysicsData } from '../../store';
 import { lerp } from 'three/src/math/MathUtils';
 import { setupVehicleParts } from '../../utils/setupVehicleParts';
 
-export default forwardRef(function Camaro({ children, ...props }: GroupProps, ref: React.Ref<Group>) {
-    const { scene } = useGLTF('/models/cars/camaro2017.glb');
-    useImperativeHandle(ref, () => vehicleGroupRef.current, [])
-    // const defaultCamera = useThree((state) => state.camera)
-    // const v = new Vector3()
+export default forwardRef(function Camaro({ children }: { children: any }, ref: React.Ref<Group>) {
 
+    const { scene } = useGLTF('/models/cars/camaro2017.glb');
+    const v = new Vector3()
+    const camera = useThree((state) => state.camera)
     const vehicleGroupRef = useRef<Group>(null!)
+
+    // Simulate hazard lights
+    const blinkTimer = useRef(0)
+    const blinkState = useRef(false)
+
+    // Ref's are used for movements    
+    const leftLightRef = useRef<any>(null!)
+    const rightLightRef = useRef<any>(null!)
+    const leftTailRef = useRef<any>(null!)
+    const rightTailRef = useRef<any>(null!)
+    const flBlinkerRef = useRef<any>(null!)
+    const frBlinkerRef = useRef<any>(null!)
+    const rlBlinkerRef = useRef<any>(null!)
+    const rrBlinkerRef = useRef<any>(null!)
+
+    useImperativeHandle(ref, () => vehicleGroupRef.current, [])
+
+    const [headlightsOn, setHeadlightsOn] = useState(false);
+    const [leftBlinker, setLeftBlinker] = useState(false);
+    const [rightBlinker, setRightBlinker] = useState(false);
+    const [hazards, setHazards] = useState(false);
+
+
     const { clonesByGroup, renderedGroups } = useMemo(() => {
 
         return setupVehicleParts({
@@ -42,8 +64,8 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
                     transparent: [
                         'SUNROOF_window', 'FRONT_windows',
                         'RIGHT_QUARTER_WINDOW', 'LEFT_QUARTER_WINDOW',
-                        'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
-                        'TAILLIGHT_LENS_LEFT', 'TAILLIGHT_LENS_RIGHT',
+                        // 'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
+                        // 'TAILLIGHT_LENS_LEFT', 'TAILLIGHT_LENS_RIGHT',
                         'REAR_WINDOW',
                     ],
                     opacity: 0.4,
@@ -110,11 +132,93 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
                 },
             ]
         })
+
     }, [scene])
 
-    const defaultCamera = useThree((state) => state.camera)
-    const v = new Vector3()
-    const wheelRefs = useMemo(() => {
+    useEffect(() => {
+        // Create left headlight
+        leftLightRef.current = new SpotLight(0xffffff, 5, 40, Math.PI / 6, 0.2)
+        const leftLight = leftLightRef.current
+        leftLight.position.set(-.5, 0.7, -1.8) // relative to headlight mesh center
+        leftLight.target.position.set(-0.4, -0.6, -5)
+        leftLight.target.updateMatrixWorld()
+        leftLight.visible = headlightsOn
+        vehicleGroupRef.current.add(leftLight)
+        vehicleGroupRef.current.add(leftLight.target)
+
+        // Create right headlight
+        rightLightRef.current = new SpotLight(0xffffff, 5, 40, Math.PI / 6, 0.2)
+        const rightLight = rightLightRef.current
+        rightLight.position.set(.55, 0.7, -1.8)
+        rightLight.target.position.set(0.4, -0.6, -5)
+        rightLight.target.updateMatrixWorld()
+        rightLight.visible = headlightsOn
+        vehicleGroupRef.current.add(rightLight)
+        vehicleGroupRef.current.add(rightLight.target)
+
+        // Left tail light
+        leftTailRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+        const leftTail = leftTailRef.current
+        leftTail.position.set(-0.5, 0.6, 1.9) // Rear of the car (x,y,z)
+        leftTail.target.position.set(-0.5, 0.5, 3)
+        leftTail.target.updateMatrixWorld()
+        leftTail.visible = false
+        vehicleGroupRef.current.add(leftTail)
+        vehicleGroupRef.current.add(leftTail.target)
+
+        // Front Right tail light
+        rightTailRef.current = new SpotLight(0xff0000, 3, 8, Math.PI / 4, 0.2)
+        const rightTail = rightTailRef.current
+        rightTail.position.set(0.57, 0.6, 1.8)
+        rightTail.target.position.set(0.57, 0.5, 3)
+        rightTail.target.updateMatrixWorld()
+        rightTail.visible = false
+        vehicleGroupRef.current.add(rightTail)
+        vehicleGroupRef.current.add(rightTail.target)
+
+        // front Left blinker (orange)
+        flBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const frontLeftBlinker = flBlinkerRef.current
+        frontLeftBlinker.position.set(-0.7, 0.6, -1.9)
+        frontLeftBlinker.target.position.set(-0.85, 0.6, -3)
+        frontLeftBlinker.visible = leftBlinker || hazards
+        frontLeftBlinker.target.updateMatrixWorld()
+        vehicleGroupRef.current.add(frontLeftBlinker)
+        vehicleGroupRef.current.add(frontLeftBlinker.target)
+
+        // front Right blinker (orange)
+        frBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const frontRightBlinker = frBlinkerRef.current
+        frontRightBlinker.position.set(0.7, 0.6, -1.9)
+        frontRightBlinker.target.position.set(0.9, 0.6, -3)
+        frontRightBlinker.visible = rightBlinker || hazards
+        frontRightBlinker.target.updateMatrixWorld()
+        vehicleGroupRef.current.add(frontRightBlinker)
+        vehicleGroupRef.current.add(frontRightBlinker.target)
+
+        // rear Left blinker (orange)
+        rlBlinkerRef.current = new SpotLight(0xffa500, 12, 16, Math.PI / 8, 0.2)
+        const rearLeftBlinker = rlBlinkerRef.current
+        rearLeftBlinker.position.set(-0.5, 0.6, 1.9)
+        rearLeftBlinker.target.position.set(-0.9, 0.6, 3)
+        rearLeftBlinker.visible = leftBlinker || hazards
+        rearLeftBlinker.target.updateMatrixWorld()
+        vehicleGroupRef.current.add(rearLeftBlinker)
+        vehicleGroupRef.current.add(rearLeftBlinker.target)
+
+        // rear Right blinker (orange)
+        rrBlinkerRef.current = new SpotLight(0xffa500, 12, 18, Math.PI / 8, 0.2)
+        const rearRightBlinker = rrBlinkerRef.current
+        rearRightBlinker.position.set(0.5, 0.6, 1.9)
+        rearRightBlinker.target.position.set(0.9, 0.6, 3)
+        rearRightBlinker.visible = rightBlinker || hazards
+        rearRightBlinker.target.updateMatrixWorld()
+        vehicleGroupRef.current.add(rearRightBlinker)
+        vehicleGroupRef.current.add(rearRightBlinker.target)
+    }, [scene])
+
+
+    const wheels = useMemo(() => {
         return [
             clonesByGroup['FL_WHEEL'],
             clonesByGroup['FR_WHEEL'],
@@ -132,17 +236,48 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
 
 
     useFrame((_, delta) => {
+        // get state on frame
         const store = getState()
+        const controls = store.controls
+        const physicsData = store.physicsData
         const camMode = store.camera
         const isEditor = store.editor
-        const physicsData = store.physicsData
 
-        if (!physicsData) return // ✅ Add this line
-        const { speed, engineValue, steeringValue, controls } = physicsData.data
+        // if (!physicsData) return // ✅ Add this line
+
+        // Update blink state every 0.5s
+        blinkTimer.current += delta
+        if (blinkTimer.current >= 0.5) {
+            blinkTimer.current = 0
+            blinkState.current = !blinkState.current
+        }
+
+        // Lights visibility
+        if (leftLightRef.current) leftLightRef.current.visible = controls.headlights
+        if (rightLightRef.current) rightLightRef.current.visible = controls.headlights
+
+        if (leftTailRef.current) leftTailRef.current.visible = controls.brake
+        if (rightTailRef.current) rightTailRef.current.visible = controls.brake
+
+        const hazards = controls.hazards
+        const blinkerLeft = controls.blinkerLeft
+        const blinkerRight = controls.blinkerRight && !hazards
+        const blinkOn = blinkState.current
+
+        //headlights
+        leftLightRef.current.visible = controls.headlights
+        rightLightRef.current.visible = controls.headlights
+
+        //taillights
+        leftTailRef.current.visible = controls.brake
+        rightTailRef.current.visible = controls.brake
+
+        if (flBlinkerRef.current) flBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkOn
+        if (frBlinkerRef.current) frBlinkerRef.current.visible = (hazards || blinkerRight) && blinkOn
+        if (rlBlinkerRef.current) rlBlinkerRef.current.visible = (hazards || blinkerLeft) && blinkOn
+        if (rrBlinkerRef.current) rrBlinkerRef.current.visible = (hazards || blinkerRight) && blinkOn
 
         if (!physicsData) return
-
-        // console.log('engaging physicsData')
         const { chassisBody, wheelInfos } = physicsData
         const group = vehicleGroupRef.current
 
@@ -165,9 +300,9 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
 
         // Update wheels
         wheelInfos.forEach((wheel: any, i: number) => {
-            if (!wheelRefs[i]) return
-            wheelRefs[i].position.lerpVectors(
-                wheelRefs[i].position,
+            if (!wheels[i]) return
+            wheels[i].position.lerpVectors(
+                wheels[i].position,
                 new Vector3(
                     wheel.position.x,
                     wheel.position.y, // <-- lower slightly
@@ -175,7 +310,7 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
                 ),
                 .5 // ← smoothing factor
             )
-            wheelRefs[i].quaternion.set(
+            wheels[i].quaternion.set(
                 wheel.quaternion.x,
                 wheel.quaternion.y,
                 wheel.quaternion.z,
@@ -193,9 +328,9 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
             }
 
             // moves camera to user
-            defaultCamera.position.lerp(v, delta)
-            // defaultCamera.rotation.z = lerp(
-            //     defaultCamera.rotation.z,
+            camera.position.lerp(v, delta)
+            // camera.rotation.z = lerp(
+            //     camera.rotation.z,
             //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
             //     + (-steeringValue * speed) / (camMode === 'DEFAULT' ? 10 : 35),
             //     delta
@@ -206,12 +341,14 @@ export default forwardRef(function Camaro({ children, ...props }: GroupProps, re
     {/* <Dust /> */ }
     {/* <Skid /> */ }
     return (
-        <group ref={vehicleGroupRef}>
-            {Object.values(renderedGroups)}
-            {children}
-            {wheelRefs.map((wheel, i) => (
+        <>
+            <group ref={vehicleGroupRef}>
+                {Object.values(renderedGroups)}
+                {children}
+            </group>
+            {wheels.map((wheel, i) => (
                 <primitive key={`wheel-${i}`} object={wheel} />
             ))}
-        </group>
+        </>
     );
 })
