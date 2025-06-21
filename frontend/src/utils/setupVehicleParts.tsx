@@ -27,7 +27,7 @@ export function setupVehicleParts({
     const clonesByGroup: Record<string, Record<string, THREE.Object3D>> = {}
     const renderedGroups: Record<string, JSX.Element> = {}
 
-    const glassFactory = createGlassMaterialFactory({ opacity: 0.05, ior: 1.5 });
+    const glassFactory = createGlassMaterialFactory({ opacity: .4, ior: 6.5 });
 
     for (const group of groups) {
         const {

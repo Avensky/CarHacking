@@ -16,10 +16,14 @@ import {
 // In Vehicle.tsx
 export default forwardRef(function Ae86({ children }: { children: any }, ref: React.Ref<Group>) {
 
-    const { scene } = useGLTF('/models/cars/ae86Rotated.glb')
+    const { scene } = useGLTF('/models/cars/ae86.glb')
     const v = new Vector3()
     const camera = useThree((s) => s.camera)
     const carGroupRef = useRef<Group>(null!)
+
+    // Pop up headlights ref
+    const headlightRef = useRef<Group>(null!)
+    const headlightRotation = useRef(0)
 
     // Simulate hazard lights
     const blinkTimer = useRef(0)
@@ -48,6 +52,8 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
             const original = scene.getObjectByName(name)
             if (original) {
                 const cloned = original.clone(true)
+                if (name === 'Headlights' && cloned instanceof Group)
+                    headlightRef.current = cloned
                 carGroupRef.current.add(cloned)
             }
         })
@@ -151,6 +157,16 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
         const camMode = store.camera
         const isEditor = store.editor
 
+        //POP UP HEADLIGHTS
+        const openRotation = 0// headlights up
+        const closedRotation = -Math.PI / 3 // headlights down
+        const target = controls.headlights ? openRotation : closedRotation
+        headlightRotation.current = lerp(headlightRotation.current, target, 5 * delta)
+
+        if (headlightRef.current) {
+            headlightRef.current.rotation.x = headlightRotation.current
+        }
+
         // Update blink state every 0.5s
         blinkTimer.current += delta
         if (blinkTimer.current >= 0.5) {
@@ -243,7 +259,6 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
             //     delta,
             // )
         }
-
     })
 
     // Headlights

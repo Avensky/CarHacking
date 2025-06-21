@@ -44,7 +44,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                 {
                     name: 'BODY',
                     parts: [
-                        'SUNROOF', 'FRONT_windows',
+                        'SUNROOF', 'FRONT_windows', 'WINDSHIELD',
                         'REAR_WINDOW',
                         'RIGHT_QUARTER_WINDOW', 'LEFT_QUARTER_WINDOW',
                         'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
@@ -62,7 +62,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                         'MUFFLERS', 'EMPTY'
                     ],
                     transparent: [
-                        'SUNROOF_window', 'FRONT_windows',
+                        'SUNROOF_window', 'FRONT_windows', 'WINDSHIELD',
                         'RIGHT_QUARTER_WINDOW', 'LEFT_QUARTER_WINDOW',
                         // 'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
                         // 'TAILLIGHT_LENS_LEFT', 'TAILLIGHT_LENS_RIGHT',
@@ -286,7 +286,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
             group.position,
             new Vector3(
                 chassisBody.position.x,
-                chassisBody.position.y - .55,
+                chassisBody.position.y,
                 chassisBody.position.z
             ),
             0.5 // ← smoothing factor
@@ -305,7 +305,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                 wheels[i].position,
                 new Vector3(
                     wheel.position.x,
-                    wheel.position.y, // <-- lower slightly
+                    wheel.position.y, // <-- Offset
                     wheel.position.z
                 ),
                 .5 // ← smoothing factor
