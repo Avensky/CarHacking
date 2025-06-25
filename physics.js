@@ -66,8 +66,11 @@ function createVehicle(id, type) {
     lastShiftTime: 0,
     _prevGear: 0,
     clutchSlip: 0, // 0 = fully disengaged, 1 = fully locked
+    justDownshifted: false,
     engineTemp: config.engineTemp.min,
-    justDownshifted: false
+    overheating: false,
+    cooldownStartTime: null,
+    lastUpdate: performance.now(), // optional
   };
   steeringState[id] = 0; // Initialize steering angle
   brakeState[id] = 0;
@@ -103,7 +106,7 @@ function createVehicle(id, type) {
 
   const chassisBody = new Body({
     mass: config.chassisMass,
-    position: new Vec3(0, rideHeight, 0),// spawn
+    position: new Vec3(0, .25, 0),// spawn
     rotation: config.rotation,
     collisionFilterGroup: 1,
     collisionFilterMask: 0,
@@ -275,18 +278,14 @@ function updateVehicleControls(id, control, controlMap) {
 // world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
 
 function resetVehicle(vehicle, controlMap) {
-  // vehicle.chassisBody.rotation.set(0, 5, 0)
-  // vehicle.chassisBody.position.set(0, 7, 0) //reset position
   // const q = new Quaternion()
   // q.setFromEuler(0, Math.PI / 2, 0)
   // vehicle.chassisBody.quaternion.copy(q)
-  // vehicle.chassisBody.velocity.set(0, 0, 0)
-  // vehicle.chassisBody.angularVelocity.set(0, 0, 0)
 
   // Reset chassis position & velocity
   vehicle.chassisBody.velocity.setZero();
   vehicle.chassisBody.angularVelocity.setZero();
-  vehicle.chassisBody.position.set(0, .85, 0);
+  vehicle.chassisBody.position.set(0, .25, 0);
   vehicle.chassisBody.quaternion.set(0, 0, 0, 1);
   vehicle.chassisBody.force.setZero();
   vehicle.chassisBody.torque.setZero();
@@ -303,7 +302,7 @@ function resetVehicle(vehicle, controlMap) {
   vehicle.updateSuspension();
 
   const id = Object.keys(vehicles).find((key) => vehicles[key].vehicle === vehicle);
-
+  const config = getVehicleConfig(vehicle.type);
   if (id) {
     // ✅ Reset gearbox state
     if (gearboxState[id]) {
@@ -316,6 +315,11 @@ function resetVehicle(vehicle, controlMap) {
         clutchSlip: 0,
         clutchEngaged: false,
         _prevGear: 0,
+        engineTemp: config.engineTemp.min,
+        overheating: false,
+        cooldownStartTime: null,
+        shutdown: false,
+        lastUpdate: performance.now(), // optional
       };
     }
 
@@ -330,8 +334,6 @@ function resetVehicle(vehicle, controlMap) {
       // controlMap[id].left = false;
       // controlMap[id].right = false;
     }
-
-
     console.log(`Vehicle ${id} fully reset: controls + gearbox`);
   }
 }

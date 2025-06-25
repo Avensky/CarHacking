@@ -1,7 +1,7 @@
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
-import { useStore } from '../store';
+import { useStore, getState } from '../store';
 
 function easeOutCubic(t: number): number {
     return 1 - Math.pow(1 - t, 3);
@@ -13,7 +13,7 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
     const [paused, setPaused] = useState(false);
     const resumeTimer = useRef<number | null>(null);
     const resumeStart = useRef<number | null>(null);
-    const screen = useStore((s) => s.screen);
+    // const screen = useStore((s) => s.screen);
 
     useEffect(() => {
         const controls = orbitRef?.current;
@@ -47,7 +47,11 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
     }, [orbitRef.current, resumeDuration]);
 
     useFrame(() => {
-        if (paused) return;
+        const screen = getState().screen;
+        if (paused || screen !== "selection-screen") return;
+        const physicsData = getState().physicsData;
+        const target = physicsData?.chassisBody?.position ?? new THREE.Vector3(0, 0, 0);
+        if (!target) return; // 👈 vehicle not ready yet
 
         angleRef.current += speed * 0.01;
         const angle = angleRef.current;
@@ -56,7 +60,10 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
         const desiredPos = new THREE.Vector3(x, height, z);
         const lerpAlpha = Math.min(0.02, desiredPos.distanceTo(camera.position) * 0.05);
         camera.position.lerp(desiredPos, lerpAlpha);
-        camera.lookAt(0, 0, 0);
+        // camera.lookAt(0, 0, 0);
+
+
+        camera.lookAt(target.x, target.y, target.z);
     });
 
     return null;
