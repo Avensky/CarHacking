@@ -16,7 +16,7 @@ import {
 // In Vehicle.tsx
 export default forwardRef(function Ae86({ children }: { children: any }, ref: React.Ref<Group>) {
 
-    const { scene } = useGLTF('/models/cars/ae86.glb')
+    const { scene } = useGLTF('/models/cars/ae86v2.glb')
     const v = new Vector3()
     const camera = useThree((s) => s.camera)
     const carGroupRef = useRef<Group>(null!)
@@ -208,7 +208,7 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
             group.position,
             new Vector3(
                 chassisBody.position.x,
-                chassisBody.position.y - .55,
+                chassisBody.position.y,
                 chassisBody.position.z
             ),
             0.5 // ← smoothing factor
@@ -227,7 +227,7 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
                 wheels[i].position,
                 new Vector3(
                     wheel.position.x,
-                    wheel.position.y, // <-- lower slightly
+                    wheel.position.y,
                     wheel.position.z
                 ),
                 .5 // ← smoothing factor
@@ -240,25 +240,47 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
             )
         })
 
-        if (!isEditor) {
+
+
+
+
+
+
+        if (!isEditor && (camMode === 'FIRST_PERSON' || camMode === 'DEFAULT')) {
             if (camMode === 'FIRST_PERSON') {
-                v.set(0.3, 1.06, .01)
-                // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
+                v.set(0.3, .85, -.1);
             } else if (camMode === 'DEFAULT') {
-                v.set(0, 3, 6)
-                // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
+                v.set(0, 3, 6);
             }
-            // moves camera to user
-            camera.position.lerp(v, delta)
-            // camera.rotation.z = lerp(
-            //     // camera.position.lerp(v, delta)
-            //     // camera.rotation.z = lerp(
-            //     camera.rotation.z,
-            //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-            //     + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
-            //     delta,
-            // )
+            camera.position.lerp(v, delta);
         }
+
+
+
+
+
+
+
+
+        // if (!isEditor) {
+        //     if (camMode === 'FIRST_PERSON') {
+        //         v.set(0.3, .85, -.1)
+        //         // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
+        //     } else if (camMode === 'DEFAULT') {
+        //         v.set(0, 3, 6)
+        //         // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
+        //     }
+        //     // moves camera to user
+        //     camera.position.lerp(v, delta)
+        //     // camera.rotation.z = lerp(
+        //     //     // camera.position.lerp(v, delta)
+        //     //     // camera.rotation.z = lerp(
+        //     //     camera.rotation.z,
+        //     //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+        //     //     + (-physicsData.data.steeringValue * physicsData.data.speed) / (camMode === 'DEFAULT' ? 30 : 55),
+        //     //     delta,
+        //     // )
+        // }
     })
 
     // Headlights

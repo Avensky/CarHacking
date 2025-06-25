@@ -68,7 +68,7 @@ function setupSocketIO(io) {
 
   setInterval(() => {
     Object.entries(controlMap).forEach(([id, control]) => {
-      updateVehicleControls(id, control);
+      updateVehicleControls(id, control, controlMap);
     });
 
     const snapshots = stepWorld(controlMap);

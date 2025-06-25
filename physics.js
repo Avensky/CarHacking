@@ -93,16 +93,25 @@ function createVehicle(id, type) {
     isFrontWheel: config.isFrontWheel
   }
 
+
   const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
-  const rideHeight = config.radius + config.suspensionRestLength * config.compressionFactor // Midway compression
+
+
+  const { radius, suspensionRestLength, compressionFactor, height } = config;
+  const suspensionTravel = suspensionRestLength * compressionFactor;
+  const rideHeight = radius + suspensionTravel + height / 2;
+
   const chassisBody = new Body({
     mass: config.chassisMass,
     position: new Vec3(0, rideHeight, 0),// spawn
     rotation: config.rotation,
     collisionFilterGroup: 1,
     collisionFilterMask: 0,
-    shape: chassisShape
+    // shape: chassisShape
   });
+
+  const shapeOffset = new Vec3(0, -config.height / 2 + config.chassisOffsetY, 0); // <- new
+  chassisBody.addShape(chassisShape, shapeOffset);
 
   const vehicle = new RaycastVehicle({
     chassisBody,
@@ -113,21 +122,23 @@ function createVehicle(id, type) {
 
   const wheelHalfTrack = config.width / 2 - config.wheelHalfTrackOffset
   const wheelBase = config.wheelBase
+  const chassisY = config.chassisOffsetY - config.height / 2; // y offset for wheel connection point
+
   const frontLeft = {
     ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, 0, -wheelBase / 2), isFrontWheel: true
+    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
   };
   const frontRight = {
     ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, 0, -wheelBase / 2), isFrontWheel: true
+    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
   };
   const rearLeft = {
     ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, 0, +wheelBase / 2), isFrontWheel: false
+    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
   };
   const rearRight = {
     ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, 0, +wheelBase / 2), isFrontWheel: false
+    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
   };
   vehicle.addWheel(frontLeft);
   vehicle.addWheel(frontRight);
@@ -155,14 +166,14 @@ function createVehicle(id, type) {
   return vehicle;
 }
 
-function updateVehicleControls(id, control) {
+function updateVehicleControls(id, control, controlMap) {
   const { vehicle } = vehicles[id] || {};
   if (!vehicle) return;
   // console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
   const config = getVehicleConfig(vehicle.type);
 
   if (control.reset) {
-    resetVehicle(vehicle); // reset position to start
+    resetVehicle(vehicle, controlMap); // reset position to start
   }
 
   // Reset steering
@@ -206,7 +217,7 @@ function updateVehicleControls(id, control) {
   if (control.forward && gearboxState[id].engineOn && (fuelState[id].fuel !== 0)) {
     vehicle.applyEngineForce(+adjustedForce, 2);
     vehicle.applyEngineForce(+adjustedForce, 3);
-  } else if (control.backward && (fuelState[id].fuel !== 0)) {
+  } else if (control.backward && gearboxState[id].engineOn && (fuelState[id].fuel !== 0)) {
     vehicle.applyEngineForce(-adjustedForce, 2);
     vehicle.applyEngineForce(-adjustedForce, 3);
   } else {
@@ -263,14 +274,66 @@ function updateVehicleControls(id, control) {
 // console.log(world.bodies.length)
 // world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
 
-function resetVehicle(vehicle) {
+function resetVehicle(vehicle, controlMap) {
   // vehicle.chassisBody.rotation.set(0, 5, 0)
-  vehicle.chassisBody.position.set(0, 7, 0) //reset position
-  const q = new Quaternion()
-  q.setFromEuler(0, Math.PI / 2, 0)
-  vehicle.chassisBody.quaternion.copy(q)
-  vehicle.chassisBody.velocity.set(0, 0, 0)
-  vehicle.chassisBody.angularVelocity.set(0, 0, 0)
+  // vehicle.chassisBody.position.set(0, 7, 0) //reset position
+  // const q = new Quaternion()
+  // q.setFromEuler(0, Math.PI / 2, 0)
+  // vehicle.chassisBody.quaternion.copy(q)
+  // vehicle.chassisBody.velocity.set(0, 0, 0)
+  // vehicle.chassisBody.angularVelocity.set(0, 0, 0)
+
+  // Reset chassis position & velocity
+  vehicle.chassisBody.velocity.setZero();
+  vehicle.chassisBody.angularVelocity.setZero();
+  vehicle.chassisBody.position.set(0, .85, 0);
+  vehicle.chassisBody.quaternion.set(0, 0, 0, 1);
+  vehicle.chassisBody.force.setZero();
+  vehicle.chassisBody.torque.setZero();
+  vehicle.chassisBody.wakeUp();
+
+  // Reset suspension for all wheels
+  for (let i = 0; i < vehicle.wheelInfos.length; i++) {
+    const wheel = vehicle.wheelInfos[i];
+    wheel.suspensionLength = wheel.suspensionRestLength;
+    vehicle.updateWheelTransform(i);         // VERY important
+  }
+
+  // Force re-evaluation of suspension
+  vehicle.updateSuspension();
+
+  const id = Object.keys(vehicles).find((key) => vehicles[key].vehicle === vehicle);
+
+  if (id) {
+    // ✅ Reset gearbox state
+    if (gearboxState[id]) {
+      gearboxState[id] = {
+        gear: 0,
+        rpm: 0,
+        engineOn: false,
+        engineStarting: false,
+        engineShuttingDown: false,
+        clutchSlip: 0,
+        clutchEngaged: false,
+        _prevGear: 0,
+      };
+    }
+
+    // ✅ Reset control state
+
+    if (controlMap[id]) {
+      controlMap[id].engineOn = false;
+      controlMap[id].reset = false;
+      // controlMap[id].forward = false;
+      // controlMap[id].brake = false;
+      // controlMap[id].backward = false;
+      // controlMap[id].left = false;
+      // controlMap[id].right = false;
+    }
+
+
+    console.log(`Vehicle ${id} fully reset: controls + gearbox`);
+  }
 }
 
 
@@ -328,6 +391,7 @@ function stepWorld(controlMap = {}) {
 
     // Simulate engine crank
     if (control.engineOn && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
+      // if (control.startEngine && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
       state.engineStarting = true;
       state.engineStartTime = now;
       state.rpm = 300; // cranking sound
@@ -394,21 +458,13 @@ function stepWorld(controlMap = {}) {
 
 
     // Turn on first gear when controls move forward
-    if (state.engineOn && state.gear === 0 && (control.forward || control.backward) && (fuelState[id].fuel !== 0)) {
+    // if (state.engineOn && state.gear === 0 && (control.forward || control.backward) && (fuelState[id].fuel !== 0)) {
+    if (control.engineOn && state.engineOn && state.gear === 0 && (control.forward || control.backward)) {
       state.gear = 1;
       state.clutchEngaged = true;
       state._prevGear = 0;
       console.log(`Gear engaged to 1 for ${id}`);
     }
-    // if (state.engineOn && state.gear === 0 && control.backward && (fuelState[id].fuel !== 0)) {
-    //   state.gear = 1; // change to reverse?
-    //   state.clutchEngaged = true;
-    //   state._prevGear = 0;
-    //   console.log(`Gear engaged to R for ${id}`);
-    // }
-
-
-
 
 
     const effectiveRatio = gearRatios[state.gear] * finalDrive;

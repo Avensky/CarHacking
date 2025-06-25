@@ -318,24 +318,24 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
             )
         })
 
-        if (!isEditor) {
-            if (camMode === 'FIRST_PERSON') {
-                v.set(-0.2, 0.99, -.15)
-                // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
-            } else if (camMode === 'DEFAULT') {
-                v.set(0, 3, 6)
-                // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
-            }
+        // if (!isEditor) {
+        //     if (camMode === 'FIRST_PERSON') {
+        //         v.set(-0.2, 0.99, -.15)
+        //         // v.set(0.3 + (Math.sin(-steeringValue) * physicsData.data.speed) / 30, 1, -0.08)
+        //     } else if (camMode === 'DEFAULT') {
+        //         v.set(0, 3, 6)
+        //         // v.set((Math.sin(steeringValue) * speed) / 2.5, 2.0 + (engineValue / 1000) * -0.5, 5 - speed / 15 + (controls.brake ? 1 : 0))
+        //     }
 
-            // moves camera to user
-            camera.position.lerp(v, delta)
-            // camera.rotation.z = lerp(
-            //     camera.rotation.z,
-            //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
-            //     + (-steeringValue * speed) / (camMode === 'DEFAULT' ? 10 : 35),
-            //     delta
-            // )
-        }
+        //     // moves camera to user
+        //     camera.position.lerp(v, delta)
+        //     // camera.rotation.z = lerp(
+        //     //     camera.rotation.z,
+        //     //     (camMode !== 'BIRD_EYE' ? 0 : Math.PI / 2)
+        //     //     + (-steeringValue * speed) / (camMode === 'DEFAULT' ? 10 : 35),
+        //     //     delta
+        //     // )
+        // }
     })
 
     {/* <Dust /> */ }

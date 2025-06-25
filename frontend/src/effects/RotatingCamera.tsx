@@ -1,6 +1,7 @@
 import { useThree, useFrame } from '@react-three/fiber';
 import { useEffect, useRef, useState } from 'react';
 import * as THREE from 'three';
+import { useStore } from '../store';
 
 function easeOutCubic(t: number): number {
     return 1 - Math.pow(1 - t, 3);
@@ -12,11 +13,11 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
     const [paused, setPaused] = useState(false);
     const resumeTimer = useRef<number | null>(null);
     const resumeStart = useRef<number | null>(null);
+    const screen = useStore((s) => s.screen);
 
     useEffect(() => {
-        if (!orbitRef?.current) return;
-
-        const controls = orbitRef.current;
+        const controls = orbitRef?.current;
+        if (!controls) return;
 
         const onStart = () => {
             setPaused(true);
@@ -35,6 +36,7 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
             }, resumeDuration * 1000);
         };
 
+
         controls.addEventListener('start', onStart);
         controls.addEventListener('end', onEnd);
 
@@ -42,7 +44,7 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
             controls.removeEventListener('start', onStart);
             controls.removeEventListener('end', onEnd);
         };
-    }, [orbitRef, resumeDuration]);
+    }, [orbitRef.current, resumeDuration]);
 
     useFrame(() => {
         if (paused) return;
@@ -52,12 +54,8 @@ export function RotatingCamera({ radius = 5, height = 2, speed = 0.3, resumeDura
         const x = radius * Math.sin(angle);
         const z = radius * Math.cos(angle);
         const desiredPos = new THREE.Vector3(x, height, z);
-
-
         const lerpAlpha = Math.min(0.02, desiredPos.distanceTo(camera.position) * 0.05);
         camera.position.lerp(desiredPos, lerpAlpha);
-
-        // camera.position.lerp(desiredPos, 0.02);
         camera.lookAt(0, 0, 0);
     });
 

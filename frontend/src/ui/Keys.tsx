@@ -42,6 +42,7 @@ const actionDisplayMap: Record<BindableActionName, { displayName: string; order:
   blinkerRight: { displayName: 'Right Blinker', order: 17 },
   hazards: { displayName: 'Hazards', order: 18 },
   engineOn: { displayName: 'engineOn', order: 19 },
+  menu: { displayName: 'Menu', order: 20 },
   help: { displayName: 'Help', order: 9 },
   honk: { displayName: 'Honk', order: 5 },
   leaderboard: { displayName: 'Leaderboards', order: 10 },

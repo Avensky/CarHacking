@@ -7,7 +7,7 @@ import { useToggle } from "../useToggle";
 import { OrbitControls as ThreeOrbitControls } from 'three-stdlib';
 
 export default function GameScene({ playerId, children, VehicleComponent, MapComponent }: { playerId: any, children: any, VehicleComponent: any, MapComponent: any }) {
-    const controlsRef = useRef<ThreeOrbitControls | null>(null);
+    // const controlsRef = useRef<ThreeOrbitControls | null>(null);
     // const layers = new Layers()
     // layers.enable(levelLayer)
     // const [screen, setScreen] = useState<Screen>("vehicle");
@@ -36,17 +36,11 @@ export default function GameScene({ playerId, children, VehicleComponent, MapCom
             </Suspense >
             {/* </ToggledDebug> */}
             {/* <ToggledMap /> */}
-            <ToggledOrbitControls />
-            {/* <Clock /> */}
-            <ToggledEditor />
+            {/* <ToggledOrbitControls /> */}
+            {/* <ToggledEditor /> */}
             {/* <ToggledFinished /> */}
-            {/* <Help /> */}
             {/* <Speed /> */}
-            {/* <ToggledStats /> */}
-            {/* <ToggledCheckpoint /> */}
-            {/* <LeaderBoard /> */}
             {/* <PickColor /> */}
-            {/* <HideMouse /> */}
             {/* </Intro > */}
         </>
     )

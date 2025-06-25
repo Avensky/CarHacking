@@ -8,10 +8,11 @@ import type { Group } from 'three'
 import type { GetState, SetState, StateSelector } from 'zustand'
 import { keys } from './keys'
 import { Vec3 } from 'cannon-es'
+import socket from './socket'
 
 // speed
 export const angularVelocity = [0, 0.5, 0] as const
-export const cameras = ['DEFAULT', 'FIRST_PERSON', 'BIRD_EYE'] as const
+export const cameras = ['GALLERY', 'DEFAULT', 'FIRST_PERSON', 'BIRD_EYE'] as const
 
 export const dpr = 1.5 as const
 export const levelLayer = 1 as const
@@ -22,8 +23,7 @@ export const position = [-200, 0.75, -45] as const
 export const rotation = [0, Math.PI / 2, 0] as const
 // import socket from './socket'
 
-// types.ts
-export type Screen = 'vehicle-select' | 'map-select' | 'game';
+type Screen = 'selection-screen' | 'game-screen';
 
 export type VehicleConfig = {
   wheelCount: number,
@@ -135,6 +135,7 @@ export const booleans = {
   debug: false,
   editor: false,
   help: false,
+  menu: false,
   leaderboard: false,
   map: true,
   pickcolor: false,
@@ -146,7 +147,7 @@ export const booleans = {
 
 type Booleans = keyof typeof booleans
 
-const exclusiveBooleans = ['help', 'leaderboard', 'pickcolor'] as const
+const exclusiveBooleans = ['help', 'menu', 'leaderboard', 'pickcolor'] as const
 type ExclusiveBoolean = (typeof exclusiveBooleans)[number]
 const isExclusiveBoolean = (v: unknown): v is ExclusiveBoolean => exclusiveBooleans.includes(v as ExclusiveBoolean)
 
@@ -188,6 +189,7 @@ const actionInputMap: ActionInputMap = {
   forward: ['arrowup', 'w', 'z'],
   headlights: ['f'],
   help: ['i'],
+  menu: ['escape'],
   honk: ['h'],
   leaderboard: ['l'],
   left: ['arrowleft', 'a', 'q'],
@@ -288,10 +290,27 @@ const useStoreImpl = create<IState>(
     const actions: Actions = {
       ...booleanActions,
       ...controlActions,
-      camera: () => set(
-        (state) => (
-          { camera: cameras[(cameras.indexOf(state.camera) + 1) % cameras.length] }
-        )),
+      camera: () =>
+        set((state) => {
+
+          if (state.screen === "selection-screen") {
+            return {}; // do nothing — stay in GALLERY
+          }
+
+          const currentIndex = cameras.indexOf(state.camera);
+          let nextIndex = (currentIndex + 1) % cameras.length;
+          let nextCamera = cameras[nextIndex];
+
+          // If we're in game-screen, skip "GALLERY"
+          if (state.screen === "game-screen") {
+            while (nextCamera === "GALLERY") {
+              nextIndex = (nextIndex + 1) % cameras.length;
+              nextCamera = cameras[nextIndex];
+            }
+          }
+
+          return { camera: nextCamera };
+        }),
       onCheckpoint: () => {
         const { start } = get()
         if (start) {
@@ -309,13 +328,31 @@ const useStoreImpl = create<IState>(
         set({ finished: 0, start: Date.now() })
       },
       reset: () => {
-        // mutation.boost = maxBoost
-        // set((state) => {
-        //   socket.emit(`${angularVelocity},${position},${rotation}`);
-        //   return { ...state, finished: 0, start: 0 }
-        // })
+        // 🧠 Persist in frontend store
+        getState().setControls({
+          reset: false,
+          engineOn: false,
+          // forward: false,
+          // backward: false,
+          // left: false,
+          // right: false,
+          // brake: false,
+          // blinkerLeft: false,
+          // blinkerRight: false,
+          // hazards: false,
+          // headlights: false,
+        });
+        // socket.emit('spawnPlayer', { vehicle, map });
+        set({ menu: false });// 👈 set menu mode
+
+        // socket.emit('controls', { reset: true, engineOn: false });
+        // // Clear the reset flag on the next tick
+        // setTimeout(() => {
+        //   socket.emit('controls', { reset: false, engineOn: false });
+        // }, 50);
       },
     }
+
 
     return {
       ...booleans,
@@ -336,6 +373,17 @@ const useStoreImpl = create<IState>(
       level: createRef<Group>(),
       session: null,
       set,
+      setControls: (partialControls: Controls) => set((state) => ({
+        controls: { ...state.controls, ...partialControls }
+      })),
+      screen: 'selection-screen' as Screen,
+      setScreen: (screen: Screen) => {
+        set({ screen });
+        if (screen === "selection-screen") {
+          set({ camera: "GALLERY" });
+          set({ engineOn: false })
+        }
+      },
       start: 0,
       physicsData: null,
       setPhysicsData: (data: { data: any }) => set({ physicsData: data }),

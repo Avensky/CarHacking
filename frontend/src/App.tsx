@@ -3,10 +3,10 @@ import SelectionScreen from './components/SelectionScreen';
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
 import { getState, levelLayer, useStore, VehicleConfig } from './store'
-// import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
+import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
 import { HideMouse, Keyboard } from './controls';
-// import { useToggle } from './useToggle';
+import { useToggle } from './useToggle';
 import socket from './socket';
 import * as THREE from 'three';
 import GameScene from "./components/GameScene"; // your main game view
@@ -21,6 +21,7 @@ import Camaro from './models/RaycastVehicle/Camaro';
 import Tank from './models/RaycastVehicle/Tank';
 import { Cameras } from './effects';
 import { Dashboard } from './ui/dashboard/Dashboard';
+import { Menu } from './ui/Menu';
 type Screen = 'selection-screen' | 'game-screen';
 
 // Define the type of cmdEvents. For example, if they are objects:
@@ -39,10 +40,10 @@ export function App(): JSX.Element {
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
   const [isConnected, setIsConnected] = useState(socket.connected);
   // const ToggledDebug = useToggle(Debug, 'debug')
-  // const ToggledEditor = useToggle(Editor, 'editor')
+  const ToggledEditor = useToggle(Editor, 'editor')
   // const ToggledFinished = useToggle(Finished, 'finished')
   // const ToggledMap = useToggle(Minimap, 'map')
-  // const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
+  const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   // const ToggledStats = useToggle(Stats, 'stats')
 
   const vehicleOptions = [
@@ -55,12 +56,12 @@ export function App(): JSX.Element {
     { type: 'rtx', name: 'Night Life', component: Rtx },
     { type: 'timesquare', name: 'Time Square', component: TimesSquare },
   ];
-
-  const [screen, setScreen] = useState<Screen>("selection-screen");
+  const screen = useStore((s) => s.screen);
   const [selectedVehicle, setSelectedVehicle] = useState<string>('ae86');
   const [selectedMap, setSelectedMap] = useState<string>('rtx');
   const [vehicleIndex, setVehicleIndex] = useState(0);
   const [mapIndex, setMapIndex] = useState(0);
+  const store = getState();
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -94,9 +95,10 @@ export function App(): JSX.Element {
     function handleSpawnPlayer(data: { vehicle: string, map: string, vehicleConfig: VehicleConfig }) {
       console.log('🚗 Player Spawned:', data);
       getState().setVehicleConfig(data.vehicleConfig);
+      getState().set({ camera: 'DEFAULT' });// 👈 set camera mode
       setSelectedVehicle(data.vehicle);
       setSelectedMap(data.map);
-      setScreen('game-screen');
+      getState().setScreen('game-screen');
     }
 
     // socket.on('move', onMove);
@@ -118,15 +120,26 @@ export function App(): JSX.Element {
     };
   }, []);
 
+
+  // get vehicle config upon preview
+  // useEffect(() => {
+  //   if (screen === 'selection-screen') {
+  //     // socket.emit('spawnPlayer', {
+  //     //   vehicle: vehicleOptions[vehicleIndex].type,
+  //     //   map: mapOptions[mapIndex].type
+  //     // });
+  //   }
+  // }, [screen]);
+
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
-
       <Canvas
         key={`${dpr}${shadows}`}
         dpr={[1, dpr]}
         shadows
         gl={{ toneMapping: THREE.ACESFilmicToneMapping }}
-        camera={{ fov: 60, position: [2, 5, 10] }}
+
+        camera={{ position: [0, 8, 15], fov: 50 }}
       >
         <Suspense fallback={null}>
           {screen === 'selection-screen' && (
@@ -148,7 +161,11 @@ export function App(): JSX.Element {
             </GameScene>
           )}
         </Suspense>
+        <PerspectiveCamera makeDefault={editor} fov={75} position={[0, 20, 20]} />
+
+        <ToggledOrbitControls />
       </Canvas>
+
       {screen === 'selection-screen' && (
         <SelectionUI
           handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
@@ -161,13 +178,49 @@ export function App(): JSX.Element {
             const vehicle = vehicleOptions[vehicleIndex].type;
             const map = mapOptions[mapIndex].type;
             socket.emit('spawnPlayer', { vehicle, map });
-          }
-          }
+            store.set({ menu: false });// 👈 set menu mode
+          }}
         />
       )}
+
       <Dashboard />
+      {screen === 'game-screen' && (
+        <Menu
+          onLeaveGame={() => {
+            // 🧠 Persist in frontend store
+            getState().setControls({
+              reset: false,
+              engineOn: false,
+              // forward: false,
+              // backward: false,
+              // left: false,
+              // right: false,
+              // brake: false,
+              // blinkerLeft: false,
+              // blinkerRight: false,
+              // hazards: false,
+              // headlights: false,
+            });
+            // socket.emit('spawnPlayer', { vehicle, map });
+            store.set({ camera: 'GALLERY' });// 👈 set camera mode
+            store.set({ menu: false });// 👈 set menu mode
+
+            socket.emit('controls', { reset: true, engineOn: false });
+            // Clear the reset flag on the next tick
+            setTimeout(() => {
+              socket.emit('controls', { reset: false, engineOn: false });
+            }, 50);
+            getState().setScreen('selection-screen');
+          }}
+        />
+      )}
+      <ToggledEditor />
       <HideMouse />
       <Keyboard />
+      {/* <Help /> */}
+      {/* <ToggledStats /> */}
+      {/* <ToggledCheckpoint /> */}
+      {/* <LeaderBoard /> */}
       {/* <Clock /> */}
       {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
     </div>

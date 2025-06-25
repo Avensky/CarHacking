@@ -313,11 +313,30 @@ body {
 }
 
 /* --------------- HELP --------------- */
+.settings-button {
+  width: 250px;
+  margin: 1dvh;
+}
+
+
+/* --------------- HELP --------------- */
 
 .help {
   position: absolute;
   left: 1lvw;
   top: 1lvw;
+}
+
+.menu-popup-content {
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2vh 3vw;
+  background: rgba(0, 0, 0, 0.80);
+  z-index: 100;
+  overflow: scroll;
 }
 
 .popup {

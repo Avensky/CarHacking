@@ -1,35 +1,35 @@
 const { Vec3 } = require('cannon-es');
 const carConfig = {
     wheelCount: 4,
-    radius: 0.623,
-    isTank: false,
+    radius: 0.3115, // distance from wheel center to bottom of the tire
     axleLocal: new Vec3(-1, 0, 0),
-    compressionFactor: .7,
-    dampingRelaxation: 6.5,       // resistance during compr:ssion
-    dampingCompression: 6.5,       // resistance on r:bound
+    chassisOffsetY: .83, // tweak this upward or downward depending on visual test
+    compressionFactor: .01, // suspension extension under the car’s own weight
+    suspensionStiffness: 100, // medium firmness
+    suspensionRestLength: 0.12, // max extension of the suspension
+    maxSuspensionTravel: 0.13,
+    dampingRelaxation: 4.8,       // resistance during compr:ssion
+    dampingCompression: 4.4,       // resistance on rebound
     directionLocal: new Vec3(0, -1, 0),
+    wheelHalfTrackOffset: 0.25, // Distance from center to side
+    wheelBase: 2.39, // Distance front to back
 
     frictionSlip: 8.5,
-    suspensionStiffness: 150,
-    suspensionRestLength: 0.18,
-    maxSuspensionForce: 100000,
-    maxSuspensionTravel: 0.3,
-    rollInfluence: 0.01,
+    maxSuspensionForce: 10000, // realistic cap
+    rollInfluence: 0.05, // mild roll
     chassisConnectionPointLocal: new Vec3(),
-    isFrontWheel: true,
+    isFrontWheel: true, //placeholder
 
     // vehicleConfig
     length: 4.21,   // <- Match AE86 GLB
     width: 1.92,    // <- Match AE86 GLB
-    height: 1.28,   // <- Match AE86 GLB
+    height: 1.14,   // <- Match AE86 GLB
     chassisMass: 250,
     indexRightAxis: 0, // X
     indexUpAxis: 1,   // Y
     indexForwardAxis: 1, // Z
-    wheelHalfTrackOffset: 0.25, // Distance from center to side
-    wheelBase: 2.41, // Distance front to back
     fuelCapacity: 45,          // Liters
-    baseConsumption: 0.004,   // Liters per tick per gear (baseline)
+    baseConsumption: 0.004,   // fuel (Liters) per tick per gear
 
     // Options
     steer: 0.3,
