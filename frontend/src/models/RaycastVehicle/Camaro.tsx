@@ -318,6 +318,18 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
             )
         })
 
+
+        if (!isEditor && (camMode === 'FIRST_PERSON' || camMode === 'DEFAULT')) {
+            if (camMode === 'FIRST_PERSON') {
+                v.set(-0.35, .98, -.13);
+            } else if (camMode === 'DEFAULT') {
+                v.set(0, 3, 6);
+            }
+            camera.position.lerp(v, delta);
+        }
+
+
+
         // if (!isEditor) {
         //     if (camMode === 'FIRST_PERSON') {
         //         v.set(-0.2, 0.99, -.15)

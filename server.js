@@ -6,7 +6,7 @@ const cors = require('cors');
 const server = http.createServer(app);
 const PORT = process.env.PORT || 5000;
 const IP = process.env.NODE_ENV === "production"
-  ? "http://192.168.1.175"
+  ? "http://192.168.41.216"
   : "http://localhost:5173"
 
 const io = new Server(server, {

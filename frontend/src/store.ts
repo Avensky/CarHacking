@@ -371,6 +371,13 @@ const useStoreImpl = create<IState>(
       get,
       keyInput: null,
       level: createRef<Group>(),
+      rotatingCamera: {
+        angle: 0,
+      },
+      setRotatingCamera: (data: Partial<{ angle: number }>) =>
+        set((state) => ({
+          rotatingCamera: { ...state.rotatingCamera, ...data },
+        })),
       session: null,
       set,
       setControls: (partialControls: Controls) => set((state) => ({

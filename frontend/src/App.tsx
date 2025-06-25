@@ -204,7 +204,7 @@ export function App(): JSX.Element {
             // socket.emit('spawnPlayer', { vehicle, map });
             store.set({ camera: 'GALLERY' });// 👈 set camera mode
             store.set({ menu: false });// 👈 set menu mode
-
+            getState().setRotatingCamera({ angle: 0 });
             socket.emit('controls', { reset: true, engineOn: false });
             // Clear the reset flag on the next tick
             setTimeout(() => {
