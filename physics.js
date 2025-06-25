@@ -1,4 +1,4 @@
-const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane, Quaternion } = require('cannon-es');
+const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
 const getVehicleConfig = require('./utils/vehicleConfigs');
 // world
 const world = new World();
@@ -100,9 +100,9 @@ function createVehicle(id, type) {
   const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
 
 
-  const { radius, suspensionRestLength, compressionFactor, height } = config;
-  const suspensionTravel = suspensionRestLength * compressionFactor;
-  const rideHeight = radius + suspensionTravel + height / 2;
+  // const { radius, suspensionRestLength, compressionFactor, height } = config;
+  // const suspensionTravel = suspensionRestLength * compressionFactor;
+  // const rideHeight = radius + suspensionTravel + height / 2;
 
   const chassisBody = new Body({
     mass: config.chassisMass,
