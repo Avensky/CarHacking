@@ -1,17 +1,20 @@
 // Camaro.tsx
 import { forwardRef, useEffect, useImperativeHandle, useMemo, useRef, useState } from 'react';
 import { useGLTF } from '@react-three/drei';
-import { Group, SpotLight, Vector3 } from 'three';
+import { Group, Color, SpotLight, Vector3 } from 'three';
 import { GroupProps, useFrame, useThree } from '@react-three/fiber';
-import { Camera, Controls, getState, PhysicsData } from '../../store';
+import { Camera, Controls, getState, PhysicsData, useStore } from '../../store';
 import { lerp } from 'three/src/math/MathUtils';
 import { setupVehicleParts } from '../../utils/setupVehicleParts';
+import { sharedGlassMaterial } from '../../utils/createGlassMaterialFactory';
 
 export default forwardRef(function Camaro({ children }: { children: any }, ref: React.Ref<Group>) {
-
+    const tintFirstPerson = new Color(0xffffff);  // Clear
+    const tintExterior = new Color(0x556677);     // Blue-gray tint (customize as needed)
     const { scene } = useGLTF('/models/cars/camaro2017.glb');
     const v = new Vector3()
     const camera = useThree((state) => state.camera)
+    const camMode = useStore((s) => s.camera);
     const vehicleGroupRef = useRef<Group>(null!)
 
     // Simulate hazard lights
@@ -44,8 +47,8 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                 {
                     name: 'BODY',
                     parts: [
-                        'SUNROOF', 'FRONT_windows', 'WINDSHIELD',
-                        'REAR_WINDOW',
+                        'SUNROOF', 'SUNROOF_window', 'FRONT_windows',
+                        'WINDSHIELD', 'REAR_WINDOW',
                         'RIGHT_QUARTER_WINDOW', 'LEFT_QUARTER_WINDOW',
                         'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
                         'TAILLIGHT_LENS_LEFT', 'TAILLIGHT_LENS_RIGHT',
@@ -62,7 +65,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                         'MUFFLERS', 'EMPTY'
                     ],
                     transparent: [
-                        'SUNROOF_window', 'FRONT_windows', 'WINDSHIELD',
+                        'SUNROOF', 'SUNROOF_window', 'FRONT_windows', 'WINDSHIELD',
                         'RIGHT_QUARTER_WINDOW', 'LEFT_QUARTER_WINDOW',
                         // 'HEADLIGHT_LENS_LEFT', 'HEADLIGHT_LENS_RIGHT',
                         // 'TAILLIGHT_LENS_LEFT', 'TAILLIGHT_LENS_RIGHT',
@@ -130,7 +133,8 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
                         'STEERING_WHEEL_CENTER', 'STEERING_WHEEL_SIDES',
                         'STEERING_WHEEL_INSIDE', 'STEERING_WHEEL_BOTTOM',],
                 },
-            ]
+            ],
+            // camMode,
         })
 
     }, [scene])
@@ -348,6 +352,30 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
         //     //     delta
         //     // )
         // }
+        const isFirstPerson = camMode === 'FIRST_PERSON';
+        const targetOpacity = isFirstPerson ? 0.1 : 0.4;
+        const targetIOR = isFirstPerson ? 1.0 : 6.5;
+        const targetColor = isFirstPerson ? tintFirstPerson : tintExterior;
+        const transitionSpeed = 3.0; // seconds it takes to reach 90% of the transition
+        const t = delta / transitionSpeed;
+
+        sharedGlassMaterial.opacity = lerp(
+            sharedGlassMaterial.opacity,
+            targetOpacity,
+            t
+        );
+
+        sharedGlassMaterial.ior = lerp(
+            sharedGlassMaterial.ior,
+            targetIOR,
+            t
+        );
+
+        sharedGlassMaterial.color.lerp(targetColor, t); // 👈 tint fade
+
+        sharedGlassMaterial.needsUpdate = true;
+
+
     })
 
     {/* <Dust /> */ }

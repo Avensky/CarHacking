@@ -96,30 +96,16 @@ export function Cameras() {
       );
 
     case 'FIRST_PERSON':
-      return (<>
-
-        <PerspectiveCamera
-          makeDefault
-          fov={75}
-          position={[0, 3, 6]}
-        // rotation={[0, 0, 0]}
-        />
-      </>
-      );
-
     case 'DEFAULT':
     default:
       return (
         <>
-
           <PerspectiveCamera
             makeDefault
             fov={75}
             // rotation={[0, 0, 0]}
-            position={[0, 8, 15]}
-          // ref={cameraRef}
+            position={[0, 3, 6]}
           />
-
         </>);
   }
 }

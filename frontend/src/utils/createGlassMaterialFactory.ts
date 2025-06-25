@@ -1,5 +1,16 @@
 // utils/createGlassMaterialFactory.ts
 import * as THREE from 'three'
+import { MeshPhysicalMaterial } from 'three';
+
+export const sharedGlassMaterial = new MeshPhysicalMaterial({
+    color: 0xffffff,
+    roughness: 0.1,
+    metalness: 0,
+    transparent: true,
+    opacity: 0.4,
+    depthWrite: false,
+    ior: 6.4,
+});
 
 export interface GlassMaterialOptions {
     opacity?: number

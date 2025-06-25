@@ -1,6 +1,6 @@
 // setupVehicleParts.tsx
 import * as THREE from 'three'
-import { createGlassMaterialFactory } from './createGlassMaterialFactory';
+import { createGlassMaterialFactory, sharedGlassMaterial } from './createGlassMaterialFactory';
 
 import React from 'react'
 
@@ -17,9 +17,11 @@ export interface VehiclePartGroup {
 export function setupVehicleParts({
     scene,
     groups,
+    // camMode,
 }: {
     scene: THREE.Group | THREE.Scene
     groups: VehiclePartGroup[]
+    // camMode: 'GALLERY' | 'DEFAULT' | 'FIRST_PERSON' | 'BIRD_EYE'
 }): {
     clonesByGroup: Record<string, Record<string, THREE.Object3D>>
     renderedGroups: Record<string, JSX.Element>
@@ -27,8 +29,12 @@ export function setupVehicleParts({
     const clonesByGroup: Record<string, Record<string, THREE.Object3D>> = {}
     const renderedGroups: Record<string, JSX.Element> = {}
 
-    const glassFactory = createGlassMaterialFactory({ opacity: .4, ior: 6.5 });
-
+    // const glassFactory = createGlassMaterialFactory({ opacity: .4, ior: 6.5 });
+    // const glassFactory = createGlassMaterialFactory(
+    //     camMode === 'FIRST_PERSON'
+    //         ? { opacity: 0.1, ior: 1.0 }
+    //         : { opacity: 0.4, ior: 6.5 }
+    // );
     for (const group of groups) {
         const {
             name,
@@ -63,12 +69,12 @@ export function setupVehicleParts({
             cloned.traverse((node) => {
                 if ((node as any).isMesh) {
                     const mesh = node as THREE.Mesh;
+
                     const mat = mesh.material;
 
                     const applyMaterial = (sourceMat: any) => {
-                        if (isPartTransparent) {
-                            return glassFactory();
-                        }
+                        if (isPartTransparent) return sharedGlassMaterial;
+
                         const clonedMat = sourceMat.clone?.() ?? sourceMat;
                         clonedMat.transparent = false;
                         clonedMat.opacity = 1;
