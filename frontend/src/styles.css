@@ -283,33 +283,253 @@ body {
   font-weight: bold;
 }
 
-/* --------------- HELP --------------- */
+/* --------------- Pedals --------------- */
+
+.Pedals {
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  align-items: center;
+  text-align: start;
+}
+
+.pedal {
+  /* height: 95px;
+  width: 95px; */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* font-weight: 900; */
+  user-select: none;
+  touch-action: none;
+  /* background-size: 90%; */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: transparent;
+  margin: 2dvh 1dvw;
+  /* border-radius: 24px; */
+  /* border: 4px solid rgb(0, 0, 0); */
+  display: inline-block;
+}
+
 .split {
+  position: relative;
   display: flex;
   align-items: center;
   text-align: center;
   justify-self: center;
 }
 
-.Pedals {
-  padding: 0.5dvw 0.5dvh;
-  width: 280px;
-  align-items: center;
-  text-align: start;
-}
-
-.gasPedal {
-  height: 85px;
-  width: 85px;
+.accelerator {
+  height: 100px;
+  width: 100px;
   background: url(/images/gasPedal.png) no-repeat;
   background-size: contain;
 }
 
-.brakePedal {
-  height: 65px;
-  width: 65px;
+.footBrake {
+  height: 85px;
+  width: 85px;
   background: url(/images/brakePedal.png) no-repeat;
   background-size: contain;
+}
+
+/* --------------- Steering --------------- */
+
+.Steering {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  /* padding: 0.5dvw 0.5dvh; */
+  /* width: 280px; */
+  align-items: center;
+  text-align: start;
+}
+
+.arrow {
+  height: 85px;
+  width: 85px;
+  font-weight: 900;
+  user-select: none;
+  touch-action: none;
+  background-size: 95%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #d6f0f7;
+  margin: 2dvh 1dvw;
+  border-radius: 24px;
+  border: 4px solid rgb(0, 0, 0);
+  display: inline-block;
+  /* transition: background-color 0.2s, border-color 0.2s; */
+  /* opacity: 0.5; */
+  /* filter: grayscale(40%); */
+  /* transition: all 0.2s ease; */
+}
+
+
+
+/* --------------- ControlsPanel --------------- */
+.ControlsPanel {
+  position: absolute;
+  top: 34%;
+  right: 0;
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.control {
+  /* background: transparent; */
+  /* color: white; */
+  touch-action: none;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #d6f0f7;
+  margin: .5dvh .25dvw;
+  border: 3px solid rgba(255, 255, 255, 0);
+  display: inline-block;
+  /* transition: background-color 0.2s, border-color 0.2s; */
+  opacity: 0.5;
+  filter: grayscale(40%);
+  transition: all 0.2s ease;
+}
+
+.control.active {
+  border-color: rgb(0, 255, 0);
+  box-shadow: 0 0 8px lime;
+  transform: scale(1.05);
+}
+
+.control.active,
+.control.flash,
+.control.boost,
+.control.headlight {
+  opacity: 1;
+  filter: none;
+}
+
+.control.inactive {
+  border-color: red;
+  box-shadow: 0 0 8px red;
+  /* transform: scale(1.05); */
+}
+
+.control.boost {
+  border-color: red;
+  box-shadow: 0 0 8px red;
+  transform: scale(1.05);
+}
+
+.control.headlight {
+  border-color: rgb(0, 204, 255);
+  box-shadow: 0 0 8px rgb(0, 204, 255);
+  transform: scale(1.05);
+}
+
+/* flashing */
+@keyframes flashBorder {
+
+  0%,
+  100% {
+    border-color: orange;
+    box-shadow: 0 0 6px orange;
+  }
+
+  50% {
+    border-color: transparent;
+    box-shadow: 0 0 0 transparent;
+  }
+}
+
+.control.flash {
+  animation: flashBorder .95s infinite;
+  transform: scale(1.05);
+}
+
+/* flashing red*/
+@keyframes flash {
+
+  0%,
+  100% {
+    border-color: red;
+    box-shadow: 0 0 6px red;
+  }
+
+  50% {
+    border-color: transparent;
+    box-shadow: 0 0 0 transparent;
+  }
+}
+
+.control.boost {
+  animation: flash .95s infinite;
+  transform: scale(1.05);
+}
+
+@keyframes pulseGlow {
+
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 rgba(255, 255, 0, 0.5);
+    border-color: rgba(255, 255, 0, 0.6);
+  }
+
+  50% {
+    transform: scale(1.05);
+    box-shadow: 0 0 12px rgba(255, 255, 0, 1);
+    border-color: rgba(255, 255, 0, 1);
+  }
+}
+
+.control.pulse {
+  animation: pulseGlow 1.1s infinite;
+  opacity: 1;
+  filter: none;
+}
+
+/* --------------- SelectionUI --------------- */
+
+
+.selection {
+  width: 48px;
+  height: 48px;
+  background-size: 135% 215%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #d6f0f7;
+  display: inline-block;
+  padding: 0;
+  padding-block: 0;
+  padding-inline: 0;
+  border-radius: 50%;
+  border: 4px solid black;
+  transition: transform 0.1s ease, scale 0.1s ease;
+}
+
+@keyframes buttonPulse {
+  0% {
+    transform: scale(1);
+  }
+
+  50% {
+    transform: scale(1.1);
+  }
+
+  100% {
+    transform: scale(1);
+  }
+}
+
+.selection.clicked {
+  animation: buttonPulse 0.3s ease;
 }
 
 /* --------------- HELP --------------- */
@@ -325,6 +545,7 @@ body {
   position: absolute;
   left: 1lvw;
   top: 1lvw;
+  touch-action: none;
 }
 
 .menu-popup-content {

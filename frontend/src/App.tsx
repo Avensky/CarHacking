@@ -22,6 +22,9 @@ import Tank from './models/RaycastVehicle/Tank';
 import { Cameras } from './effects';
 import { Dashboard } from './ui/dashboard/Dashboard';
 import { Menu } from './ui/Menu';
+import Pedals from './ui/Pedals';
+import Steering from './ui/Steering';
+import ControlsPanel from './ui/ControlsPanel';
 type Screen = 'selection-screen' | 'game-screen';
 
 // Define the type of cmdEvents. For example, if they are objects:
@@ -133,6 +136,7 @@ export function App(): JSX.Element {
 
   return (
     <div style={{ position: 'relative', width: '100vw', height: '100vh', overflow: 'hidden' }}>
+
       <Canvas
         key={`${dpr}${shadows}`}
         dpr={[1, dpr]}
@@ -182,41 +186,44 @@ export function App(): JSX.Element {
           }}
         />
       )}
+      {screen == 'game-screen' ? <Dashboard /> : <></>}
+      <Pedals />
+      <Steering />
+      <ControlsPanel />
 
-      <Dashboard />
-      {screen === 'game-screen' && (
-        <Menu
-          onLeaveGame={() => {
-            // 🧠 Persist in frontend store
-            getState().setControls({
-              reset: false,
-              engineOn: false,
-              // forward: false,
-              // backward: false,
-              // left: false,
-              // right: false,
-              // brake: false,
-              // blinkerLeft: false,
-              // blinkerRight: false,
-              // hazards: false,
-              // headlights: false,
-            });
-            // socket.emit('spawnPlayer', { vehicle, map });
-            store.set({ camera: 'GALLERY' });// 👈 set camera mode
-            store.set({ menu: false });// 👈 set menu mode
-            getState().setRotatingCamera({ angle: 0 });
-            socket.emit('controls', { reset: true, engineOn: false });
-            // Clear the reset flag on the next tick
-            setTimeout(() => {
-              socket.emit('controls', { reset: false, engineOn: false });
-            }, 50);
-            getState().setScreen('selection-screen');
-          }}
-        />
-      )}
+      <Menu
+        onLeaveGame={() => {
+          // 🧠 Persist in frontend store
+          getState().setControls({
+            reset: false,
+            engineOn: false,
+            // forward: false,
+            // backward: false,
+            // left: false,
+            // right: false,
+            // brake: false,
+            // blinkerLeft: false,
+            // blinkerRight: false,
+            // hazards: false,
+            // headlights: false,
+          });
+          // socket.emit('spawnPlayer', { vehicle, map });
+          store.set({ camera: 'GALLERY' });// 👈 set camera mode
+          store.set({ menu: false });// 👈 set menu mode
+          getState().setRotatingCamera({ angle: 0 });
+          socket.emit('controls', { reset: true, engineOn: false });
+          // Clear the reset flag on the next tick
+          setTimeout(() => {
+            socket.emit('controls', { reset: false, engineOn: false });
+          }, 50);
+          getState().setScreen('selection-screen');
+        }}
+      />
+
       <ToggledEditor />
       <HideMouse />
       <Keyboard />
+
       {/* <Help /> */}
       {/* <ToggledStats /> */}
       {/* <ToggledCheckpoint /> */}
