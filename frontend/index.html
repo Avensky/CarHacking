@@ -2,17 +2,69 @@
 <html lang="en">
 
 <head>
-  <meta name="viewport"
-    content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, orientation=landscape">
+  <!-- Responsive and zoom settings -->
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+
+  <!-- Mobile app fullscreen support -->
   <meta name="mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+
+  <!-- App icons and manifest -->
   <link rel="icon" type="image/svg+xml" href="/vite.svg" />
   <link rel="manifest" href="/manifest.json" />
+
   <title>CarSim</title>
+
+  <!-- Optional: prevent long-press context menu on iOS -->
+  <style>
+    * {
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      -webkit-tap-highlight-color: transparent;
+      touch-action: manipulation;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+      overscroll-behavior: none;
+      background-color: black;
+    }
+  </style>
 </head>
+<script>
+  function checkOrientation() {
+    const isLandscape = window.innerWidth > window.innerHeight;
+    const warning = document.getElementById('rotate-warning');
+    if (warning) {
+      warning.style.display = isLandscape ? 'none' : 'flex';
+    }
+  }
+
+  window.addEventListener('orientationchange', checkOrientation);
+  window.addEventListener('resize', checkOrientation);
+  window.addEventListener('load', checkOrientation);
+</script>
 
 <body>
+  <div id="rotate-warning" style="
+  display: none;
+  position: fixed;
+  z-index: 9999;
+  top: 0; left: 0;
+  width: 100vw; height: 100vh;
+  background: black;
+  color: white;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.5rem;
+  text-align: center;
+  padding: 2rem;">
+    🔄 Please rotate your device to landscape mode
+  </div>
+
   <div id="root"></div>
   <script type="module" src="/src/main.tsx"></script>
 </body>

@@ -25,6 +25,7 @@ import { Menu } from './ui/Menu';
 import Pedals from './ui/Pedals';
 import Steering from './ui/Steering';
 import ControlsPanel from './ui/ControlsPanel';
+import CommandLine from './ui/CommandLine/CommandLine';
 type Screen = 'selection-screen' | 'game-screen';
 
 // Define the type of cmdEvents. For example, if they are objects:
@@ -65,6 +66,7 @@ export function App(): JSX.Element {
   const [vehicleIndex, setVehicleIndex] = useState(0);
   const [mapIndex, setMapIndex] = useState(0);
   const store = getState();
+  const [cmdEvents, setCmdEvents] = useState<string[]>([]);
 
   useEffect(() => {
     window.scrollTo(0, 0);
@@ -83,11 +85,11 @@ export function App(): JSX.Element {
     }
 
     function onError(value: any) {
-      // setCmdEvents((previous) => [...previous, value]);
+      setCmdEvents((previous: any) => [...previous, value]);
     }
 
     function onCmdEvent(value: any) {
-      // setCmdEvents((previous) => [...previous, value]);
+      setCmdEvents((previous: any) => [...previous, value]);
     }
 
     const handlePhysicsUpdate = (data: PhysicsData) => {
@@ -190,6 +192,7 @@ export function App(): JSX.Element {
       <Pedals />
       <Steering />
       <ControlsPanel />
+      <CommandLine cmdEvents={cmdEvents} isConnected={isConnected} />
 
       <Menu
         onLeaveGame={() => {
@@ -229,7 +232,6 @@ export function App(): JSX.Element {
       {/* <ToggledCheckpoint /> */}
       {/* <LeaderBoard /> */}
       {/* <Clock /> */}
-      {/* <UI cmdEvents={cmdEvents} isConnected={isConnected} /> */}
     </div>
   );
 }

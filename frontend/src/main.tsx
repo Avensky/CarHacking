@@ -1,7 +1,7 @@
 import { createRoot } from 'react-dom/client';
 import { useGLTF } from '@react-three/drei';
 import 'inter-ui';
-import './styles.css';
+import './style.css';
 import { App } from './App';
 
 // Preload 3D models
