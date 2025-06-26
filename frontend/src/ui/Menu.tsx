@@ -7,7 +7,7 @@ export function Menu({ onLeaveGame }: { onLeaveGame: () => void }) {
         <div className="help">
             {!menu && <button style={{
                 background: 'transparent',
-                fontSize: '3rem'
+                fontSize: '1.9rem'
             }}
                 onClick={() => set({ menu: true })}>⚙️</button>}
             <div className={`popup ${menu ? 'open' : ''}`}>

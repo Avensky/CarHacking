@@ -19,7 +19,7 @@ if (process.env.NODE_ENV === "production") {
 const controlMap = {};
 
 function setupSocketIO(io) {
-  io.on('connection', (socket) => {
+  io.on('connect', (socket) => {
     console.log('Client connected:', socket.id);
 
     controlMap[socket.id] =
@@ -40,7 +40,7 @@ function setupSocketIO(io) {
     socket.on('spawnPlayer', (data) => {
       const config = getVehicleConfig(data.vehicle);
       data.vehicleConfig = config
-      console.log(data);
+      // console.log(data);
       socket.emit('spawnPlayer', data);
       createVehicle(socket.id, data.vehicle);
     });

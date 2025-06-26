@@ -32,10 +32,8 @@ export function MyForm() {
 
   return (
     <form onSubmit={onSubmit} className={styles.MyForm}>
-      <input onChange={(e) => setValue(e.target.value)} placeholder="$" />
-      <button type="submit" disabled={isLoading}>
-        Enter
-      </button>
+      <input onChange={(e) => setValue(e.target.value)} placeholder="What's on your mind?" />
+      <button type="submit" disabled={isLoading} />
     </form>
   )
 }

@@ -1,7 +1,21 @@
-import { io, Socket } from 'socket.io-client'
+// socket.ts
+import { io } from 'socket.io-client';
 
 // "undefined" means the URL will be computed from the `window.location` object
-const URL = process.env.NODE_ENV === 'production' ? undefined : 'http://localhost:5000'// Replace with your server URL if different
+// Replace with your server URL if different
+const SERVER_URL = process.env.NODE_ENV === 'production' ? import.meta.env.VITE_SERVER_URL : 'http://localhost:5000'
 
-export const socket: Socket = io(URL)
-export default socket
+const socket = io(SERVER_URL, {
+    transports: ['websocket'],
+    autoConnect: true,
+});
+
+// socket.on('connect', () => {
+//     console.log('✅ Connected to server with ID:', socket.id);
+// });
+
+// socket.on('connect_error', (err) => {
+//     console.error('❌ Connection error:', err.message);
+// });
+
+export default socket;

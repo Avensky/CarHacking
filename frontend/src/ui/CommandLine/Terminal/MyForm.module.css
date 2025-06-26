@@ -1,16 +1,24 @@
 .MyForm {
     display: flex;
     width: 100%;
-    /* margin: 1lvh 0lvw; */
     box-sizing: border-box;
-    flex-wrap: wrap;
     justify-content: start;
+    padding: 8px;
+    background-color: #000;
+    border: 1px solid #333;
+    font-family: monospace;
 }
 
 .MyForm input {
-    min-width: 75%;
+    width: 100%;
+    background: black;
+    color: #0f0;
+    border: none;
+    outline: none;
+    font-size: 1rem;
 }
 
 .MyForm button {
-    min-width: 25%;
+    display: none;
+    /* Hides it but keeps submit functionality */
 }

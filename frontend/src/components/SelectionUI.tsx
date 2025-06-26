@@ -27,20 +27,10 @@ export default function SelectionUI(
         setTimeout(() => setClickedBtn(null), 300);
     }
     return (
-        <div
-            style={{
-                position: 'absolute', // ✅ Changed
-                pointerEvents: 'auto', // ✅ Ensures buttons work
-                bottom: '5%',
-                left: '50%',
-                userSelect: 'none',
-                textAlign: 'center',
-                transform: 'translateX(-50%)',
-                color: 'white',
-            }}>
+        <div className='selection-wrapper'>
             {/* UI controls fixed on screen */}
             {/* <h2>{selectedVehicle.name}</h2> */}
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div className='selection-bar'>
                 <button
 
                     onContextMenu={(e) => e.preventDefault()}
@@ -60,7 +50,7 @@ export default function SelectionUI(
             </div>
 
             {/* <h3 style={{ marginTop: '2rem' }}>{selectedMap.name}</h3> */}
-            <div style={{ marginTop: '1rem', display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
+            <div className='selection-bar'>
                 <button
                     onContextMenu={(e) => e.preventDefault()}
                     className={`selection ${clickedBtn === 'mapPrev' ? 'clicked' : ''}`}
@@ -77,15 +67,8 @@ export default function SelectionUI(
                 />
             </div>
             <button
-                className={`selection ${clickedBtn === 'spawn' ? 'clicked' : ''}`}
+                className={`selection selection-select ${clickedBtn === 'spawn' ? 'clicked' : ''}`}
                 onContextMenu={(e) => e.preventDefault()}
-                style={{
-                    marginTop: 20,
-                    fontWeight: 900,
-                    fontSize: '1.5rem',
-                    width: '100%',
-                    borderRadius: '16px',
-                }}
                 onClick={() => animateButton('spawn', handleSpawn)}
             >
                 Start Game

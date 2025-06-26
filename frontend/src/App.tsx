@@ -26,7 +26,7 @@ import Pedals from './ui/Pedals';
 import Steering from './ui/Steering';
 import ControlsPanel from './ui/ControlsPanel';
 import CommandLine from './ui/CommandLine/CommandLine';
-type Screen = 'selection-screen' | 'game-screen';
+// type Screen = 'selection-screen' | 'game-screen';
 
 // Define the type of cmdEvents. For example, if they are objects:
 // type CmdEvent = string; // Replace with the actual structure if known
@@ -40,15 +40,22 @@ export function App(): JSX.Element {
 
   const layers = new Layers()
   layers.enable(levelLayer)
-  const [light, setLight] = useState<DirectionalLight | null>(null)
-  const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
-  const [isConnected, setIsConnected] = useState(socket.connected);
   // const ToggledDebug = useToggle(Debug, 'debug')
   const ToggledEditor = useToggle(Editor, 'editor')
   // const ToggledFinished = useToggle(Finished, 'finished')
   // const ToggledMap = useToggle(Minimap, 'map')
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   // const ToggledStats = useToggle(Stats, 'stats')
+  const screen = useStore((s) => s.screen);
+  const store = getState();
+  const [light, setLight] = useState<DirectionalLight | null>(null)
+  const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
+  const [isConnected, setIsConnected] = useState<boolean>(socket.connected);
+  const [selectedVehicle, setSelectedVehicle] = useState<string>('ae86');
+  const [selectedMap, setSelectedMap] = useState<string>('rtx');
+  const [vehicleIndex, setVehicleIndex] = useState(0);
+  const [mapIndex, setMapIndex] = useState(0);
+  const [cmdEvents, setCmdEvents] = useState<string[]>([]);
 
   const vehicleOptions = [
     { type: 'ae86', name: 'AE86', component: Ae86 },
@@ -60,14 +67,6 @@ export function App(): JSX.Element {
     { type: 'rtx', name: 'Night Life', component: Rtx },
     { type: 'timesquare', name: 'Time Square', component: TimesSquare },
   ];
-  const screen = useStore((s) => s.screen);
-  const [selectedVehicle, setSelectedVehicle] = useState<string>('ae86');
-  const [selectedMap, setSelectedMap] = useState<string>('rtx');
-  const [vehicleIndex, setVehicleIndex] = useState(0);
-  const [mapIndex, setMapIndex] = useState(0);
-  const store = getState();
-  const [cmdEvents, setCmdEvents] = useState<string[]>([]);
-
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);
@@ -123,7 +122,7 @@ export function App(): JSX.Element {
       socket.off('disconnect', onDisconnect);
       socket.removeAllListeners(`carSim`);
     };
-  }, []);
+  }, [socket]);
 
 
   // get vehicle config upon preview

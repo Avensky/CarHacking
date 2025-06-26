@@ -14,8 +14,8 @@ export default function CommandLine({ cmdEvents, isConnected }: UIProps): JSX.El
         <div className="flex-row">
           {isConnected === true ? (
             <>
-              <Button reload={false} url="/api/start" name="Start Sim" />
-              <Button reload={false} url="/api/hack" name="Hack Car" />
+              {/* <Button reload={false} url="/api/start" name="Start Sim" />
+              <Button reload={false} url="/api/hack" name="Hack Car" /> */}
               <Button reload={false} url="/api/reload" name="Reload Node" />
               <Button reload={true} url="" name="Reload UI" />
               <Button reload={false} url="/api/abort" name="Abort" />
@@ -31,7 +31,7 @@ export default function CommandLine({ cmdEvents, isConnected }: UIProps): JSX.El
       </div>
       <Log events={cmdEvents} />
       <MyForm />
-      <ConnectionManager isConnected={isConnected} />
+      {/* <ConnectionManager isConnected={isConnected} /> */}
     </div>
   )
 }
