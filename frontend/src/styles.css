@@ -4,13 +4,9 @@
 @tailwind components;
 @tailwind utilities;
 
-
-
 body {
   margin: 0;
 }
-
-
 
 *,
 *::before,
@@ -28,6 +24,39 @@ body,
   overflow: hidden;
   /* overflow: scroll; */
 }
+
+/* improve clicking */
+button,
+.control,
+.pedal,
+.arrow,
+.selection {
+  user-select: none;
+  -webkit-user-select: none;
+  -webkit-touch-callout: none;
+  /* disable image save/copy on long press */
+}
+
+/*  remove iOS/Android button glow or outlines: */
+button,
+.control,
+.pedal,
+.arrow {
+  background: none;
+  border: none;
+  outline: none;
+  appearance: none;
+  -webkit-appearance: none;
+}
+
+/* Use touch-action: none to prevent gesture interference */
+button,
+.control,
+.pedal,
+.arrow {
+  touch-action: none;
+}
+
 
 /* GLB */
 canvas {
