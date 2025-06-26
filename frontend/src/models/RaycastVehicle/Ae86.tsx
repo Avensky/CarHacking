@@ -44,6 +44,7 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
     const [leftBlinker, setLeftBlinker] = useState(false);
     const [rightBlinker, setRightBlinker] = useState(false);
     const [hazards, setHazards] = useState(false);
+    const wheelRotations = useRef([0, 0, 0, 0]) // FL, FR, RL, RR
 
     useEffect(() => {
         const parts = ['CarBody', 'Interior', 'SteeringWheel', 'Headlights', 'FL_Caliper', 'FR_Caliper', 'RL_Caliper', 'RR_Caliper']
@@ -149,6 +150,7 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
     }, [scene])
 
     // Update transformations every frame ie. chassis
+
     useFrame((_, delta) => {
         // get state on frame
         const store = getState()
@@ -206,38 +208,21 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
         // Update vehicle body
         group.position.lerpVectors(
             group.position,
-            new Vector3(
-                chassisBody.position.x,
-                chassisBody.position.y,
-                chassisBody.position.z
-            ),
+            new Vector3(chassisBody.position.x, chassisBody.position.y, chassisBody.position.z),
             0.5 // ← smoothing factor
         )
-        group.quaternion.set(
-            chassisBody.quaternion.x,
-            chassisBody.quaternion.y,
-            chassisBody.quaternion.z,
-            chassisBody.quaternion.w
-        )
+        group.quaternion.set(chassisBody.quaternion.x, chassisBody.quaternion.y, chassisBody.quaternion.z, chassisBody.quaternion.w)
 
         // Update wheels
+
         wheelInfos.forEach((wheel: any, i: number) => {
             if (!wheels[i]) return
             wheels[i].position.lerpVectors(
                 wheels[i].position,
-                new Vector3(
-                    wheel.position.x,
-                    wheel.position.y,
-                    wheel.position.z
-                ),
+                new Vector3(wheel.position.x, wheel.position.y, wheel.position.z),
                 .5 // ← smoothing factor
             )
-            wheels[i].quaternion.set(
-                wheel.quaternion.x,
-                wheel.quaternion.y,
-                wheel.quaternion.z,
-                wheel.quaternion.w
-            )
+            wheels[i].quaternion.set(wheel.quaternion.x, wheel.quaternion.y, wheel.quaternion.z, wheel.quaternion.w)
         })
 
 

@@ -55,7 +55,7 @@ function Pedals(): JSX.Element {
       <div className='split'>
         <button
           onContextMenu={(e) => e.preventDefault()}
-          className='pedal'
+          className={`pedal ${controls.brake ? 'pressed' : ''}`}
           onPointerDown={() => {
             const nextControls = { ...controls, brake: true };
             setControls(nextControls);
@@ -76,7 +76,7 @@ function Pedals(): JSX.Element {
         </button>
         <button
           onContextMenu={(e) => e.preventDefault()}
-          className='accelerator pedal'
+          className={`accelerator pedal ${controls.forward ? 'pressed' : ''}`}
           onPointerDown={() => {
             const nextControls = { ...controls, forward: true };
             setControls(nextControls);
