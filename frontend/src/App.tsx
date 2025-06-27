@@ -88,7 +88,7 @@ export function App(): JSX.Element {
     }
 
     function onCmdEvent(value: any) {
-      setCmdEvents((previous: any) => [...previous, value]);
+      setCmdEvents((prev) => [...prev.slice(-100), value]); // ⏪ max 100 logs
     }
 
     const handlePhysicsUpdate = (data: PhysicsData) => {

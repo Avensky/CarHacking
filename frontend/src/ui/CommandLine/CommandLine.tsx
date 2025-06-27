@@ -1,7 +1,7 @@
 import { Button } from "./Button/Button";
-import { ConnectionManager } from "./ConnectionManager/ConnectionManager";
-import { Log } from "./log/Log";
-import { MyForm } from "./Terminal/MyForm";
+// import { ConnectionManager } from "./ConnectionManager/ConnectionManager";
+import Output from "./Output/Output";
+import Input from "./Input/Input";
 
 interface UIProps {
   cmdEvents: string[]; // Replace `any[]` with the actual type of cmdEvents if known
@@ -29,8 +29,8 @@ export default function CommandLine({ cmdEvents, isConnected }: UIProps): JSX.El
           )}
         </div>
       </div>
-      <Log events={cmdEvents} />
-      <MyForm />
+      <Output events={cmdEvents} />
+      <Input />
       {/* <ConnectionManager isConnected={isConnected} /> */}
     </div>
   )

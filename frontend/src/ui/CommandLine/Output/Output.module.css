@@ -1,0 +1,60 @@
+.Log {
+    color: rgba(255, 255, 255, 0.95);
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    height: 25dvh;
+    pointer-events: none;
+    user-select: none;
+    font-family: monospace;
+    padding: 8px;
+    width: 100%;
+    background-color: rgba(0, 0, 0, 0.75);
+    border-top: 1px solid rgba(255, 255, 255, 0.2);
+    overflow: hidden;
+}
+
+.Messages {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    overflow-y: auto;
+    overflow-x: hidden;
+    font-size: 0.75rem;
+}
+
+.Event {
+    white-space: pre-wrap;
+    padding: 2px 0;
+    line-height: 1.2;
+    animation: fadein 0.2s ease-in;
+}
+
+/* Log Levels */
+.event-success {
+    color: #0f0;
+}
+
+.event-error {
+    color: #f33;
+}
+
+.event-info {
+    color: #09f;
+}
+
+.event-debug {
+    color: #888;
+}
+
+@keyframes fadein {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

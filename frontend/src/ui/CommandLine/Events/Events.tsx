@@ -1,6 +1,6 @@
 // import styles from './Events.module.css';
 
-export function Events(props: { events: any }): JSX.Element {
+export default function Events(props: { events: any }): JSX.Element {
   return (
     <div
     // className={styles.Events}
@@ -10,13 +10,13 @@ export function Events(props: { events: any }): JSX.Element {
       >
         {props.events.length > 0
           ? props.events.map((event: any, index: any) => (
-              <div
-                // className={styles.Event}
-                key={index}
-              >
-                {event}
-              </div>
-            ))
+            <div
+              // className={styles.Event}
+              key={index}
+            >
+              {event}
+            </div>
+          ))
           : null}
       </div>
     </div>

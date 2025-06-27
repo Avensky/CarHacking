@@ -16,6 +16,9 @@ const io = new Server(server, {
   }
 });
 
+//setup router
+require('./controllers/cmdController').init(io);
+
 const { setupExpress } = require('./app');
 const { setupSocketIO } = require('./socket');
 

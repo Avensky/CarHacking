@@ -1,16 +1,19 @@
 const path = require('path');
 const cors = require('cors');
 const express = require('express');
+const AppError = require('./utils/appError');
+const cmdRouter = require('./routes/cmdRouter');
 
 function setupExpress(app) {
   app.use(cors());
   app.use(express.json());
 
-  app.get('/api/ping', (_, res) => res.send('pong'));
-  app.post('/api/cmd', (req, res) => {
-    // const command = req.body;
-    // console.log('Received command:', command);
-    res.send({ status: 'received' });
+  // routes
+  app.use("/api/v1/", cmdRouter)
+
+  // catches all non existing routes
+  app.all("*", (req, res, next) => {
+    next(new AppError(`Can't find ${req.originalUrl} on this server!`, 404));
   });
 
   // launch server in production mode
