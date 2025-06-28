@@ -6,7 +6,7 @@ body,
   padding: 0;
   width: 100dvw;
   height: 100dvh;
-  /* height: 100vh; fallback */
+  height: 100vh;
   position: fixed;
   overflow: hidden;
   background: #101010;

@@ -37,6 +37,11 @@ interface PhysicsData {
 }
 
 export function App(): JSX.Element {
+  window.addEventListener('gesturestart', (e) => {
+    e.preventDefault();
+    document.body.style.transform = 'scale(1)';
+  });
+
 
   const layers = new Layers()
   layers.enable(levelLayer)
