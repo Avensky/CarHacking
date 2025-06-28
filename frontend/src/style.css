@@ -350,11 +350,11 @@ body {
 /* --------------- Pedals --------------- */
 
 .Pedals {
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
-  right: 0;
-  align-items: center;
-  text-align: start;
+  right: 0; */
+  /* align-items: center; */
+  /* text-align: start; */
 }
 
 .pedal {
@@ -370,7 +370,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-color: transparent;
-  margin: 2dvh 1dvw;
+  /* margin: 2dvh 1dvw; */
   /* border-radius: 24px; */
   /* border: 4px solid rgb(0, 0, 0); */
   display: inline-block;
@@ -385,7 +385,7 @@ body {
 
 
 .split {
-  position: relative;
+  /* position: relative; */
   display: flex;
   align-items: center;
   text-align: center;
@@ -393,15 +393,15 @@ body {
 }
 
 .accelerator {
-  height: 80px;
-  width: 80px;
+  height: 75px;
+  width: 75px;
   background: url(/images/gasPedal.png) no-repeat;
   background-size: contain;
 }
 
 .footBrake {
-  height: 75px;
-  width: 75px;
+  height: 65px;
+  width: 65px;
   background: url(/images/brakePedal.png) no-repeat;
   background-size: contain;
 }
@@ -409,13 +409,15 @@ body {
 /* --------------- Steering --------------- */
 
 .Steering {
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
-  left: 0;
+  left: 0; */
   /* padding: 0.5dvw 0.5dvh; */
   /* width: 280px; */
-  align-items: center;
-  text-align: start;
+  /* align-items: center; */
+  display: flex;
+  align-items: start;
+  z-index: 100;
 }
 
 .arrow {
@@ -428,7 +430,7 @@ body {
   background-position: center;
   background-repeat: no-repeat;
   background-color: #d6f0f7;
-  margin: 2dvh 1dvw;
+  margin: 1dvh .5dvw;
   border-radius: 24px;
   border: 4px solid rgb(0, 0, 0);
   display: inline-block;
@@ -461,9 +463,10 @@ body {
 
 /* --------------- ControlsPanel --------------- */
 .ControlsPanel {
-  position: absolute;
+  /* position: absolute;
   top: 34%;
-  right: 0;
+  right: 0; */
+  margin: 3dvh 0;
 }
 
 .row {
@@ -659,9 +662,9 @@ body {
 /* --------------- HELP --------------- */
 
 .help {
-  position: absolute;
-  left: 0;
-  top: 0;
+  /* position: absolute; */
+  /* left: 0;
+  top: 0; */
   touch-action: none;
 }
 
@@ -673,7 +676,7 @@ body {
   align-items: center;
   padding: 2vh 3vw;
   background: rgba(0, 0, 0, 0.80);
-  z-index: 100;
+  z-index: 1000;
   overflow: scroll;
 }
 
@@ -706,7 +709,16 @@ body {
   flex-direction: column;
   align-items: center;
   padding: 2vh 3vw;
-  background: rgba(0, 0, 0, 0.95);
+  background: rgba(0, 0, 0, 0.90);
+  z-index: 100;
+  overflow: scroll;
+
+  width: 100dvw;
+  height: 100dvh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2vh 3vw;
   z-index: 100;
   overflow: scroll;
 }
@@ -774,8 +786,8 @@ body {
 }
 
 button {
-  min-width: 32px;
-  min-height: 32px;
+  /* min-width: 32px;
+  min-height: 32px; */
   color: inherit;
   border: none;
   font: inherit;
@@ -958,14 +970,14 @@ button {
 }
 
 .dashboard {
-  position: absolute;
+  /* position: absolute;
   bottom: 0;
-  right: 0;
+  right: 0; */
   box-sizing: border-box;
   /* z-index: 2; */
   user-select: none;
   pointer-events: none;
-  padding: 1lvh 1lvw;
+  /* padding: 1lvh 1lvw; */
   /* display: flex; */
   /* flex-direction: row; */
   /* justify-content: end; */
@@ -1070,33 +1082,6 @@ button {
   user-select: none;
 }
 
-.flex-row {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-wrap: wrap;
-}
-
-/* COMMAND LINE */
-
-.command-line {
-  position: absolute;
-  left: 0;
-  top: 20%;
-  width: 200px;
-  box-sizing: border-box;
-  padding: 1lvh 1lvw;
-  display: flex;
-  flex-direction: column;
-  /* justify-content: end; */
-  /* align-items: end; */
-}
-
-.disconnected {
-  background-color: #560505bc;
-}
-
-
 .close {
   padding: 1lvh 1lvw;
   margin: 1lvh 0 0;
@@ -1155,4 +1140,100 @@ button {
   border: 1px solid #555;
   border-radius: 4px;
   cursor: pointer;
+}
+
+/* COMMAND LINE */
+.command-line {
+  /* position: absolute;
+  left: 0;
+  top: 20%; */
+  width: 75dvw;
+  box-sizing: border-box;
+  padding: 1lvh 1lvw;
+  display: flex;
+  flex-direction: column;
+  /* user-select: all !important; */
+  /* touch-action: manipulation !important; */
+  /* justify-content: end; */
+  /* align-items: end; */
+}
+
+.cmd-controls {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+
+}
+
+.disconnected {
+  background-color: #560505bc;
+}
+
+.cmd-control {
+  touch-action: none;
+  width: 25px;
+  height: 25px;
+  /* border-radius: 50%; */
+  background-size: 80% 80%;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: #d6f0f7;
+  margin: 0dvh .25dvw;
+  border: 3px solid rgba(255, 255, 255, 0);
+  display: inline-block;
+  /* transition: background-color 0.2s, border-color 0.2s; */
+  opacity: 0.5;
+  filter: grayscale(40%);
+  transition: all 0.2s ease;
+}
+
+.reload {
+  background-size: 110% 110%;
+}
+
+.clear {
+  background-size: 190% 190%;
+}
+
+.popup-left {
+  /* position: fixed;
+  left: 0;
+  top: 0; */
+  /* display: flex; */
+  /* align-items: center; */
+  /* justify-content: center; */
+  opacity: 0;
+  transition: all 0.3s ease-in-out;
+  transform: translateX(-50%);
+}
+
+.popup-left.open {
+  opacity: 1;
+  transform: translateX(0);
+}
+
+
+/* UI */
+
+.ui-left {
+  position: absolute;
+  top: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 25dvw;
+  justify-content: space-between;
+}
+
+.ui-right {
+  position: absolute;
+  top: 0;
+  right: 0;
+  display: flex;
+  flex-direction: column;
+  height: 100dvh;
+  width: 25dvw;
+  justify-content: space-between;
+  align-items: end;
 }

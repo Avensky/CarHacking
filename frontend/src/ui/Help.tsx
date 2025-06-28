@@ -9,7 +9,6 @@ export function Help(): JSX.Element {
     <>
       <div className={`${sound ? 'sound' : 'nosound'}`}></div>
       <div className="help">
-        {!help && <button onClick={() => set({ help: true })}>i</button>}
         <div className={`popup ${help ? 'open' : ''}`}>
           <button className="popup-close" onClick={() => set({ help: false })}>
             i

@@ -1,20 +1,18 @@
 import { useStore } from '../store'
 
 export function Menu({ onLeaveGame }: { onLeaveGame: () => void }) {
-    const [set, menu, screen] = useStore((state) => [state.set, state.menu, state.screen])
+    const [set, menu, leaderboard, help, screen] = useStore((state) => [
+        state.set, state.menu, state.leaderboard, state.help, state.screen
+    ])
 
     return (
         <div className="help">
-            {!menu && <button style={{
-                background: 'transparent',
-                fontSize: '1.9rem'
-            }}
-                onClick={() => set({ menu: true })}>⚙️</button>}
             <div className={`popup ${menu ? 'open' : ''}`}>
                 <div className="menu-popup-content">
                     <h2>Game Settings</h2>
                     <button className='settings-button' onClick={() => set({ menu: false })}>Resume Game</button>
-                    <button className='settings-button' onClick={() => alert("Change Keybindings - Coming Soon!")}>Change Keybindings</button>
+                    <button className='settings-button' onClick={() => set({ leaderboard: true, menu: false })}>Command Line Logs</button>
+                    <button className='settings-button' onClick={() => set({ help: true, menu: false })}>Keybindings</button>
                     {screen === 'game-screen' ? <button className='settings-button' onClick={onLeaveGame}>Leave Game</button> : null}
                 </div>
             </div>

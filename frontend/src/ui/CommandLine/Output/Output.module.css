@@ -3,31 +3,47 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    height: 25dvh;
+    height: 45dvh;
     pointer-events: none;
     user-select: none;
     font-family: monospace;
     padding: 8px;
     width: 100%;
-    background-color: rgba(0, 0, 0, 0.75);
+    background-color: rgba(0, 0, 0, 0.9);
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
+    /* user-select: all !important; */
+    pointer-events: auto;
+    /* ✅ allow scroll & hover inside log */
+    user-select: text;
+    /* ✅ allow selecting text in the output */
 }
 
 .Messages {
+    overflow-x: hidden;
     width: 100%;
     display: flex;
     flex-direction: column;
     overflow-y: auto;
-    overflow-x: hidden;
+    /* ✅ Enable vertical scroll */
+    overscroll-behavior: contain;
+    /* ✅ Allow natural bounce */
+    touch-action: pan-y;
+    /* ✅ Allow vertical touch scroll only */
     font-size: 0.75rem;
 }
+
+
 
 .Event {
     white-space: pre-wrap;
     padding: 2px 0;
     line-height: 1.2;
     animation: fadein 0.2s ease-in;
+}
+
+.LogButton {
+    user-select: all !important;
 }
 
 /* Log Levels */

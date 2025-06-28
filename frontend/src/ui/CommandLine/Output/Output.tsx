@@ -1,21 +1,28 @@
-import { JSXElementConstructor, Key, ReactElement, ReactNode, useEffect, useRef } from 'react';
+import { Key, useEffect, useRef } from 'react';
 import styles from './Output.module.css';
+interface OutputProps {
+  events: any[];
+  paused: boolean;
+  logs: any[];
+}
 
-export default function Output(props: { events: any }): JSX.Element {
+export default function Output({ events, paused, logs }: OutputProps): JSX.Element {
   const logEndRef = useRef<HTMLDivElement | null>(null);
 
+
+  // Auto Scroll
   const scrollToBottom = () => {
     if (logEndRef.current) {
       logEndRef.current.scrollIntoView({ behavior: 'instant' });
     }
   };
 
-  useEffect(scrollToBottom, [props.events]);
+  useEffect(scrollToBottom, [logs]);
 
   return (
     <div className={styles.Log}>
       <div className={styles.Messages}>
-        {props.events.map((e: any, i: Key) => {
+        {logs.map((e: any, i: Key) => {
           let className = styles.Event;
 
           if (typeof e === 'string') {

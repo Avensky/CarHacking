@@ -18,12 +18,12 @@ export default function Input() {
       .post('/api/v1/cmd/', { data: value })
       .then((response) => {
         setIsLoading(false)
-        // setValue('');
+        setValue('');
         console.log(response.data)
       })
       .catch((error) => {
         setIsLoading(false)
-        // setValue('');
+        setValue('');
         console.log(error.response)
       })
   }

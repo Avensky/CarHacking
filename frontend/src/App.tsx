@@ -4,7 +4,7 @@ import { Suspense, useRef, useState, useEffect } from 'react';
 import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
 import { getState, levelLayer, useStore, VehicleConfig } from './store'
 import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
-import { Checkpoint, Clock, Speed, Minimap, Intro, Help, Editor, LeaderBoard, Finished, PickColor } from './ui'
+import { Speed, Minimap, Intro, Help, Editor, PickColor } from './ui'
 import { HideMouse, Keyboard } from './controls';
 import { useToggle } from './useToggle';
 import socket from './socket';
@@ -46,7 +46,6 @@ export function App(): JSX.Element {
   // const ToggledMap = useToggle(Minimap, 'map')
   const ToggledOrbitControls = useToggle(OrbitControls, 'editor')
   // const ToggledStats = useToggle(Stats, 'stats')
-  const screen = useStore((s) => s.screen);
   const store = getState();
   const [light, setLight] = useState<DirectionalLight | null>(null)
   const [actions, dpr, editor, shadows] = useStore((s) => [s.actions, s.dpr, s.editor, s.shadows])
@@ -56,7 +55,9 @@ export function App(): JSX.Element {
   const [vehicleIndex, setVehicleIndex] = useState(0);
   const [mapIndex, setMapIndex] = useState(0);
   const [cmdEvents, setCmdEvents] = useState<string[]>([]);
-
+  const [set, menu, screen] = useStore((state) => [
+    state.set, state.menu, state.screen
+  ])
   const vehicleOptions = [
     { type: 'ae86', name: 'AE86', component: Ae86 },
     { type: 'camaro', name: '2017 Camaro', component: Camaro },
@@ -171,6 +172,7 @@ export function App(): JSX.Element {
         <ToggledOrbitControls />
       </Canvas>
 
+
       {screen === 'selection-screen' && (
         <SelectionUI
           handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
@@ -187,11 +189,38 @@ export function App(): JSX.Element {
           }}
         />
       )}
-      {screen == 'game-screen' ? <Dashboard /> : <></>}
-      <Pedals />
-      <Steering />
-      <ControlsPanel />
-      <CommandLine cmdEvents={cmdEvents} isConnected={isConnected} />
+
+
+
+
+      <div className='ui-right'>
+        <div className='ui-top'>
+          {screen == 'game-screen' ? <Dashboard /> : <></>}
+        </div>
+        <div className='ui-bottom'>
+          <ControlsPanel />
+          <Pedals />
+        </div>
+      </div>
+
+
+
+      <div className='ui-left'>
+        <div className='ui-top'>
+          {!menu && <button
+            style={{ background: 'transparent', fontSize: '1.9rem' }}
+            onClick={() => set({ menu: true })}
+          >⚙️</button>}
+        </div>
+        <div className='ui-bottom'>
+          <CommandLine cmdEvents={cmdEvents} />
+          <Steering />
+        </div>
+      </div>
+
+
+
+
 
       <Menu
         onLeaveGame={() => {
@@ -221,12 +250,12 @@ export function App(): JSX.Element {
           getState().setScreen('selection-screen');
         }}
       />
+      <Help />
 
       <ToggledEditor />
       <HideMouse />
       <Keyboard />
 
-      {/* <Help /> */}
       {/* <ToggledStats /> */}
       {/* <ToggledCheckpoint /> */}
       {/* <LeaderBoard /> */}
