@@ -173,23 +173,24 @@ export function App(): JSX.Element {
         <ToggledOrbitControls />
       </Canvas>
 
-
-      {screen === 'selection-screen' && (
-        <SelectionUI
-          handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
-          handleVehiclePrev={() => setVehicleIndex((prev) => (prev - 1 + vehicleOptions.length) % vehicleOptions.length)}
-          handleMapNext={() => setMapIndex((prev) => (prev + 1) % mapOptions.length)}
-          handleMapPrev={() => setMapIndex((prev) => (prev - 1 + mapOptions.length) % mapOptions.length)}
-          vehicleName={vehicleOptions[vehicleIndex].name}
-          mapName={mapOptions[mapIndex].name}
-          handleSpawn={() => {
-            const vehicle = vehicleOptions[vehicleIndex].type;
-            const map = mapOptions[mapIndex].type;
-            socket.emit('spawnPlayer', { vehicle, map });
-            store.set({ menu: false });// 👈 set menu mode
-          }}
-        />
-      )}
+      <div className='ui-center'>
+        {screen === 'selection-screen' && (
+          <SelectionUI
+            handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
+            handleVehiclePrev={() => setVehicleIndex((prev) => (prev - 1 + vehicleOptions.length) % vehicleOptions.length)}
+            handleMapNext={() => setMapIndex((prev) => (prev + 1) % mapOptions.length)}
+            handleMapPrev={() => setMapIndex((prev) => (prev - 1 + mapOptions.length) % mapOptions.length)}
+            vehicleName={vehicleOptions[vehicleIndex].name}
+            mapName={mapOptions[mapIndex].name}
+            handleSpawn={() => {
+              const vehicle = vehicleOptions[vehicleIndex].type;
+              const map = mapOptions[mapIndex].type;
+              socket.emit('spawnPlayer', { vehicle, map });
+              store.set({ menu: false });// 👈 set menu mode
+            }}
+          />
+        )}
+      </div>
 
 
 
