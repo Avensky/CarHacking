@@ -136,7 +136,7 @@ export const booleans = {
   editor: false,
   help: false,
   menu: false,
-  leaderboard: true,
+  cli: true,
   map: true,
   pickcolor: false,
   ready: false,
@@ -147,7 +147,7 @@ export const booleans = {
 
 type Booleans = keyof typeof booleans
 
-const exclusiveBooleans = ['help', 'menu', 'leaderboard', 'pickcolor'] as const
+const exclusiveBooleans = ['help', 'menu', 'cli', 'pickcolor'] as const
 type ExclusiveBoolean = (typeof exclusiveBooleans)[number]
 const isExclusiveBoolean = (v: unknown): v is ExclusiveBoolean => exclusiveBooleans.includes(v as ExclusiveBoolean)
 
@@ -191,7 +191,7 @@ const actionInputMap: ActionInputMap = {
   help: ['i'],
   menu: ['escape'],
   honk: ['h'],
-  leaderboard: ['l'],
+  cli: ['l'],
   left: ['arrowleft', 'a', 'q'],
   map: ['m'],
   pickcolor: ['p'],

@@ -3,7 +3,7 @@
     width: 100%;
     box-sizing: border-box;
     justify-content: start;
-    padding: 8px;
+    padding: 2px;
     background-color: #000;
     border: 1px solid #333;
     font-family: monospace;
@@ -11,14 +11,36 @@
 
 .MyForm input {
     width: 100%;
-    background: black;
+    background: transparent;
     color: #0f0;
     border: none;
     outline: none;
-    font-size: 1rem;
+    font-size: .85rem;
+    font-family: monospace;
 }
 
 .MyForm button {
     display: none;
     /* Hides it but keeps submit functionality */
+}
+
+
+.PromptLine {
+    display: flex;
+    align-items: center;
+    font-family: monospace;
+    font-size: .85rem;
+    color: #0f0;
+    flex: 1;
+}
+
+.PromptSymbol {
+    margin-right: 2px;
+    animation: blink 1s steps(2, start) infinite;
+}
+
+@keyframes blink {
+    to {
+        visibility: hidden;
+    }
 }

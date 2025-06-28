@@ -58,6 +58,7 @@ export function App(): JSX.Element {
   const [set, menu, screen] = useStore((state) => [
     state.set, state.menu, state.screen
   ])
+
   const vehicleOptions = [
     { type: 'ae86', name: 'AE86', component: Ae86 },
     { type: 'camaro', name: '2017 Camaro', component: Camaro },
@@ -257,9 +258,6 @@ export function App(): JSX.Element {
       <Keyboard />
 
       {/* <ToggledStats /> */}
-      {/* <ToggledCheckpoint /> */}
-      {/* <LeaderBoard /> */}
-      {/* <Clock /> */}
     </div>
   );
 }

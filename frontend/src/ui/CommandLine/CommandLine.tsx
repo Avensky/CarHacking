@@ -1,11 +1,11 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import Output from "./Output/Output";
 import Input from "./Input/Input";
 import play from "/images/play.svg";
 import pause from "/images/pause.svg";
 import clear from "/images/clear2.svg";
 import reload from '/images/reload.svg'
-import { getState, useStore } from "../../store";
+import { useStore } from "../../store";
 
 interface UIProps {
   cmdEvents: string[]; // Replace `any[]` with the actual type of cmdEvents if known
@@ -14,8 +14,8 @@ interface UIProps {
 export default function CommandLine({ cmdEvents }: UIProps): JSX.Element {
   const [paused, setPaused] = useState(false);
   const [logs, setLogs] = useState<any[]>([]);
-  const [set, leaderboard] = useStore((state) => [state.set, state.leaderboard])
-
+  const [set, cli] = useStore((state) => [state.set, state.cli])
+  const [clearInputFlag, setClearInputFlag] = useState(false);
   // Keep logs updated only when not paused
   useEffect(() => {
     if (!paused) {
@@ -25,7 +25,7 @@ export default function CommandLine({ cmdEvents }: UIProps): JSX.Element {
 
   return (
     <div
-      className={`command-line popup-left ${leaderboard ? 'open' : ''}`}
+      className={`command-line popup-left ${cli ? 'open' : ''}`}
     >
       <div className="command">
         <div className="cmd-controls">
@@ -38,20 +38,23 @@ export default function CommandLine({ cmdEvents }: UIProps): JSX.Element {
             <button
               className={`cmd-control reload`}
               style={{ backgroundImage: `url(${reload})` }}
-              onClick={() => setLogs([])}
+              onClick={() => {
+                setLogs([]);
+                setClearInputFlag(true);   // ✅ tell input to clear
+              }}
             />
           </div>
           <div className="cmd-controls-right">
             <button
               className={`cmd-control clear`}
               style={{ backgroundImage: `url(${clear})` }}
-              onClick={() => set({ leaderboard: false })}
+              onClick={() => set({ cli: false })}
             />
           </div>
         </div>
       </div>
       <Output paused={paused} logs={logs} events={cmdEvents} />
-      <Input />
+      <Input clearInputFlag={clearInputFlag} setClearInputFlag={setClearInputFlag} />
     </div>
   )
 }
