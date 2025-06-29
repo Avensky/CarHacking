@@ -64,6 +64,7 @@ const carConfig = {
         coolRate: 0.03,     // per tick when idle
     },
 }
+
 const tankConfig = {
     wheelCount: 2, // or 6+ if tracked
     wheelBase: 3.5,

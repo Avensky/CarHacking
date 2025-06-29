@@ -11,16 +11,20 @@ import { SpeedometerProps } from 'react-speedometer/dist/Speedometer'
 
 interface SpeedProps {
   speed: number // Expect speed as a number
+  size: number
 }
 
-export function Speed({ speed }: SpeedProps): JSX.Element {
+export function Speed({ speed, size }: SpeedProps): JSX.Element {
+
+  const width = 120 * size;
+  const height = 120 * size;
   const speedometerProps: SpeedometerProps = {
     value: speed,
     max: 160,
     fontFamily: 'squada-one',
     rotation: -225,
-    width: 120,
-    height: 120,
+    width: width,
+    height: height,
     children: <Indicator />,
   }
 
@@ -30,18 +34,24 @@ export function Speed({ speed }: SpeedProps): JSX.Element {
       <Speedometer {...speedometerProps}>
         <Background />
         <Arc />
-        <Needle color="rgba(110, 6, 6, 1)" circleColor="rgba(0, 0, 0, 0.60)" />
+        <Needle
+          // baseOffset={10}
+          circleRadius={8}
+          color="rgba(110, 6, 6, 1)"
+          circleColor="rgba(0, 0, 0, 0.60)"
+        />
         <Progress />
         <Marks
           // baseWidth={1}
+          // numbersRadius={100}
           step={10}
           fontSize={10}
         />
         <Indicator
           // textAnchor='start'
-          x={96}
-          y={69}
-          fontSize={26}
+          x={75}
+          y={53}
+          fontSize={20}
         />
       </Speedometer>
     </div>

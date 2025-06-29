@@ -11,9 +11,10 @@ import Speedometer, {
 interface RpmsProps {
   rpms: number // Expect speed as a number
   gear: number
+  size: number
 }
 
-export function Rpms({ rpms, gear }: RpmsProps): JSX.Element {
+export function Rpms({ rpms, gear, size }: RpmsProps): JSX.Element {
   return (
     <div className="rpms">
       <Speedometer
@@ -31,7 +32,12 @@ export function Rpms({ rpms, gear }: RpmsProps): JSX.Element {
           color="rgba(255,255,255, 1"
         // lineCap="line"
         />
-        <Needle baseOffset={25} circleRadius={20} circleColor="rgba(0, 0, 0, 0.60)" color="rgba(110, 6, 6, 1)" />
+        <Needle
+          baseOffset={25}
+          circleRadius={20}
+          circleColor="rgba(0, 0, 0, 0.60)"
+          color="rgba(110, 6, 6, 1)"
+        />
         <DangerPath
           color="rgba(110, 6, 6, 1)"
           offset={0}

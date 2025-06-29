@@ -1,5 +1,5 @@
 import { FuelTemp } from './FuelTemp'
-import { Speed } from './Speed'
+import Speedometer from './Speedometer'
 import { Rpms } from './Rpms'
 import { getState, subscribe } from '../../store'
 import { useEffect, useState } from 'react'
@@ -7,6 +7,7 @@ import { useEffect, useState } from 'react'
 export function Dashboard(): JSX.Element {
   const [physicsData, setPhysicsData] = useState(() => getState().physicsData)
   const vehicleConfig = getState().vehicleConfig
+  const DASH_SIZE = 1;
 
   useEffect(() => {
     // subscribe to store updates
@@ -28,9 +29,9 @@ export function Dashboard(): JSX.Element {
   return (
     <div className="dashboard">
       <div className="dash-top">
-        <Speed speed={speed} />
-        <Rpms rpms={engineRpm / 1000} gear={gear} />
-        <FuelTemp fuel={fuel} fuelCapacity={fuelCapacity} temp={temp} />
+        <Speedometer speed={speed} scale={90} />
+        <Rpms size={DASH_SIZE} rpms={engineRpm / 1000} gear={gear} />
+        <FuelTemp size={DASH_SIZE} fuel={fuel} fuelCapacity={fuelCapacity} temp={temp} />
       </div>
     </div>
   )
