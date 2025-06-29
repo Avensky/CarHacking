@@ -1,49 +1,74 @@
 import { useEffect, useRef } from "react";
+import { getState, useStore } from "../../store";
 
-export default function Speedometer({ speed, scale }: { speed: number, scale: number }) {
+interface RpmsProps {
+    speed: number
+    value: number // Expect speed as a number
+    gear: number
+    scale: number
+    engineOn: boolean
+}
+
+export default function Revolutions({ speed, value, gear, scale, engineOn }: RpmsProps) {
+
+
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const requestRef = useRef<number>();
 
     // Store a smooth interpolated needle value
-    const needleValue = useRef(speed);
+    const needleValue = useRef(value);
 
     // programatically resizeable cluster variables
     const size = 160; // cluster size in px
     const radius = 80; // radius end of needle
 
     // Cluster start/end points clockwise (- for counterclockwise)
-    const startAngle = (-7 * Math.PI) / 4; // ~60 deg
-    const endAngle = -Math.PI / 3; // ~315 deg
+    const startAngle = (-4 * Math.PI) / 3; // ~60 deg
+    const endAngle = 0; // ~315 deg
 
     // Mark labels
-    const labelOffset = -28 // use (-) for inside cluster
-    const labelColor = 'white'
-    const fontSize = '.8rem';
+    const labelOffset = -24 // use (-) for inside cluster
+    const labelColor = 'black '
+    const fontSize = '1rem';
     const font = 'monospace';
+    const fontWeight = 'bold'
 
     // Tick and Marks
-    const tickColor = '#fff'; // Tick color
-    const maxSpeed = 160 // get from backend
-    const tickCount = 8 // (maxSpeed/tickCount = increments) ie. 160/8 = 20
+    const tickColor = 'black'; // Tick color
+    const maxNumber = 9 // get from backend
+    const tickCount = 9 // (maxNumber/tickCount = increments) ie. 160/8 = 20
     const tickLineWidth = 3;  // Tick mark thickness
     const tickLineLength = 14; // tick Width
 
-    const majorStep = maxSpeed / tickCount;
+    const majorStep = maxNumber / tickCount;
     const mediumStep = majorStep / 2;
-    const minorStep = mediumStep / 2;
+    const minorStep = mediumStep / 4;
 
     // Arc attributes
     const backgroundOffset = 0;
     const backgroundSize = radius + backgroundOffset
     const backgroundColor = "rgba(0, 0, 0, 0.5)"
-    const arcColor = 'rgba(0, 0, 0, 0.5)';
-    const arcLineWidth = 5;   // Arc line thickness
+    const arcColor = 'rgba(0, 0, 0, .8)';
+    const arcLineWidth = 1;   // Arc line thickness
 
+    // Arc Offset RPMS white arc
+    const smStartAngle = startAngle + 0.1; // expand ~5-10 deg
+    const background2Color = "white"
+    const smEndAngle = endAngle - 0.1;
+    const arcLine2Width = 40;   // Arc line thickness
 
     //Digital readout
-    // const readoutFontSize = '1.4rem';
-    // const readoutOffsetX = size / 4;
-    // const readoutOffsetY = 2;
+    const readoutBackgroundColor = `${engineOn ? 'orange' : 'black'}`;
+    const readoutFontSize = '1.4rem';
+    const readoutFontColor = `${engineOn ? 'yellow' : 'black'}`
+    const readoutFont = 'monospace'
+    const readoutShadow = `${engineOn ? 'rgba(255, 165, 0, 0.8)' : 'black'}`
+    // gear
+    const readoutOffsetX = 8;
+    const readoutOffsetY = size / 2.8;
+    // speed
+    const readout2OffsetX = size / 3.7;
+    const readout2OffsetY = size / 6.5;
 
     // Needle
     const needleLength = radius - 7;
@@ -79,29 +104,38 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
             ctx.fill();
             ctx.restore();
 
+            // RPMs white background arc
+            ctx.beginPath();
+            ctx.lineWidth = arcLine2Width; // make it thicker for background coverage
+            ctx.strokeStyle = background2Color; // or any color you want
+            ctx.arc(centerX, centerY, radius - arcLine2Width / 2, startAngle, endAngle, false);
+            ctx.stroke();
+
+
             // Arc background
             ctx.beginPath();
             ctx.lineWidth = arcLineWidth; // tick width
             ctx.strokeStyle = arcColor;
-            ctx.arc(centerX, centerY, radius - arcLineWidth / 2, startAngle, endAngle, false);
+            ctx.arc(centerX, centerY, radius - arcLineWidth / 2, smStartAngle, smEndAngle, false);
             ctx.stroke();
+
 
             // Ticks and labels
             ctx.fillStyle = labelColor;
-            ctx.font = `${fontSize} ${font}`;
+            ctx.font = `${fontWeight} ${fontSize} ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
 
-            for (let speedValue = 0; speedValue <= maxSpeed; speedValue += minorStep) {
-                const ratio = speedValue / maxSpeed;
-                const angle = startAngle + ratio * (endAngle - startAngle);
+            for (let value = 0; value <= maxNumber; value += minorStep) {
+                const ratio = value / maxNumber;
+                const angle = smStartAngle + ratio * (smEndAngle - smStartAngle);
 
                 let tickLength, lineWidth;
 
-                if (speedValue % majorStep === 0) {
+                if (value % majorStep === 0) {
                     tickLength = tickLineLength;
                     lineWidth = tickLineWidth;
-                } else if (speedValue % mediumStep === 0) {
+                } else if (value % mediumStep === 0) {
                     tickLength = tickLineLength * .7;
                     lineWidth = tickLineWidth * .6;
                 } else {
@@ -118,16 +152,17 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
                 ctx.moveTo(tickX1, tickY1);
                 ctx.lineTo(tickX2, tickY2);
                 ctx.lineWidth = lineWidth;
-                ctx.strokeStyle = tickColor;
+                // Use red for value >= 7.5, else black
+                ctx.strokeStyle = value >= 7.5 ? 'rgba(139, 0, 0, 1)' : tickColor;
                 ctx.stroke();
 
-                if (speedValue % majorStep === 0) {
+                if (value % majorStep === 0) {
+                    ctx.fillStyle = value >= 7.5 ? 'rgba(139, 0, 0, 1)' : labelColor;
                     const labelX = centerX + (radius + labelOffset) * Math.cos(angle);
                     const labelY = centerY + (radius + labelOffset) * Math.sin(angle);
-                    ctx.fillText(speedValue.toFixed(0), labelX, labelY);
+                    ctx.fillText(value.toFixed(0), labelX, labelY);
                 }
             }
-
             // Center dot
             ctx.save(); // ✅ isolate shadow settings
 
@@ -142,8 +177,8 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
             ctx.restore(); // ✅ back to normal drawing state
 
             // Needle
-            const speedRatio = Math.max(0, Math.min(speed / maxSpeed, 1));
-            const needleAngle = startAngle + speedRatio * (endAngle - startAngle);
+            const valueRatio = Math.max(0, Math.min(value / maxNumber, 1));
+            const needleAngle = smStartAngle + valueRatio * (endAngle - smStartAngle);
 
             // Direction vector
             const dx = Math.cos(needleAngle);
@@ -184,15 +219,69 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
 
             ctx.restore(); // ✅ Reset to no shadow
 
+            // === GEAR DIGITAL BOX ===
+            ctx.save();
+            ctx.shadowColor = readoutShadow; // orange glow
+            ctx.shadowBlur = 15;
+
+            const gearText = `${gear.toFixed(0)}`;
+            ctx.font = `${readoutFontSize} ${readoutFont}`;
+            const gearMetrics = ctx.measureText(gearText);
+            const padding = 43;
+
+            const gearBoxWidth = gearMetrics.width + padding;
+            const gearBoxHeight = parseInt(readoutFontSize) * 25;
+
+            const gearBoxX = centerX + readoutOffsetX - gearBoxWidth / 2;
+            const gearBoxY = centerY + readoutOffsetY - gearBoxHeight / 1.6;
+
+            // Draw box
+            ctx.fillStyle = readoutBackgroundColor;
+            ctx.fillRect(gearBoxX, gearBoxY, gearBoxWidth, gearBoxHeight);
+
+            // Draw text
+            ctx.fillStyle = readoutFontColor;
+            ctx.shadowBlur = 0; // no shadow on text itself
+            ctx.fillText(gearText, centerX + readoutOffsetX, centerY + readoutOffsetY);
+
+            ctx.restore();
+
             // Digital readout
-            //     ctx.fillStyle = "#fff";
-            //     ctx.font = `${readoutFontSize} ${font}`;
-            //     ctx.fillText(`${speed.toFixed(0)}`, centerX + readoutOffsetX, centerY + readoutOffsetY);
+            ctx.fillStyle = readoutFontColor;
+            ctx.font = `${readoutFontSize} ${readoutFont}`;
+            ctx.fillText(`${speed.toFixed(0)}`, centerX + readout2OffsetX, centerY + readout2OffsetY);
+
+            // === SPEED DIGITAL BOX ===
+            ctx.save();
+            ctx.shadowColor = readoutShadow; // orange glow
+            ctx.shadowBlur = 15;
+
+            const speedText = `${speed.toFixed(0)}`;
+            ctx.font = `${readoutFontSize} ${readoutFont}`;
+            // const speedMetrics = ctx.measureText(speedText);
+
+            const speedBoxWidth = padding * 1.05;
+            const speedBoxHeight = parseInt(readoutFontSize) * 25;
+
+            const speedBoxX = centerX + readout2OffsetX - speedBoxWidth / 2;
+            const speedBoxY = centerY + readout2OffsetY - speedBoxHeight / 1.6;
+
+            // Draw box
+            ctx.fillStyle = readoutBackgroundColor;
+            ctx.fillRect(speedBoxX, speedBoxY, speedBoxWidth, speedBoxHeight);
+
+            // Draw text
+            ctx.fillStyle = readoutFontColor;
+            ctx.shadowBlur = 0;
+            ctx.fillText(speedText, centerX + readout2OffsetX, centerY + readout2OffsetY);
+
+            ctx.restore();
+
         };
 
         // Smooth animation loop
         const animate = () => {
-            needleValue.current += (speed - needleValue.current) * 0.1;
+            needleValue.current += (value - needleValue.current) * 0.1;
             drawGauge();
             requestRef.current = requestAnimationFrame(animate);
         };
@@ -202,7 +291,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
         return () => {
             cancelAnimationFrame(requestRef.current!);
         };
-    }, [speed]);
+    }, [value]);
 
     return (
         <canvas
