@@ -1,8 +1,7 @@
 import React, { useState } from 'react';
-import gasPedalImage from '/images/gasPedal.png';
-import brakePedalImage from '/images/brakePedal.png'
 import { useStore } from '../store';
 import socket from '../socket';
+import gear from '/images/gear-stick.svg';
 function Pedals(): JSX.Element {
   // const [gasPedal, setGasPedal] = useState(0);
   // const [brakePedal, setBrakePedal] = useState(0);
@@ -53,6 +52,26 @@ function Pedals(): JSX.Element {
   return (
     <div className="Pedals">
       <div className='split'>
+        <button
+          style={{ backgroundImage: `url(${gear})` }}
+          onContextMenu={(e) => e.preventDefault()}
+          className={`backward pedal ${controls.backward ? 'pressed' : ''}`}
+          onPointerDown={() => {
+            const nextControls = { ...controls, backward: true };
+            setControls(nextControls);
+            socket.emit('controls', { ...nextControls });
+          }}
+          onPointerUp={() => {
+            const nextControls = { ...controls, backward: false };
+            setControls(nextControls);
+            socket.emit('controls', { ...nextControls });
+          }}
+          onPointerLeave={() => {
+            const nextControls = { ...controls, backward: false };
+            setControls(nextControls);
+            socket.emit('controls', { ...nextControls });
+          }}
+        />
         <button
           onContextMenu={(e) => e.preventDefault()}
           className={`pedal ${controls.brake ? 'pressed' : ''}`}

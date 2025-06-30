@@ -348,6 +348,14 @@ button,
   background-size: contain;
 }
 
+.backward {
+  height: 65px;
+  width: 65px;
+  /* background: url(/images/brakePedal.png) no-repeat; */
+  background-size: 110%;
+
+}
+
 /* --------------- Steering --------------- */
 
 .Steering {
@@ -407,13 +415,14 @@ button,
   /* position: absolute;
   top: 34%;
   right: 0; */
-  margin: 5dvh 0;
+  margin: 5dvh 2dvw;
+
 }
 
 .row {
   display: flex;
   align-items: center;
-  justify-content: center;
+  justify-content: end;
 }
 
 .control {
