@@ -407,7 +407,7 @@ button,
   /* position: absolute;
   top: 34%;
   right: 0; */
-  margin: 0dvh 0;
+  margin: 5dvh 0;
 }
 
 .row {
@@ -920,11 +920,11 @@ button {
   /* optional, if it's display only */
 }
 
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .dashboard {
-    transform: translateX(-50%) scale(0.85);
+    transform: scale(0.85);
   }
-}
+} */
 
 .dash-top {
   display: flex;
