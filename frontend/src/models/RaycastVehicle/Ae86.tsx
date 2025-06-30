@@ -233,7 +233,7 @@ export default forwardRef(function Ae86({ children }: { children: any }, ref: Re
 
         if (!isEditor && (camMode === 'FIRST_PERSON' || camMode === 'DEFAULT')) {
             if (camMode === 'FIRST_PERSON') {
-                v.set(0.3, .85, -.1);
+                v.set(0.29, .97, -.01);
             } else if (camMode === 'DEFAULT') {
                 v.set(0, 3, 6);
             }

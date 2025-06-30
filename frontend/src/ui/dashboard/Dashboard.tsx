@@ -31,13 +31,13 @@ export function Dashboard(): JSX.Element {
   return (
     <div className="dashboard">
       <div style={{
-        // position: 'absolute',
-        // width: `${size * 3}px`, // total width for all 3 clusters
-        // height: `${sizeBig}px`, // tallest cluster
         display: 'flex',
         flexDirection: 'row',
         alignItems: 'center',
-        justifyContent: 'center'
+        justifyContent: 'center',
+        flexWrap: 'nowrap',
+        maxWidth: '100vw',
+        overflow: 'hidden',
       }}>
         {/* Speedometer */}
         <div style={{
@@ -46,6 +46,7 @@ export function Dashboard(): JSX.Element {
           marginRight: `-${size * 0.15}px`, // overlap 10% into RPM
           width: size,
           height: size,
+          flexShrink: 1
         }}>
           <Speedometer speed={speed} scale={size} />
         </div>
@@ -56,6 +57,7 @@ export function Dashboard(): JSX.Element {
           position: 'relative',
           width: sizeBig,
           height: sizeBig,
+          flexShrink: 0
         }}>
           <Revolutions
             engineOn={engineOn}
@@ -72,7 +74,8 @@ export function Dashboard(): JSX.Element {
           width: size,
           height: size,
           position: 'relative',
-          marginLeft: `-${size * 0.15}px` // overlap 10% into RPM
+          marginLeft: `-${size * 0.15}px`, // overlap 10% into RPM
+          flexShrink: 1
         }}>
           <FuelTemp
             engineOn={engineOn}

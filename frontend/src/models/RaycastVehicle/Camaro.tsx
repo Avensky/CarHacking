@@ -325,7 +325,7 @@ export default forwardRef(function Camaro({ children }: { children: any }, ref: 
 
         if (!isEditor && (camMode === 'FIRST_PERSON' || camMode === 'DEFAULT')) {
             if (camMode === 'FIRST_PERSON') {
-                v.set(-0.35, .98, -.13);
+                v.set(-0.25, .98, -.1);
             } else if (camMode === 'DEFAULT') {
                 v.set(0, 3, 6);
             }

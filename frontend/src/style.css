@@ -913,11 +913,17 @@ button {
   position: absolute;
   top: 0%;
   /* adjust placement */
-  left: 50%;
-  transform: translateX(-50%);
+  right: 50%;
+  transform: translateX(50%);
   z-index: 2;
   pointer-events: none;
   /* optional, if it's display only */
+}
+
+@media (max-width: 768px) {
+  .dashboard {
+    transform: translateX(-50%) scale(0.85);
+  }
 }
 
 .dash-top {

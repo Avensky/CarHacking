@@ -178,6 +178,7 @@ export function App(): JSX.Element {
         <ToggledOrbitControls />
       </Canvas>
       <div className="ui">
+        <Dashboard />
         <div className='ui-center'>
           {screen === 'selection-screen' && (
             <SelectionUI
@@ -202,7 +203,6 @@ export function App(): JSX.Element {
 
         <div className='ui-right'>
           <div className='ui-top'>
-            {screen == 'game-screen' ? <Dashboard /> : <></>}
           </div>
           <div className='ui-bottom'>
             <ControlsPanel />
