@@ -65,7 +65,7 @@ export default function FuelGauge({ minTemp, maxTemp, temp, overheat, critical, 
     // Center dot
     const centerDotSize = 14;
     const centerDotShadowBlur = 10
-    const centerDotColorGlow = "rgba(255, 0, 0, 0.4)";
+    const centerDotColorGlow = "rgba(255, 0, 0, 1)";
     const centerDotColor = 'rgba(0, 0, 0, 0.85)'; // 70% transparent
 
     // fuel image

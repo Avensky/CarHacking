@@ -177,58 +177,55 @@ export function App(): JSX.Element {
 
         <ToggledOrbitControls />
       </Canvas>
+      <div className="ui">
+        <div className='ui-center'>
+          {screen === 'selection-screen' && (
+            <SelectionUI
+              handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
+              handleVehiclePrev={() => setVehicleIndex((prev) => (prev - 1 + vehicleOptions.length) % vehicleOptions.length)}
+              handleMapNext={() => setMapIndex((prev) => (prev + 1) % mapOptions.length)}
+              handleMapPrev={() => setMapIndex((prev) => (prev - 1 + mapOptions.length) % mapOptions.length)}
+              vehicleName={vehicleOptions[vehicleIndex].name}
+              mapName={mapOptions[mapIndex].name}
+              handleSpawn={() => {
+                const vehicle = vehicleOptions[vehicleIndex].type;
+                const map = mapOptions[mapIndex].type;
+                socket.emit('spawnPlayer', { vehicle, map });
+                store.set({ menu: false });// 👈 set menu mode
+              }}
+            />
+          )}
+        </div>
 
-      <div className='ui-center'>
-        {screen === 'selection-screen' && (
-          <SelectionUI
-            handleVehicleNext={() => setVehicleIndex((prev) => (prev + 1) % vehicleOptions.length)}
-            handleVehiclePrev={() => setVehicleIndex((prev) => (prev - 1 + vehicleOptions.length) % vehicleOptions.length)}
-            handleMapNext={() => setMapIndex((prev) => (prev + 1) % mapOptions.length)}
-            handleMapPrev={() => setMapIndex((prev) => (prev - 1 + mapOptions.length) % mapOptions.length)}
-            vehicleName={vehicleOptions[vehicleIndex].name}
-            mapName={mapOptions[mapIndex].name}
-            handleSpawn={() => {
-              const vehicle = vehicleOptions[vehicleIndex].type;
-              const map = mapOptions[mapIndex].type;
-              socket.emit('spawnPlayer', { vehicle, map });
-              store.set({ menu: false });// 👈 set menu mode
-            }}
-          />
-        )}
+
+
+
+        <div className='ui-right'>
+          <div className='ui-top'>
+            {screen == 'game-screen' ? <Dashboard /> : <></>}
+          </div>
+          <div className='ui-bottom'>
+            <ControlsPanel />
+            <Pedals />
+          </div>
+        </div>
+
+
+
+        <div className='ui-left'>
+          <div className='ui-top'>
+            {!menu && <button
+              style={{ background: 'transparent', fontSize: '2.5rem' }}
+              onClick={() => set({ menu: true })}
+            >⚙️</button>}
+          </div>
+          <div className='ui-bottom'>
+            <CommandLine cmdEvents={cmdEvents} />
+            <Steering />
+          </div>
+        </div>
       </div>
-
-
-
-
-      <div className='ui-right'>
-        <div className='ui-top'>
-          {screen == 'game-screen' ? <Dashboard /> : <></>}
-        </div>
-        <div className='ui-bottom'>
-          <ControlsPanel />
-          <Pedals />
-        </div>
-      </div>
-
-
-
-      <div className='ui-left'>
-        <div className='ui-top'>
-          {!menu && <button
-            style={{ background: 'transparent', fontSize: '1.9rem' }}
-            onClick={() => set({ menu: true })}
-          >⚙️</button>}
-        </div>
-        <div className='ui-bottom'>
-          <CommandLine cmdEvents={cmdEvents} />
-          <Steering />
-        </div>
-      </div>
-
-
-
-
-
+      <Help />
       <Menu
         onLeaveGame={() => {
           // 🧠 Persist in frontend store
@@ -257,7 +254,7 @@ export function App(): JSX.Element {
           getState().setScreen('selection-screen');
         }}
       />
-      <Help />
+
 
       <ToggledEditor />
       <HideMouse />

@@ -16,9 +16,12 @@ body,
 }
 
 canvas {
-  width: 100dvw;
-  height: 100dvh;
-  display: block;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 0;
 }
 
 * {
@@ -394,8 +397,8 @@ button,
 }
 
 .arrow.hold {
-  transform: scale(1.05);
-  animation: arrowGlow 1s infinite ease-in-out;
+  transform: scale(1.15);
+  /* animation: arrowGlow 1s infinite ease-in-out; */
 }
 
 
@@ -601,9 +604,8 @@ button,
 /* --------------- HELP --------------- */
 
 .help {
-  /* position: absolute; */
-  /* left: 0;
-  top: 0; */
+  position: fixed;
+  z-index: 1000;
 }
 
 .menu-popup-content {
@@ -908,47 +910,43 @@ button {
 }
 
 .dashboard {
-  /* position: absolute;
-  bottom: 0;
-  right: 0; */
-  box-sizing: border-box;
-  /* z-index: 2; */
-  user-select: none;
+  position: absolute;
+  top: 0%;
+  /* adjust placement */
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 2;
   pointer-events: none;
-  /* padding: 1lvh 1lvw; */
-  /* display: flex; */
-  /* flex-direction: row; */
-  /* justify-content: end; */
-  align-items: start;
-  height: 100%;
+  /* optional, if it's display only */
 }
 
 .dash-top {
   display: flex;
-  position: relative;
+  /* position: relative; */
 }
 
 .rpms {
-  position: relative;
+  /* position: relative; */
 }
 
-.gear {
+/* .gear {
   position: absolute;
   top: 80%;
   left: 50%;
   transform: translate(-50%, -50%);
   font-size: 1.6em;
-  /* font-weight: bold; */
+  font-weight: bold;
   color: white;
   pointer-events: none;
   font-family: squada-one;
-}
+} */
 
+/* 
 .dash-bottom {
   display: flex;
   align-items: end;
   flex-direction: column;
-}
+} */
 
 /* fuel and temp gauge */
 .misc {
@@ -1153,6 +1151,18 @@ button {
 
 
 /* UI */
+.ui {
+  position: absolute;
+  /* absolute to the parent container */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  /* only children can receive clicks if needed */
+  z-index: 2;
+}
+
 .ui-center {
   position: absolute;
   top: 0;
@@ -1190,9 +1200,7 @@ button {
   pointer-events: none;
 }
 
-.ui-bottom {
-  pointer-events: none;
-}
+
 
 .ui-left button,
 .ui-right button,

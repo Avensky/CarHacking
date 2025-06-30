@@ -32,19 +32,17 @@ export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: F
 
     <div
       style={{
-        position: 'relative',
+        position: 'absolute',
         width: size,
         height: size,
         borderRadius: '50%',
-        backgroundColor: 'rgba(0,0,0,0.6)',
-        // overflow: 'hidden',
+        backgroundColor: 'rgba(0,0,0,0.7)',
       }}>
       <div
         style={{
-          position: 'absolute',
+          position: 'relative',
           top: '3%', // shift up to stick to top
-          right: '10%',
-          // transform: 'translateX(-50%)',
+          right: '-18%',
         }}
       >
         <FuelGauge
@@ -56,10 +54,9 @@ export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: F
       </div>
       <div
         style={{
-          position: 'absolute',
-          bottom: '4%', // shift down to stick to bottom
-          right: '10%',
-          // transform: 'translateX(-50%)',
+          position: 'relative',
+          bottom: '-22%', // shift up to stick to top
+          right: '-18%',
         }}
       >
         <TempGauge

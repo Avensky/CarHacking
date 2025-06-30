@@ -35,7 +35,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
     // Arc attributes
     const backgroundOffset = 0;
     const backgroundSize = radius + backgroundOffset
-    const backgroundColor = "rgba(0, 0, 0, 0.6)"
+    const backgroundColor = "rgba(0, 0, 0, 0.7)"
     const arcColor = 'rgba(0, 0, 0, 0.5)';
     const arcLineWidth = 5;   // Arc line thickness
 
@@ -56,7 +56,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
     // Center dot
     const centerDotSize = 14;
     const centerDotShadowBlur = 10
-    const centerDotColorGlow = "rgba(255, 0, 0, 0.4)";
+    const centerDotColorGlow = "rgba(255, 0, 0, 1)";
     const centerDotColor = 'rgba(0, 0, 0, 0.85)'; // 70% transparent
 
     useEffect(() => {
@@ -208,7 +208,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
         <canvas
             ref={canvasRef}
             style={{
-                display: "block",
+                // display: "block",
                 width: `${scale}px`,
                 height: `${scale}px`,
             }}

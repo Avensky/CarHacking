@@ -21,7 +21,6 @@ function Steering(): JSX.Element {
                     style={{ backgroundImage: `url(${left})` }}
                     onContextMenu={(e) => e.preventDefault()}
                     className={`left arrow ${controls.left ? 'hold' : ''}`}
-                    // style={{ backgroundImage: `url(${brakePedalImage})` }}
                     onClick={() => animateButton('leftArrow')}
                     onPointerDown={() => {
                         const nextControls = { ...controls, left: true };
@@ -47,7 +46,6 @@ function Steering(): JSX.Element {
                     onContextMenu={(e) => e.preventDefault()}
                     className={`right arrow ${controls.right ? 'hold' : ''}`}
                     onClick={() => animateButton('rightArrow')}
-                    //   style={{ backgroundImage: `url(${gasPedalImage})` }}
                     onPointerDown={() => {
                         const nextControls = { ...controls, right: true };
                         setControls(nextControls);
