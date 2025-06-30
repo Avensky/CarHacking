@@ -51,6 +51,11 @@
   window.addEventListener('resize', checkOrientation);
   window.addEventListener('load', checkOrientation);
 </script>
+<script>
+  document.addEventListener('gesturestart', function (e) {
+    e.preventDefault();
+  });
+</script>
 
 <body>
   <div id="rotate-warning" style="
