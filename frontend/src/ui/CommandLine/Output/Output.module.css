@@ -4,7 +4,6 @@
     flex-direction: column;
     justify-content: flex-end;
     height: 40dvh;
-    pointer-events: none;
     user-select: none;
     font-family: monospace;
     padding: 4px 4px 0 4px;
@@ -13,10 +12,11 @@
     border-top: 1px solid rgba(255, 255, 255, 0.2);
     overflow: hidden;
     /* user-select: all !important; */
-    pointer-events: auto;
+    /* pointer-events: auto; */
     /* ✅ allow scroll & hover inside log */
     user-select: text;
     /* ✅ allow selecting text in the output */
+    touch-action: pan-y;
 }
 
 .Messages {

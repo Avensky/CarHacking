@@ -11,7 +11,6 @@ interface RpmsProps {
 
 export default function Revolutions({ speed, value, gear, scale, engineOn }: RpmsProps) {
 
-
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const requestRef = useRef<number>();
 

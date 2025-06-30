@@ -4,9 +4,10 @@ interface OutputProps {
   events: any[];
   paused: boolean;
   logs: any[];
+  cli: boolean;  // ✅ new prop!
 }
 
-export default function Output({ events, paused, logs }: OutputProps): JSX.Element {
+export default function Output({ events, paused, logs, cli }: OutputProps): JSX.Element {
   const logEndRef = useRef<HTMLDivElement | null>(null);
 
 
@@ -20,7 +21,10 @@ export default function Output({ events, paused, logs }: OutputProps): JSX.Eleme
   useEffect(scrollToBottom, [logs]);
 
   return (
-    <div className={styles.Log}>
+    <div style={{
+      // pointerEvents: cli ? 'auto' : 'none',
+    }}
+      className={styles.Log}>
       <div className={styles.Messages}>
         {logs.map((e: any, i: Key) => {
           let className = styles.Event;

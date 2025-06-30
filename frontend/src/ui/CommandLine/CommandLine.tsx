@@ -25,6 +25,9 @@ export default function CommandLine({ cmdEvents }: UIProps): JSX.Element {
 
   return (
     <div
+      style={{
+        pointerEvents: cli ? 'auto' : 'none',
+      }}
       className={`command-line popup-left ${cli ? 'open' : ''}`}
     >
       <div className="command">
@@ -53,7 +56,7 @@ export default function CommandLine({ cmdEvents }: UIProps): JSX.Element {
           </div>
         </div>
       </div>
-      <Output paused={paused} logs={logs} events={cmdEvents} />
+      <Output paused={paused} logs={logs} events={cmdEvents} cli={cli} />
       <Input clearInputFlag={clearInputFlag} setClearInputFlag={setClearInputFlag} />
     </div>
   )

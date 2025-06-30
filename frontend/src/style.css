@@ -1154,6 +1154,7 @@ button {
   padding: .25lvh 1lvw;
   display: flex;
   flex-direction: column;
+  /* pointer-events: none; */
   /* user-select: all !important; */
   /* touch-action: manipulation !important; */
   /* justify-content: end; */
@@ -1208,6 +1209,7 @@ button {
   opacity: 0;
   transition: all 0.3s ease-in-out;
   transform: translateX(-50%);
+  /* pointer-events: none; */
 }
 
 .popup-left.open {
@@ -1227,6 +1229,7 @@ button {
   /* flex-direction: column; */
   align-items: end;
   justify-content: center;
+  pointer-events: none;
 }
 
 .ui-left {
@@ -1237,6 +1240,7 @@ button {
   height: 100dvh;
   width: 25dvw;
   justify-content: space-between;
+  pointer-events: none;
 }
 
 .ui-right {
@@ -1249,4 +1253,16 @@ button {
   width: 25dvw;
   justify-content: space-between;
   align-items: end;
+  pointer-events: none;
+}
+
+.ui-bottom {
+  pointer-events: none;
+}
+
+.ui-left button,
+.ui-right button,
+.ui-center button,
+.ui-bottom button {
+  pointer-events: auto;
 }
