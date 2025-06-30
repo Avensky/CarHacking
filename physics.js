@@ -527,14 +527,14 @@ function stepWorld(controlMap = {}) {
       const prevGear = state.gear - 1;
 
       // const upSpeed = config.shiftUpSpeeds[state.gear] || Infinity;
-      const downSpeed = config.shiftDownSpeeds[state.gear] || 0;
+      const downSpeed = config.shiftDownSpeeds[state.gear];
 
       const shouldUpshift = nextGear < config.gearRatios.length && (rpm > shiftUpRpm);
       // (rpm > config.shiftUpRpm || speed > upSpeed);
 
       const shouldDownshift =
-        prevGear > 0 &&
-        (rpm < shiftDownRpm || speed < downSpeed);
+        prevGear >= 0 &&
+        (rpm < shiftDownRpm && speed < downSpeed);
 
       if (shouldUpshift) {
         console.log(`Upshifting ${id}: ${state.gear} → ${nextGear}`);

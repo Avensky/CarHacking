@@ -35,7 +35,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
     // Arc attributes
     const backgroundOffset = 0;
     const backgroundSize = radius + backgroundOffset
-    const backgroundColor = "rgba(0, 0, 0, 0.5)"
+    const backgroundColor = "rgba(0, 0, 0, 0.6)"
     const arcColor = 'rgba(0, 0, 0, 0.5)';
     const arcLineWidth = 5;   // Arc line thickness
 

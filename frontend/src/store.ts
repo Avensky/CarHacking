@@ -136,7 +136,7 @@ export const booleans = {
   editor: false,
   help: false,
   menu: false,
-  cli: true,
+  cli: false,
   map: true,
   pickcolor: false,
   ready: false,

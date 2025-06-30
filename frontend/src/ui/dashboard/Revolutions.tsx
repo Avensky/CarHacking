@@ -47,7 +47,7 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
     // Arc attributes
     const backgroundOffset = 0;
     const backgroundSize = radius + backgroundOffset
-    const backgroundColor = "rgba(0, 0, 0, 0.5)"
+    const backgroundColor = "rgba(0, 0, 0, 0.6)"
     const arcColor = 'rgba(0, 0, 0, .8)';
     const arcLineWidth = 1;   // Arc line thickness
 
@@ -97,12 +97,12 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
             ctx.clearRect(0, 0, size, size);
 
             // Background circle
-            ctx.save();
+            // ctx.save();
             ctx.beginPath();
             ctx.arc(centerX, centerY, backgroundSize, 0, 2 * Math.PI);
             ctx.fillStyle = backgroundColor;
             ctx.fill();
-            ctx.restore();
+            // ctx.restore();
 
             // RPMs white background arc
             ctx.beginPath();
@@ -112,7 +112,7 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
             ctx.stroke();
 
 
-            // Arc background
+            // Arc outline
             ctx.beginPath();
             ctx.lineWidth = arcLineWidth; // tick width
             ctx.strokeStyle = arcColor;
@@ -157,7 +157,7 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
                 ctx.stroke();
 
                 if (value % majorStep === 0) {
-                    ctx.fillStyle = value >= 7.5 ? 'rgba(139, 0, 0, 1)' : labelColor;
+                    // ctx.fillStyle = value >= 7.5 ? 'rgba(139, 0, 0, 1)' : labelColor;
                     const labelX = centerX + (radius + labelOffset) * Math.cos(angle);
                     const labelY = centerY + (radius + labelOffset) * Math.sin(angle);
                     ctx.fillText(value.toFixed(0), labelX, labelY);
@@ -291,7 +291,7 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
         return () => {
             cancelAnimationFrame(requestRef.current!);
         };
-    }, [value]);
+    }, [value, engineOn]);
 
     return (
         <canvas

@@ -15,9 +15,10 @@ interface FuelTempProps {
   temp: number // Expect temp as a number
   fuelCapacity: number
   size: number
+  engineOn: boolean
 }
 // export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
-export function FuelTemp({ fuel, temp, fuelCapacity, size }: FuelTempProps): JSX.Element {
+export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: FuelTempProps): JSX.Element {
   // console.log('Fuel', fuel)
   // console.log('FuelCapacity', fuelCapacity)
 
@@ -29,111 +30,48 @@ export function FuelTemp({ fuel, temp, fuelCapacity, size }: FuelTempProps): JSX
   // const clampedTemp = Math.max(100, Math.min(280, safeTemp));
   return (
 
-    <div style={{ display: 'flex', gap: '10px' }}>
-      <FuelGauge fuel={fuel} fuelCapacity={fuelCapacity} size={size} />
-      <TempGauge temp={temp} size={size} />
+    <div
+      style={{
+        position: 'relative',
+        width: size,
+        height: size,
+        borderRadius: '50%',
+        backgroundColor: 'rgba(0,0,0,0.6)',
+        // overflow: 'hidden',
+      }}>
+      <div
+        style={{
+          position: 'absolute',
+          top: '3%', // shift up to stick to top
+          right: '10%',
+          // transform: 'translateX(-50%)',
+        }}
+      >
+        <FuelGauge
+          fuel={fuel}
+          fuelCapacity={fuelCapacity}
+          scale={size * .75}
+          engineOn={engineOn}
+        />
+      </div>
+      <div
+        style={{
+          position: 'absolute',
+          bottom: '4%', // shift down to stick to bottom
+          right: '10%',
+          // transform: 'translateX(-50%)',
+        }}
+      >
+        <TempGauge
+          temp={temp}
+          minTemp={160}
+          maxTemp={250}
+          overheat={240}
+          critical={260}
+          scale={size * .75}
+          engineOn={engineOn}
+        />
+      </div>
     </div>
-
-    // <div className="misc">
-    //   <div className="fuel">
-    //     <Speedometer
-    //       value={clampedFuel}
-    //       width={100}
-    //       height={100}
-    //       min={-fuelCapacity}
-    //       max={0}
-    //       angle={170}
-    //       rotation={275}
-    //     >
-    //       <Background
-    //         // rotation={360}
-    //         angle={360}
-    //       />
-    //       {/* <Background rotation={90} angle={180} /> */}
-    //       <Arc arcWidth={4} />
-    //       <Needle
-    //         baseOffset={8}
-    //         baseWidth={1}
-    //         circleRadius={5}
-    //         circleColor="rgba(0, 0, 0, 0.60)"
-    //         color="rgba(110, 6, 6, 1)"
-    //       />
-    //       <DangerPath arcWidth={2} offset={0} color="rgba(110, 6, 6, 1)" />
-    //       <Marks step={fuelCapacity / 4} fontSize={14}>
-    //         {(mark, i) => (
-    //           <g key={i}>
-    //             (
-    //             <line
-    //               {...mark.coordinates}
-    //               stroke="white"
-    //             // strokeOpacity={1}
-    //             />
-    //             {i === 0 ? (
-    //               <text
-    //                 {...mark.textProps}
-    //                 textAnchor="middle"
-    //                 alignmentBaseline="middle"
-    //                 fontSize={16}
-    //                 // opacity={0.6}
-    //                 fill="white"
-    //               >
-    //                 {'F'}
-    //               </text>
-    //             ) : null}
-    //             {/* {(i === 2) ? < text
-    //                                 {...mark.textProps}
-    //                                 textAnchor="middle"
-    //                                 alignmentBaseline="middle"
-    //                                 fontSize={16}
-    //                                 // opacity={0.6}
-    //                                 fill="white"
-    //                             >
-    //                                 <FontAwesomeIcon icon="fa-solid fa-heart" />
-    //                             </text> : null} */}
-    //             {i === 4 ? (
-    //               <text
-    //                 {...mark.textProps}
-    //                 textAnchor="middle"
-    //                 alignmentBaseline="middle"
-    //                 fontSize={16}
-    //                 // opacity={0.6}
-    //                 fill="white"
-    //               >
-    //                 {'E'}
-    //               </text>
-    //             ) : null}
-    //             )
-    //           </g>
-    //         )}
-    //       </Marks>
-    //     </Speedometer>
-    //   </div>
-    //   <div className="temp">
-    //     <Speedometer
-    //       value={clampedTemp}
-    //       width={100}
-    //       height={100}
-    //       min={100}
-    //       max={280}
-    //       angle={180}
-    //       rotation={90}
-    //     >
-    //       {/* <Background
-    //                     angle={180}
-    //                 rotation={180}
-    //                 /> */}
-    //       <Arc arcWidth={4} />
-    //       <Needle
-    //         baseOffset={8}
-    //         baseWidth={1}
-    //         circleRadius={5}
-    //         circleColor="rgba(0, 0, 0, 0.60)"
-    //         color="rgba(110, 6, 6, 1)"
-    //       />
-    //       <DangerPath arcWidth={2} offset={0} color="rgba(110, 6, 6, 1)" />
-    //       <Marks step={45} fontSize={11} />
-    //     </Speedometer>
-    //   </div>
-    // </div>
   )
 }
