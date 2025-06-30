@@ -4,8 +4,8 @@ body,
 #root {
   margin: 0;
   padding: 0;
-  width: 100dvw;
-  height: 100dvh;
+  width: 100vw;
+  height: 100svh;
   /* height: 100vh; */
   position: fixed;
   overflow: hidden;
@@ -19,8 +19,8 @@ canvas {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100svh;
   z-index: 0;
 }
 
@@ -49,146 +49,6 @@ button,
   -webkit-user-select: none;
   -webkit-touch-callout: none;
   -webkit-tap-highlight-color: transparent;
-}
-
-.clock {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-weight: 200;
-  font-size: 5em;
-  font-variant-numeric: tabular-nums;
-  letter-spacing: -5px;
-}
-
-.checkpoint {
-  position: absolute;
-  top: 28%;
-  left: 50%;
-  font-weight: 500;
-  font-size: 1em;
-  font-variant-numeric: tabular-nums;
-  width: 200px;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.checkpoint .green {
-  color: green;
-}
-
-.checkpoint .red {
-  color: red;
-}
-
-/* --------------- AUTH --------------- */
-
-.auth-providers {
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-}
-
-.auth-provider {
-  font-size: 0.7em;
-  border: 1px solid transparent;
-  border-bottom: 3px solid #a0a0a0;
-  border-radius: 3px;
-  padding: 8px 12px;
-  background: white;
-  color: black;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  margin-bottom: 10px;
-  width: 200px;
-  height: 45px;
-}
-
-.auth-provider:hover {
-  border-bottom: 1px solid #a0a0a0;
-}
-
-.auth-provider svg {
-  width: 24px;
-  margin-right: 10px;
-}
-
-.auth-header {
-  color: #b0b0b0;
-  font-weight: 600;
-  font-size: 1.1em;
-  text-align: center;
-}
-
-/* --------------- Leaderboard --------------- */
-
-.finished {
-  align-items: center;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-  text-align: center;
-  background: #101010;
-  bottom: 0;
-  position: absolute;
-  width: 100vw;
-  z-index: 10;
-}
-
-.finished-header {
-  max-height: 120px;
-}
-
-.finished-leaderboard {
-  flex: 1;
-  overflow-y: scroll;
-}
-
-.finished-auth {
-  height: auto;
-}
-
-.finished-restart {
-  align-items: center;
-  display: flex;
-  height: 60px;
-}
-
-.leaderboard-name img {
-  position: relative;
-  right: 2px;
-  margin-right: 2px;
-}
-
-.leaderboard-bottom li {
-  margin-bottom: 10px;
-  text-align: center;
-  counter-increment: listCounter;
-}
-
-.leaderboard b {
-  margin-right: 5px;
-}
-
-.leaderboard li {
-  margin-bottom: 10px;
-  text-align: center;
-  counter-increment: listCounter;
-  justify-content: space-between;
-}
-
-.leaderboard-bottom {
-  list-style: none;
-  padding: 0;
-  margin-top: 20px;
-  counter-reset: listCounter;
-  max-height: auto;
-  overflow: auto;
 }
 
 /* --------------- COLORPICKER --------------- */
