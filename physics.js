@@ -1,43 +1,8 @@
-const { Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
+const { Box, Body, Vec3, RaycastVehicle, Cylinder } = require('cannon-es');
 const getVehicleConfig = require('./utils/vehicleConfigs');
 const { updateEngineState, updateFuelState, updateEngineTemp } = require('./physics/engine.js');
-
-const { world, vehicles, gearboxState, fuelState } = require('./physics/state.js');
-
-// Create a new material for the ground (optional)
-const groundMaterial = new Material('groundMaterial');
-
-// Create the ground plane
-const groundShape = new Plane();
-const groundBody = new Body({
-  mass: 0, // static body, doesn't move
-  material: groundMaterial,
-});
-
-// Add the plane shape to the body
-groundBody.addShape(groundShape);
-
-// Rotate the plane so it lies flat along the y-axis
-groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-groundBody.position.set(0, 0, 0);
-world.addBody(groundBody);
-
-// Define interactions between wheels and ground
-// Wheel Ground
-const friction = 0.6
-const restitution = 0
-const contactEquationStiffness = 1e6
-const contactEquationRelaxation = 3
-
-const wheelMaterial = new Material('wheel')
-const wheel_ground = new ContactMaterial(wheelMaterial, groundMaterial, {
-  friction: friction,
-  restitution: restitution,
-  contactEquationStiffness: contactEquationStiffness,
-  contactEquationRelaxation: contactEquationRelaxation,
-})
-world.addContactMaterial(wheel_ground)
-
+const { vehicles, gearboxState, fuelState } = require('./physics/state.js');
+const { world, wheelMaterial } = require('./physics/world');
 // state
 const steeringState = {}; // key: id, value: current steer angle
 const brakeState = {}; // key: id, value: current brake force
@@ -371,19 +336,7 @@ function stepWorld(controlMap = {}) {
       shiftDownRpm
     } = config;
 
-    // const chassis = {
-    //   position: { ...chassisBody.position },
-    //   quaternion: { ...chassisBody.quaternion },
-    // };
-
-    // const wheelInfos = vehicle.wheelInfos.map(w => ({
-    //   position: { ...w.worldTransform.position },
-    //   quaternion: { ...w.worldTransform.quaternion },
-    // }));
-
     const speed = chassisBody.velocity.length();
-    // const fuel = fuelState[id];
-
 
     // Turn on first gear when controls move forward
     // if (state.engineOn && state.gear === 0 && (control.forward || control.backward) && (fuelState[id].fuel !== 0)) {

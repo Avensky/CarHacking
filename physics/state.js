@@ -1,9 +1,6 @@
 // physics/state.js
 
-const { World } = require('cannon-es');
-
-const world = new World();
-world.gravity.set(0, -9.82, 0);
+const { world } = require('./world');
 
 const gearboxState = {};
 const fuelState = {};
