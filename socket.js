@@ -1,5 +1,6 @@
 // socket.js
-const { createVehicle, stepWorld, updateVehicleControls } = require('./physics');
+const { stepWorld, updateVehicleControls } = require('./physics');
+const { createVehicle } = require('./physics/vehicles');
 const getVehicleConfig = require('./utils/vehicleConfigs');
 
 // Connect to Socketcan on Production (Linux)

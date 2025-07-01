@@ -3,128 +3,127 @@ const getVehicleConfig = require('./utils/vehicleConfigs');
 const { updateEngineState, updateFuelState, updateEngineTemp } = require('./physics/engine.js');
 const { vehicles, gearboxState, fuelState } = require('./physics/state.js');
 const { world, wheelMaterial } = require('./physics/world');
+const { createVehicle } = require('./physics/vehicles');
 // state
 const steeringState = {}; // key: id, value: current steer angle
 const brakeState = {}; // key: id, value: current brake force
 const snapshots = {};
 
-// Wheel Config
-function createVehicle(id, type) {
-  const config = getVehicleConfig(type);
 
-  gearboxState[id] = {
-    gear: 0,
-    rpm: 0,
-    clutchEngaged: false,
-    engineOn: false,
-    engineStart: false,
-    engineStartTime: 0,
-    engineShuttingDown: false,
-    lastShiftTime: 0,
-    _prevGear: 0,
-    clutchSlip: 0, // 0 = fully disengaged, 1 = fully locked
-    justDownshifted: false,
-    engineTemp: config.engineTemp.min,
-    overheating: false,
-    cooldownStartTime: null,
-    lastUpdate: performance.now(), // optional
-  };
-  steeringState[id] = 0; // Initialize steering angle
-  brakeState[id] = 0;
-  fuelState[id] = {
-    fuel: config.fuelCapacity,
-  };
+// {
+//   const config = getVehicleConfig(type);
 
-  console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
+//   gearboxState[id] = {
+//     gear: 0,
+//     rpm: 0,
+//     clutchEngaged: false,
+//     engineOn: false,
+//     engineStart: false,
+//     engineStartTime: 0,
+//     engineShuttingDown: false,
+//     lastShiftTime: 0,
+//     _prevGear: 0,
+//     clutchSlip: 0, // 0 = fully disengaged, 1 = fully locked
+//     justDownshifted: false,
+//     engineTemp: config.engineTemp.min,
+//     overheating: false,
+//     cooldownStartTime: null,
+//     lastUpdate: performance.now(), // optional
+//   };
+//   steeringState[id] = 0; // Initialize steering angle
+//   brakeState[id] = 0;
+//   fuelState[id] = { fuel: config.fuelCapacity, };
 
-  const wheelOptions = {
-    radius: config.radius,
-    directionLocal: config.directionLocal, // Down
-    suspensionStiffness: config.suspensionStiffness,
-    suspensionRestLength: config.suspensionRestLength,
-    frictionSlip: config.frictionSlip,
-    dampingRelaxation: config.dampingRelaxation,       // resistance during compression
-    dampingCompression: config.dampingCompression,       // resistance on rebound
-    maxSuspensionForce: config.maxSuspensionForce,
-    maxSuspensionTravel: config.maxSuspensionTravel,
-    rollInfluence: config.rollInfluence,
-    axleLocal: config.axleLocal, // Left
-    chassisConnectionPointLocal: config.chassisConnectionPointLocal, // set below
-    isFrontWheel: config.isFrontWheel
-  }
+//   console.log(`Created ${id}: gear=${gearboxState[id].gear}, rpm=${gearboxState[id].rpm}, clutch=${gearboxState[id].clutchSlip}`);
+
+//   const wheelOptions = {
+//     radius: config.radius,
+//     directionLocal: config.directionLocal, // Down
+//     suspensionStiffness: config.suspensionStiffness,
+//     suspensionRestLength: config.suspensionRestLength,
+//     frictionSlip: config.frictionSlip,
+//     dampingRelaxation: config.dampingRelaxation,       // resistance during compression
+//     dampingCompression: config.dampingCompression,       // resistance on rebound
+//     maxSuspensionForce: config.maxSuspensionForce,
+//     maxSuspensionTravel: config.maxSuspensionTravel,
+//     rollInfluence: config.rollInfluence,
+//     axleLocal: config.axleLocal, // Left
+//     chassisConnectionPointLocal: config.chassisConnectionPointLocal, // set below
+//     isFrontWheel: config.isFrontWheel
+//   }
 
 
-  const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
+//   const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
 
 
-  const { radius, suspensionRestLength, compressionFactor, height } = config;
-  const suspensionTravel = suspensionRestLength * compressionFactor;
-  const rideHeight = radius + suspensionTravel + height / 2;
+//   const { radius, suspensionRestLength, compressionFactor, height } = config;
+//   const suspensionTravel = suspensionRestLength * compressionFactor;
+//   const rideHeight = radius + suspensionTravel + height / 2;
 
-  const chassisBody = new Body({
-    mass: config.chassisMass,
-    position: new Vec3(0, rideHeight, 0),// spawn
-    rotation: config.rotation,
-    collisionFilterGroup: 1,
-    collisionFilterMask: 0,
-    // shape: chassisShape
-  });
+//   const chassisBody = new Body({
+//     mass: config.chassisMass,
+//     position: new Vec3(0, rideHeight, 0),// spawn
+//     rotation: config.rotation,
+//     collisionFilterGroup: 1,
+//     collisionFilterMask: 0,
+//     // shape: chassisShape
+//   });
 
-  const shapeOffset = new Vec3(0, -config.height / 2 + config.chassisOffsetY, 0); // <- new
-  chassisBody.addShape(chassisShape, shapeOffset);
+//   const shapeOffset = new Vec3(0, -config.height / 2 + config.chassisOffsetY, 0); // <- new
+//   chassisBody.addShape(chassisShape, shapeOffset);
 
-  const vehicle = new RaycastVehicle({
-    chassisBody,
-    indexRightAxis: config.indexRightAxis, // X
-    indexUpAxis: config.indexUpAxis,    // Y
-    indexForwardAxis: config.indexForwardAxis // Z
-  });
+//   const vehicle = new RaycastVehicle({
+//     chassisBody,
+//     indexRightAxis: config.indexRightAxis, // X
+//     indexUpAxis: config.indexUpAxis,    // Y
+//     indexForwardAxis: config.indexForwardAxis // Z
+//   });
 
-  const wheelHalfTrack = config.width / 2 - config.wheelHalfTrackOffset
-  const wheelBase = config.wheelBase
-  const chassisY = config.chassisOffsetY - config.height / 2; // y offset for wheel connection point
+//   const wheelHalfTrack = config.width / 2 - config.wheelHalfTrackOffset
+//   const wheelBase = config.wheelBase
+//   const chassisY = config.chassisOffsetY - config.height / 2; // y offset for wheel connection point
 
-  const frontLeft = {
-    ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
-  };
-  const frontRight = {
-    ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
-  };
-  const rearLeft = {
-    ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
-  };
-  const rearRight = {
-    ...wheelOptions,
-    chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
-  };
-  vehicle.addWheel(frontLeft);
-  vehicle.addWheel(frontRight);
-  vehicle.addWheel(rearLeft);
-  vehicle.addWheel(rearRight);
-  vehicle.addToWorld(world);
+//   const frontLeft = {
+//     ...wheelOptions,
+//     chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
+//   };
+//   const frontRight = {
+//     ...wheelOptions,
+//     chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, -wheelBase / 2), isFrontWheel: true
+//   };
+//   const rearLeft = {
+//     ...wheelOptions,
+//     chassisConnectionPointLocal: new Vec3(-wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
+//   };
+//   const rearRight = {
+//     ...wheelOptions,
+//     chassisConnectionPointLocal: new Vec3(+wheelHalfTrack, chassisY, +wheelBase / 2), isFrontWheel: false
+//   };
+//   vehicle.addWheel(frontLeft);
+//   vehicle.addWheel(frontRight);
+//   vehicle.addWheel(rearLeft);
+//   vehicle.addWheel(rearRight);
+//   vehicle.addToWorld(world);
 
-  vehicles[id] = { vehicle, chassisBody };
-  // Add the wheel bodies
-  const wheelBodies = []
-  vehicle.wheelInfos.forEach((wheel) => {
-    const cylinderShape = new Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20)
-    const wheelBody = new Body({
-      mass: 0,
-      material: wheelMaterial,
-    })
+//   vehicles[id] = { vehicle, chassisBody };
+//   // Add the wheel bodies
+//   const wheelBodies = []
+//   vehicle.wheelInfos.forEach((wheel) => {
+//     const cylinderShape = new Cylinder(wheel.radius, wheel.radius, wheel.radius / 2, 20)
+//     const wheelBody = new Body({
+//       mass: 0,
+//       material: wheelMaterial,
+//     })
 
-    wheelBody.type = Body.KINEMATIC
-    wheelBody.collisionFilterGroup = 0 // turn off collisions
-    // const wheelOrientation = new Quaternion().setFromEuler(0, 0, Math.PI / 2)
-    wheelBody.addShape(cylinderShape)
-    wheelBodies.push(wheelBody)
-    world.addBody(wheelBody)
-  })
-  return vehicle;
-}
+//     wheelBody.type = Body.KINEMATIC
+//     wheelBody.collisionFilterGroup = 0 // turn off collisions
+//     // const wheelOrientation = new Quaternion().setFromEuler(0, 0, Math.PI / 2)
+//     wheelBody.addShape(cylinderShape)
+//     wheelBodies.push(wheelBody)
+//     world.addBody(wheelBody)
+//   })
+//   return vehicle;
+// }
 
 function updateVehicleControls(id, control, controlMap) {
   const { vehicle } = vehicles[id] || {};
