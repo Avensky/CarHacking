@@ -1,6 +1,10 @@
 import { useEffect, useRef } from "react";
-
-export default function Speedometer({ speed, scale }: { speed: number, scale: number }) {
+interface SpeedometerProps {
+    speed: number
+    scale: number
+    maxSpeed: number
+}
+export default function Speedometer({ speed, scale, maxSpeed }: SpeedometerProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const requestRef = useRef<number>();
 
@@ -23,7 +27,7 @@ export default function Speedometer({ speed, scale }: { speed: number, scale: nu
 
     // Tick and Marks
     const tickColor = '#fff'; // Tick color
-    const maxSpeed = 160 // get from backend
+
     const tickCount = 8 // (maxSpeed/tickCount = increments) ie. 160/8 = 20
     const tickLineWidth = 3;  // Tick mark thickness
     const tickLineLength = 14; // tick Width

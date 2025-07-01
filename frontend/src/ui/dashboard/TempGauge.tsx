@@ -2,15 +2,14 @@ import { useEffect, useRef } from "react";
 
 interface FuelGaugeProps {
     temp: number;      // CAN bus temp value (e.g. 0 to 100)
-    minTemp: number;
-    maxTemp: number;
+    min: number;
     overheat: number;
     critical: number;
     scale: number;
     engineOn: boolean
 }
 
-export default function FuelGauge({ minTemp, maxTemp, temp, overheat, critical, scale, engineOn }: FuelGaugeProps) {
+export default function FuelGauge({ min, temp, overheat, critical, scale, engineOn }: FuelGaugeProps) {
     const canvasRef = useRef<HTMLCanvasElement>(null);
     const requestRef = useRef<number>();
     // Store a smooth interpolated needle value
@@ -42,9 +41,9 @@ export default function FuelGauge({ minTemp, maxTemp, temp, overheat, critical, 
     // const minorStep = mediumStep / 4;
 
     // Arc attributes
-    const backgroundOffset = 0;
-    const backgroundSize = radius + backgroundOffset
-    const backgroundColor = "rgba(0, 0, 0, 0.5)"
+    // const backgroundOffset = 0;
+    // const backgroundSize = radius + backgroundOffset
+    // const backgroundColor = "rgba(0, 0, 0, 0.5)"
     const arcColor = 'white';
     const arcLineWidth = 2;   // Arc line thickness
 
@@ -104,8 +103,8 @@ export default function FuelGauge({ minTemp, maxTemp, temp, overheat, critical, 
             ctx.textBaseline = "middle";
 
             // RED MARK OVERHEAT
-            const overheatRatio = (overheat - minTemp) / (critical - minTemp);
-            const criticalRatio = (critical - 3 - minTemp) / (critical - minTemp); // always 1
+            const overheatRatio = (overheat - min) / (critical - min);
+            const criticalRatio = (critical - 6 - min) / (critical - min); // always 1
 
             const overheatAngle = startAngle + (1 - criticalRatio) * (endAngle - startAngle);
             const criticalAngle = startAngle + (1 - overheatRatio) * (endAngle - startAngle);
@@ -153,7 +152,7 @@ export default function FuelGauge({ minTemp, maxTemp, temp, overheat, critical, 
             ctx.font = `${fontWeight} ${fontSize} ${font}`;
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
-            ctx.fillText("H", centerX + (radius + labelOffset) * Math.cos(startAngle), centerY + (radius) * Math.sin(startAngle));
+            ctx.fillText("H", centerX + (radius + labelOffset - 2) * Math.cos(startAngle), centerY + (radius) * Math.sin(startAngle));
             ctx.fillText("C", centerX + (radius) * Math.cos(endAngle), centerY + (radius + labelOffset) * Math.sin(endAngle));
 
             tempImg.onload = () => {

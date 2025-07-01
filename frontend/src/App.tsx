@@ -2,7 +2,7 @@
 import SelectionScreen from './components/SelectionScreen';
 import { Suspense, useRef, useState, useEffect } from 'react';
 import { DirectionalLight, Group, Layers, Mesh, Object3D } from 'three';
-import { getState, levelLayer, useStore, VehicleConfig } from './store'
+import { getState, levelLayer, PhysicsData, useStore, VehicleConfig } from './store'
 import { Sky, Environment, PerspectiveCamera, OrbitControls, Stats } from '@react-three/drei';
 import { Speed, Minimap, Intro, Help, Editor, PickColor } from './ui'
 import { HideMouse, Keyboard } from './controls';
@@ -13,10 +13,8 @@ import GameScene from "./components/GameScene"; // your main game view
 import SelectionUI from './components/SelectionUI';
 import { Canvas } from '@react-three/fiber';
 import Rtx from './models/environments/Rtx';
-
 import TimesSquare from './models/environments/TimesSquare';
 import Ae86 from './models/RaycastVehicle/Ae86';
-
 import Camaro from './models/RaycastVehicle/Camaro';
 import Tank from './models/RaycastVehicle/Tank';
 import { Cameras } from './effects';
@@ -30,11 +28,6 @@ import CommandLine from './ui/CommandLine/CommandLine';
 
 // Define the type of cmdEvents. For example, if they are objects:
 // type CmdEvent = string; // Replace with the actual structure if known
-interface PhysicsData {
-  position: THREE.Vector3,
-  angularVelocity: THREE.Vector3,
-  velocity: THREE.Vector3
-}
 
 export function App(): JSX.Element {
   window.addEventListener('gesturestart', (e) => {
@@ -88,6 +81,7 @@ export function App(): JSX.Element {
     function onDisconnect() {
       setIsConnected(false);
       console.log('Good bye, disconnecting...')
+      store.setScreen('selection-screen');
     }
 
     function onError(value: any) {

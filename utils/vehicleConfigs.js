@@ -35,7 +35,8 @@ const carConfig = {
     steer: 0.3,
     maxSteer: 0.5,
     maxBrake: 65,
-    maxSpeed: 60, // m/s ~134 m/h
+    maxSpeed: 50, // ~112 miles/hour
+    clusterSpeed: 120, // mph
     maxForce: 500,
     maxBrakeForce: 25,
     brakeLerpSpeed: 0.25, // Smoothing factor
@@ -50,18 +51,18 @@ const carConfig = {
     // shiftUpSpeeds:   [0, 7, 15, 25, 35, 45],// m/s
     shiftDownSpeeds: [0, .4, 8, 13, 18, 25, 30], // ~[0,1,15,30,45,60]mph
     finalDrive: 3.9,
-    idleRpm: 750,
-    maxRpm: 7200,
+    idleRpm: 850,
+    maxRpm: 7600,
     shiftUpRpm: 6500,
     shiftDownRpm: 2500,
 
     engineTemp: {
-        min: 160,           // °F when idle
-        max: 250,           // °F max safe temp
-        overheat: 240,      // °F begins overheating behavior
-        critical: 260,      // °F critical, engine shuts off
-        heatRate: 0.05,     // per tick when under throttle
-        coolRate: 0.03,     // per tick when idle
+        min: 68,            // °F Cold Ambient
+        normal: 185,        // °F Operating Range
+        overheat: 212,      // °F Begins Overheating Behavior
+        critical: 230,      // °F Sritical, Sngine Shut Off
+        heatRate: 0.036,    // Per Tick Heating // 0.036
+        coolRate: 0.018,    // Per Tick Cooling // 0.18
     },
 }
 

@@ -7,18 +7,19 @@
 //   // Indicator,
 //   DangerPath,
 // } from 'react-speedometer'
+import { VehicleConfig } from '../../store'
 import FuelGauge from './FuelGauge'
 import TempGauge from './TempGauge'
 
 interface FuelTempProps {
   fuel: number // Expect fuel as a number
   temp: number // Expect temp as a number
-  fuelCapacity: number
   size: number
   engineOn: boolean
+  vehicleConfig: VehicleConfig
 }
 // export function FuelTemp({ fuel, temp }: FuelTempProps): JSX.Element {
-export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: FuelTempProps): JSX.Element {
+export default function FuelTemp({ fuel, temp, size, engineOn, vehicleConfig }: FuelTempProps): JSX.Element {
   // console.log('Fuel', fuel)
   // console.log('FuelCapacity', fuelCapacity)
 
@@ -47,7 +48,7 @@ export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: F
       >
         <FuelGauge
           fuel={fuel}
-          fuelCapacity={fuelCapacity}
+          fuelCapacity={vehicleConfig.fuelCapacity}
           scale={size * .75}
           engineOn={engineOn}
         />
@@ -61,10 +62,9 @@ export default function FuelTemp({ fuel, temp, fuelCapacity, size, engineOn }: F
       >
         <TempGauge
           temp={temp}
-          minTemp={160}
-          maxTemp={250}
-          overheat={240}
-          critical={260}
+          min={vehicleConfig.engineTemp.min}
+          overheat={vehicleConfig.engineTemp.overheat}
+          critical={vehicleConfig.engineTemp.critical}
           scale={size * .75}
           engineOn={engineOn}
         />

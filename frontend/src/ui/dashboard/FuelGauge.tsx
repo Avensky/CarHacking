@@ -128,7 +128,7 @@ export default function FuelGauge({ fuel, fuelCapacity, scale, engineOn }: FuelG
             ctx.textAlign = "center";
             ctx.textBaseline = "middle";
             ctx.fillText("F", centerX + (radius) * Math.cos(startAngle), centerY + (radius + labelOffset) * Math.sin(startAngle));
-            ctx.fillText("E", centerX + (radius + labelOffset + 4) * Math.cos(endAngle), centerY + (radius) * Math.sin(endAngle));
+            ctx.fillText("E", centerX + (radius + labelOffset + 2) * Math.cos(endAngle), centerY + (radius) * Math.sin(endAngle));
 
             fuelPump.onload = () => {
                 drawGauge();

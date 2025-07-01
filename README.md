@@ -11,7 +11,7 @@ When the fuel gauge reaches 0, the simulation ends and all gauges are reset.
 
 ## 📁 Project Structure
 
-```
+```t
 CarHacking/
 ├── .github/actions       # Github actions
 ├── .github/workflows     # CICD yml files
@@ -145,7 +145,8 @@ Create a blank file named `ssh` (no extension) on the **boot** partition.
 ### Connect to Wi-Fi:
 Create a file called `wpa_supplicant.conf` (in boot partition):
 
-```country=US
+```bash
+country=US
 ctrl_interface=DIR=/var/run/wpa_supplicant GROUP=netdev
 update_config=1
 
@@ -170,10 +171,12 @@ Type your password and save key to your list of known hosts.
 🛠 First-Time Setup Commands
 Open config menu:
 
-```sudo raspi-config
+```bash
+  sudo raspi-config
 ```
 Update the system:
-```sudo apt update && sudo apt full-upgrade -y
+```bash
+  sudo apt update && sudo apt full-upgrade -y
 ```
 
 📝 Notes
@@ -186,11 +189,13 @@ Password: raspberry
 Use a good-quality SD card and power supply for stability
 
 ## Add Environment Variables
-```echo 'export NODE_ENV=production' >> ~/.profile
+```bash
+  echo 'export NODE_ENV=production' >> ~/.profile
 ```
 🔄 Apply it Immediately (without reboot):
 After adding it, run:
-```source ~/.profile
+```bash
+  source ~/.profile
 ```
 
 ## ✅ Install `nvm`
@@ -424,11 +429,12 @@ pm2 startup
 
 fixing pipeline errors
 
+```bash
 pm2 delete all
 pm2 unstartup
 pm2 startup
 pm2 save
-
+```
 
 NODE_ENV=production node var/www/CarHacking/_work/CarHacking/CarHacking/server.js 
 
@@ -474,9 +480,7 @@ Edit the NGINX site configuration:
 sudo nano /etc/nginx/sites-available/CarHacking
 ```
 
-Paste the following configuration (replace `<ipaddress>` with your Pi's IP):
-
-```nginx
+```t
 server {
   listen 80;
   listen [::]:80;
@@ -484,7 +488,7 @@ server {
   root /var/www/CarHacking/_work/CarHacking/CarHacking/frontend/dist;
   index index.html index.htm index.nginx-debian.html;
 
-  server_name <ipaddress>;
+  server_name _;
 
   location / {
     try_files $uri $uri/ =404;
@@ -511,6 +515,7 @@ server {
 }
 ```
 
+
 Enable the site and tweak NGINX settings:
 
 ```bash
@@ -520,15 +525,16 @@ sudo nano /etc/nginx/nginx.conf
 
 In the `http` block, ensure:
 
-```nginx
+```s
 server_names_hash_bucket_size 64;
 ```
 
 ---
 
-## 🔁 Test and Restart NGINX
+## 🔁 Remove Default, Test, and Restart NGINX
 
 ```bash
+sudo rm /etc/nginx/sites-enabled/default
 sudo nginx -t
 sudo systemctl restart nginx
 ```
@@ -546,24 +552,97 @@ sudo ip link set up vcan0
 
 ---
 
+## Set Up Environment Variables
+```bash
+  nano ~/.bashrc
+```
+
+## Add This to Bottom of File
+```s
+  export NODE_ENV = production
+  export PORT=5000
+  export IP=192.168.41.216
+  export Home_IP=192.168.1.175
+```
+
+## Load Environment Variables
+```bash
+  source ~/.bashrc
+```
+
 ## 🔄 Recovery After Restart / IP Change
 
-### 1. Restart GitHub Actions Runner
+## Create Startup Script to Account For Ip Change
+```bash
+sudo nano /usr/local/bin/carhacking-startup.sh
+```
 
+## Paste, Save & exit, 
+```t
+  #!/bin/bash
+
+  echo "➡️ Starting CarHacking service..."
+  cd /var/www/CarHacking
+  sudo ./svc.sh start
+
+  echo "➡️ Checking for vcan0..."
+  if ! ip link show vcan0 &> /dev/null; then
+    echo "➡️ vcan0 does not exist. Creating..."
+    sudo ip link add dev vcan0 type vcan
+    sudo ip link set up vcan0
+  else
+    echo "✅ vcan0 already exists."
+  fi
+```
+
+## make it executable:
+```bash
+  sudo chmod +x /usr/local/bin/carhacking-startup.sh
+```
+
+## Run it automatically on boot
+```bash
+sudo nano /etc/systemd/system/carhacking.service
+```
+
+## Copy Paste Exit
+```t
+  [Unit]
+  Description=CarHacking Auto Startup Script
+  After=network.target
+
+  [Service]
+  Type=oneshot
+  ExecStart=/usr/local/bin/carhacking-startup.sh
+  RemainAfterExit=true
+
+  [Install]
+  WantedBy=multi-user.target
+
+```
+
+## Reload, Enable, And Test
+```bash
+sudo systemctl daemon-reload
+sudo systemctl enable carhacking.service
+sudo systemctl start carhacking.service
+sudo systemctl status carhacking.service
+```
+
+# Manual Recovery From IP Change
+### 1. Restart GitHub Actions Runner
 ```bash
 cd /var/www/CarHacking
 sudo ./svc.sh start
 ```
 
 ### 2. Restart Virtual CAN Bus
-
 ```bash
 sudo ip link add dev vcan0 type vcan
 sudo ip link set up vcan0
 ```
 
 ### 3. Restart PM2 Server
-
 ```bash
 pm2 restart 0
 ```
@@ -591,7 +670,7 @@ sudo nano /etc/nginx/sites-available/CarHacking
 ```
 
 Update:
-```nginx
+```s
 server_name <new.ip.address>;
 ```
 
@@ -611,21 +690,21 @@ Contributions are welcome! If you have tools, scripts, or documentation to add:
 
 2. **Create a New Branch**:
 
-   ```bash
-   git checkout -b feature/your-feature-name
-   ```
+```bash
+  git checkout -b feature/your-feature-name
+```
 
 3. **Commit Your Changes**:
 
-   ```bash
-   git commit -m "Add your feature"
-   ```
+```bash
+  git commit -m "Add your feature"
+```
 
 4. **Push to Your Fork**:
 
-   ```bash
-   git push origin
-   ```
+```bash
+  git push origin
+```
 
 5. **Create a Pull Request**
 

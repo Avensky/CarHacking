@@ -1,8 +1,8 @@
-const { World, Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
+const { Body, Box, Vec3, RaycastVehicle, Material, Cylinder, ContactMaterial, Plane } = require('cannon-es');
 const getVehicleConfig = require('./utils/vehicleConfigs');
-// world
-const world = new World();
-world.gravity.set(0, -9.82, 0);
+const { updateEngineState, updateFuelState, updateEngineTemp } = require('./physics/engine.js');
+
+const { world, vehicles, gearboxState, fuelState } = require('./physics/state.js');
 
 // Create a new material for the ground (optional)
 const groundMaterial = new Material('groundMaterial');
@@ -19,12 +19,7 @@ groundBody.addShape(groundShape);
 
 // Rotate the plane so it lies flat along the y-axis
 groundBody.quaternion.setFromEuler(-Math.PI / 2, 0, 0);
-
-// const normal = new Vec3(0, 0, 1) // default normal of Plane
-// normal.applyQuaternion(groundBody.quaternion)
-// console.log("Ground normal in world space:", normal)
 groundBody.position.set(0, 0, 0);
-// Add the body to the world
 world.addBody(groundBody);
 
 // Define interactions between wheels and ground
@@ -45,11 +40,8 @@ world.addContactMaterial(wheel_ground)
 
 // state
 const steeringState = {}; // key: id, value: current steer angle
-const gearboxState = {};
 const brakeState = {}; // key: id, value: current brake force
 const snapshots = {};
-const fuelState = {}; // key: id, value: { fuel: number }
-const vehicles = {};// store all vehicles
 
 // Wheel Config
 function createVehicle(id, type) {
@@ -100,13 +92,13 @@ function createVehicle(id, type) {
   const chassisShape = new Box(new Vec3(config.width / 2, config.height / 2, config.length / 2))
 
 
-  // const { radius, suspensionRestLength, compressionFactor, height } = config;
-  // const suspensionTravel = suspensionRestLength * compressionFactor;
-  // const rideHeight = radius + suspensionTravel + height / 2;
+  const { radius, suspensionRestLength, compressionFactor, height } = config;
+  const suspensionTravel = suspensionRestLength * compressionFactor;
+  const rideHeight = radius + suspensionTravel + height / 2;
 
   const chassisBody = new Body({
     mass: config.chassisMass,
-    position: new Vec3(0, .25, 0),// spawn
+    position: new Vec3(0, rideHeight, 0),// spawn
     rotation: config.rotation,
     collisionFilterGroup: 1,
     collisionFilterMask: 0,
@@ -200,19 +192,37 @@ function updateVehicleControls(id, control, controlMap) {
   //   vehicle.applyEngineForce(0, 2);
   //   vehicle.applyEngineForce(0, 3);
   // }
+
   const temp = gearboxState[id].engineTemp;
-  const overheat = config.engineTemp.overheat;
-  const critical = config.engineTemp.critical;
+  // const overheat = config.engineTemp.overheat;
+  // const critical = config.engineTemp.critical;
 
   let powerMultiplier = 1.0;
 
-  if (temp >= critical) {
-    // console.log(`ENGINE BLOCKED: CRITICAL TEMPERATURE for ${id}`);
-    powerMultiplier = 0;
-  } else if (temp >= overheat) {
-    const t = (temp - overheat) / (critical - overheat);
-    powerMultiplier = 1 - 0.5 * t; // fades from 1.0 to 0.5
-    // console.log(`ENGINE POWER REDUCED: OVERHEAT for ${id}`);
+  // engine damp behavior
+  // if (temp >= critical) {
+  //   // console.log(`ENGINE BLOCKED: CRITICAL TEMPERATURE for ${id}`);
+  //   powerMultiplier = 0;
+  // } else if (temp >= overheat) {
+  //   const t = (temp - overheat) / (critical - overheat);
+  //   powerMultiplier = 1 - 0.5 * t; // fades from 1.0 to 0.5
+  //   // console.log(`ENGINE POWER REDUCED: OVERHEAT for ${id}`);
+  // }
+
+  // Engine overheating behavior
+  if (temp >= config.engineTemp.overheat) {
+    console.log(`ENGINE OVERHEATING for ${id}`);
+    const t = (temp - config.engineTemp.overheat) /
+      (config.engineTemp.critical - config.engineTemp.overheat);
+    powerMultiplier = 1 - 0.5 * t; // Fade power by up to 50%
+  } else {
+    powerMultiplier = 1.0;
+  }
+
+  if (temp >= config.engineTemp.critical) {
+    powerMultiplier = 0;  // shut off completely
+    state.engineShuttingDown = true;
+    console.log(`ENGINE CRITICAL: shutting down for ${id}`);
   }
 
   const adjustedForce = forwardForce * powerMultiplier;
@@ -278,10 +288,6 @@ function updateVehicleControls(id, control, controlMap) {
 // world.bodies.forEach(body => console.log(body.id, body.shapes, body.position))
 
 function resetVehicle(vehicle, controlMap) {
-  // const q = new Quaternion()
-  // q.setFromEuler(0, Math.PI / 2, 0)
-  // vehicle.chassisBody.quaternion.copy(q)
-
   // Reset chassis position & velocity
   vehicle.chassisBody.velocity.setZero();
   vehicle.chassisBody.angularVelocity.setZero();
@@ -324,7 +330,6 @@ function resetVehicle(vehicle, controlMap) {
     }
 
     // ✅ Reset control state
-
     if (controlMap[id]) {
       controlMap[id].engineOn = false;
       controlMap[id].reset = false;
@@ -339,25 +344,23 @@ function resetVehicle(vehicle, controlMap) {
 }
 
 
-
-
-
-
-
-
 function stepWorld(controlMap = {}) {
   world.step(1 / 60);
 
   // Update all vehicles
   for (const [id, { vehicle, chassisBody }] of Object.entries(vehicles)) {
-    // config
-    const control = controlMap[id] || {};
+
     const config = getVehicleConfig(vehicle.type);
     const state = gearboxState[id];
+    const control = controlMap[id] || {};
+    const now = Date.now();
 
-    // clamp gear between 0 and max
-    if (state.gear >= config.gearRatios.length) state.gear = 0;
-    if (state.gear < 0) state.gear = 0;
+    updateEngineState(id, state, config, control, chassisBody, now, fuelState[id]);
+    updateFuelState(id, state, config, control, fuelState[id]);
+    updateEngineTemp(id, state, config, control);
+    // updateClutch(id, state, control);
+
+    //-------------------------- OLD CODE ----------------------------//
 
     const {
       gearRatios,
@@ -368,95 +371,18 @@ function stepWorld(controlMap = {}) {
       shiftDownRpm
     } = config;
 
-    // const gearRatio = gearRatios[state.gear] ?? 1;
-    // const slipLerpSpeed = 0.1;
-    // const idleThrottle = 0.25; // when clutch disengaged, engineValue fallback
+    // const chassis = {
+    //   position: { ...chassisBody.position },
+    //   quaternion: { ...chassisBody.quaternion },
+    // };
 
-    // get physics data
-    const chassis = {
-      position: { ...chassisBody.position },
-      quaternion: { ...chassisBody.quaternion },
-    };
-
-    const wheelInfos = vehicle.wheelInfos.map(w => ({
-      position: { ...w.worldTransform.position },
-      quaternion: { ...w.worldTransform.quaternion },
-    }));
+    // const wheelInfos = vehicle.wheelInfos.map(w => ({
+    //   position: { ...w.worldTransform.position },
+    //   quaternion: { ...w.worldTransform.quaternion },
+    // }));
 
     const speed = chassisBody.velocity.length();
-    const fuel = fuelState[id];
-    const now = Date.now();
-
-
-
-
-
-    // Simulate engine crank
-    if (control.engineOn && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
-      // if (control.startEngine && !state.engineOn && !state.engineStarting && !state.engineShuttingDown) {
-      state.engineStarting = true;
-      state.engineStartTime = now;
-      state.rpm = 300; // cranking sound
-      console.log(`Engine cranking for ${id}`);
-    }
-
-
-
-    // Simulate engine starting with delay
-    if (state.engineStarting) {
-      const elapsed = now - state.engineStartTime;
-
-      // Animate cranking RPMs during startup
-      const crankPulse = Math.sin(now * 0.02 + id.length) * 150;
-      state.rpm = 300 + crankPulse;
-
-      if (elapsed > 1300) { // 1.3 second delay
-        if (fuel.fuel !== 0) {
-          state.engineOn = true; // turn the engine on
-          state.rpm = config.idleRpm;
-          console.log(`Engine turned on for ${id}`);
-        }
-        state.engineStarting = false;
-      }
-    }
-
-
-
-
-
-    // simulate idle rmps in neutral
-    if (state.gear === 0 && state.engineOn && (fuelState[id].fuel !== 0)) {
-      const fluctuation = Math.sin(now * 0.01 + id.length) * 50; // wiggle ±50 rpm
-      state.rpm = config.idleRpm + fluctuation;
-    }
-
-
-
-
-
-
-    // simulate engine shut off 
-    if (!control.engineOn) {
-      if (state.engineOn) {
-        // engine is being turned off
-        state.engineOn = false;
-        state.engineShuttingDown = true;
-        console.log(`Engine shutting down on for ${id}`);
-      }
-
-      if (state.engineShuttingDown) {
-        // decay rpm gradually
-        state.rpm = Math.max(0, state.rpm - 25); // reduce 50 rpm per frame (~3000rpm in 1 sec at 60fps)
-        if (state.rpm === 0) {
-          state.engineShuttingDown = false;
-          state.gear = 0; // ✅ RESET GEAR TO NEUTRAL
-          console.log(`Engine fully off, gear reset to 0 for ${id}`);
-        }
-      }
-    }
-
-
-
+    // const fuel = fuelState[id];
 
 
     // Turn on first gear when controls move forward
@@ -467,7 +393,6 @@ function stepWorld(controlMap = {}) {
       state._prevGear = 0;
       console.log(`Gear engaged to 1 for ${id}`);
     }
-
 
     const effectiveRatio = gearRatios[state.gear] * finalDrive;
     // simulate rpms while gears are engaged
@@ -504,24 +429,11 @@ function stepWorld(controlMap = {}) {
       }
     }
 
-
-    if (fuelState[id].fuel === 0) {
-      state.rpm -= (state.rpm) * 0.005;
-    }
-
-
-
-
-
-
-
-
-
     // Automatic gear shifting with hysteresis and rpm
     if (!state.lastShiftTime) state.lastShiftTime = 0;
     const timeSinceLastShift = now - state.lastShiftTime;
 
-    if (state.engineOn && state.gear > 0 && timeSinceLastShift > 1000) {
+    if (state.gear > 0 && timeSinceLastShift > 1000) {
       const rpm = state.rpm;
       const nextGear = state.gear + 1;
       const prevGear = state.gear - 1;
@@ -569,15 +481,6 @@ function stepWorld(controlMap = {}) {
       }
     }
 
-
-
-
-
-
-
-
-
-
     // Automatic clutch logic
     const isShifting = state._prevGear !== state.gear;
     const isTryingToLaunch = control.forward && speed < 1;
@@ -591,16 +494,6 @@ function stepWorld(controlMap = {}) {
       state.clutchEngaged = true;
       state.clutchSlip += (1.0 - state.clutchSlip) * 0.1; // smoothly lock
     }
-
-
-
-
-
-
-
-
-
-
 
 
     // // Simulate engine braking when decelerating in gear
@@ -617,123 +510,26 @@ function stepWorld(controlMap = {}) {
     //   vehicle.wheelInfos[3].brake = engineBraking;
     // }
 
-
-
-
-
-
-
-
-
-
-    // Fuel consumption logic
-    if (state.engineOn && fuel.fuel > 0) {
-      const gearMultiplier = state.gear;
-      const throttle = control.forward || control.backward ? 1 : 0.2; // higher burn under load
-      const rpmFactor = state.rpm / config.maxRpm;
-      let burn = config.baseConsumption
-
-      // burn less fuel in neutral 
-      gearMultiplier === 0
-        ? burn = burn * rpmFactor * throttle
-        : burn = burn * rpmFactor * throttle * gearMultiplier;
-
-
-      fuel.fuel = Math.max(0, fuel.fuel - burn);
-
-      if (fuel.fuel === 0) {
-        // state.engineOn = false;
-        state.engineShuttingDown = true;
-        console.log(`Fuel empty — engine shutting off for ${id}`);
-      }
-    }
-
-    if ((fuel.fuel === 0) && (state.rpms === 0)) {
-      state.engineOn = false;
-    }
-
-    if (control.refuel) {
-      fuel.fuel = Math.min(1.0, fuel + 0.01); // simulate refueling
-    }
-
-
-
-
-
-
-
-
-
-
-    const tempCfg = config.engineTemp;
-
-    if (state.engineOn) {
-      if (control.forward || control.backward) {
-        state.engineTemp += tempCfg.heatRate;
-
-        // Simulate harder heating at high RPM
-        const rpmFactor = state.rpm / config.maxRpm;
-        state.engineTemp += tempCfg.heatRate * rpmFactor * 0.2;
-      } else {
-        state.engineTemp -= tempCfg.coolRate;
-      }
-    } else {
-      // passive cooling when off
-      state.engineTemp -= tempCfg.coolRate * 2;
-    }
-
-    // Clamp temperature
-    state.engineTemp = Math.max(tempCfg.min, Math.min(tempCfg.critical, state.engineTemp));
-
-
-    // Engine overheating behavior
-    if (state.engineTemp >= tempCfg.critical) {
-      if (!state.engineShuttingDown) {
-        // console.log(`ENGINE CRITICAL: shutting down for ${id}`);
-        state.engineShuttingDown = true;
-      }
-
-      // Begin decaying RPM only if it's still running
-      if (state.rpm > idleRpm) {
-        state.rpm -= tempCfg.coolRate * 5; // crank down faster than idle decay
-      } else {
-        // state.rpm = idleRpm;
-        state.engineOn = false;
-        state.engineShuttingDown = false;
-      }
-    } else if (state.engineTemp >= tempCfg.overheat) {
-      // Optional: Reduce power/force if overheated
-      // console.log(`ENGINE OVERHEATING for ${id}`);
-      // e.g., reduce engineForce in updateVehicleControls()
-    }
-
-
-
-
-
-
-
     // send physics snapshot to frontend
     snapshots[id] = {
       chassisBody: {
-        position: chassis.position,
-        quaternion: chassis.quaternion,
-        velocity: { ...chassisBody.velocity },
-        angularVelocity: { ...chassisBody.angularVelocity }
+        position: { ...chassisBody.position },
+        quaternion: { ...chassisBody.quaternion },
       },
-      data: {
-        speed: chassisBody.velocity.length() * 2.23694, //convert to mph
-        steeringValue: vehicle.steeringValue,
-        engineRpm: Math.round(state.rpm),
-        engineStarting: state.engineStarting,
-        gear: state.gear,
-        fuel: fuel.fuel,
-        temp: Math.round(state.engineTemp),
-      },
-      wheelInfos
+      wheelInfos: vehicle.wheelInfos.map(wheel => ({
+        position: { ...wheel.worldTransform.position },
+        quaternion: { ...wheel.worldTransform.quaternion },
+      })),
+      speed: chassisBody.velocity.length() * 2.24, //convert to mph
+      rpm: state.rpm,
+      gear: state.gear,
+      fuel: fuelState[id].fuel,
+      temp: state.engineTemp
+      // engineStarting: state.engineStarting,
+      // steeringValue: vehicle.steeringValue,
     };
 
-  } // end for loop
+  }
 
   return snapshots;
 }

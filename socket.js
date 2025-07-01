@@ -1,27 +1,25 @@
+// socket.js
 const { createVehicle, stepWorld, updateVehicleControls } = require('./physics');
 const getVehicleConfig = require('./utils/vehicleConfigs');
 
-let channel
+// Connect to Socketcan on Production (Linux)
+let channel;
 if (process.env.NODE_ENV === "production") {
   const can = require("socketcan");
-  // sudo apt-get install can-utils
-  // sudo modprobe vcan
-  // sudo ip link add dev vcan0 type vcan
-  // sudo ip link set up vcan0
-
   channel = can.createRawChannel("vcan0", true);
-  channel.addListener("onMessage", msg => {
-    console.log("Received CAN:", msg);
-  });
+  channel.addListener("onMessage", msg => console.log("Received CAN:", msg));
   channel.start();
-
 }
+
+// Store All User Inputs
 const controlMap = {};
 
+// Setup Socket Connection to Fronend
 function setupSocketIO(io) {
   io.on('connect', (socket) => {
     console.log('Client connected:', socket.id);
 
+    // User Controls From Frontend
     controlMap[socket.id] =
     {
       forward: false,
@@ -38,39 +36,40 @@ function setupSocketIO(io) {
     }
 
     socket.on('spawnPlayer', (data) => {
+      // Get Vehicle Data for Specific Vehicle
       const config = getVehicleConfig(data.vehicle);
       data.vehicleConfig = config
-      // console.log(data);
-      socket.emit('spawnPlayer', data);
+
+      // Add Vehicle to Physics Engine
       createVehicle(socket.id, data.vehicle);
+
+      // Send Vehicle Data to Frontend
+      socket.emit('spawnPlayer', data);
     });
 
-
-
+    // Recieve User Input Data
     socket.on('controls', (data) => {
-      // console.log(data.engineOn);
+
+      // Store User's Inputs
       controlMap[socket.id] = data;
     });
 
+    // Delete Control Data On Disconnect
     socket.on('disconnect', () => {
       console.log('Client disconnected:', socket.id);
       delete controlMap[socket.id];
     });
   });
 
-  // Add Meaningful CAN ID Mapping
-  // You can differentiate between message types using different CAN IDs:
-  // ID	Purpose
-  // 0x101	Speed/Revs
-  // 0x102	Fuel + Gear
-  // 0x103	Blinker State
-  // 0x104	Diagnostics
-
+  // Send Data at 60 Frames Per Second
   setInterval(() => {
+
+    // Update Every PlayersControls
     Object.entries(controlMap).forEach(([id, control]) => {
       updateVehicleControls(id, control, controlMap);
     });
 
+    // Get World Snapshots Based on User Controls
     const snapshots = stepWorld(controlMap);
     Object.entries(snapshots).forEach(([id, data]) => {
       io.to(id).emit('physicsUpdate', data);

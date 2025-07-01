@@ -80,6 +80,16 @@ export type VehicleConfig = {
   maxRpm: number,
   shiftUpRpm: number,
   shiftDownRpm: number,
+
+  engineTemp: {
+    min: number,
+    normal: number,
+    overheat: number,
+    critical: number,
+    heatRate: number,
+    coolRate: number,
+  },
+
 }
 
 
@@ -88,15 +98,17 @@ export type PhysicsData = {
     position: { x: number; y: number; z: number }
     quaternion: { x: number; y: number; z: number; w: number }
   }
-  data: {
-    speed: number
-    steeringValue: number
-
-  }
   wheelInfos: Array<{
     position: { x: number; y: number; z: number }
     quaternion: { x: number; y: number; z: number; w: number }
   }>
+  speed: number
+  rpm: number
+  gear: number
+  fuel: number
+  temp: number
+  engineStarting: number
+  steeringValue: number
 }
 
 

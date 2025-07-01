@@ -1,9 +1,8 @@
 import { useEffect, useRef } from "react";
-import { getState, useStore } from "../../store";
 
 interface RpmsProps {
     speed: number
-    value: number // Expect speed as a number
+    value: number
     gear: number
     scale: number
     engineOn: boolean
@@ -62,9 +61,11 @@ export default function Revolutions({ speed, value, gear, scale, engineOn }: Rpm
     const readoutFontColor = `${engineOn ? 'yellow' : 'black'}`
     const readoutFont = 'monospace'
     const readoutShadow = `${engineOn ? 'rgba(255, 165, 0, 0.8)' : 'black'}`
+
     // gear
     const readoutOffsetX = 8;
     const readoutOffsetY = size / 2.8;
+
     // speed
     const readout2OffsetX = size / 3.7;
     const readout2OffsetY = size / 6.5;

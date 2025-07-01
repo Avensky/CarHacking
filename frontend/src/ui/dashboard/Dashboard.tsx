@@ -22,11 +22,9 @@ export function Dashboard(): JSX.Element {
     return () => unsub()
   }, [])
 
-  if (!physicsData || !physicsData.data || !vehicleConfig) return <></>
+  if (!physicsData || !vehicleConfig) return <></>
   // console.log('vehicleConfig', vehicleConfig);
-
-  const { speed, engineRpm, fuel, temp, gear } = physicsData.data
-  const fuelCapacity = vehicleConfig.fuelCapacity
+  const { speed, rpm, fuel, temp, gear } = physicsData
   // console.log('dashboard loaded');
   return (
     <div className="dashboard">
@@ -48,7 +46,7 @@ export function Dashboard(): JSX.Element {
           height: size,
           flexShrink: 1
         }}>
-          <Speedometer speed={speed} scale={size} />
+          <Speedometer speed={speed} scale={size} maxSpeed={vehicleConfig.clusterSpeed} />
         </div>
 
         {/* Revolutions in center */}
@@ -63,7 +61,7 @@ export function Dashboard(): JSX.Element {
             engineOn={engineOn}
             speed={speed}
             scale={sizeBig}
-            value={engineRpm / 1000}
+            value={rpm / 1000}
             gear={gear}
           />
         </div>
@@ -81,8 +79,8 @@ export function Dashboard(): JSX.Element {
             engineOn={engineOn}
             size={size}
             fuel={fuel}
-            fuelCapacity={fuelCapacity}
             temp={temp}
+            vehicleConfig={vehicleConfig}
           />
         </div>
       </div>
