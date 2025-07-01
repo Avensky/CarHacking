@@ -266,11 +266,32 @@ function updateEngineRPM(id, state, config, control, speed, now) {
     // }
 }
 
+function updatePowerMultiplier(id, state, config) {
+    const temp = state.engineTemp;
+    let powerMultiplier = 1.0;
+
+    if (temp >= config.engineTemp.overheat) {
+        console.log(`ENGINE OVERHEATING for ${id}`);
+        const t = (temp - config.engineTemp.overheat) /
+            (config.engineTemp.critical - config.engineTemp.overheat);
+        powerMultiplier = 1 - 0.5 * t;
+    }
+    if (temp >= config.engineTemp.critical) {
+        powerMultiplier = 0;
+        state.engineShuttingDown = true;
+        console.log(`ENGINE CRITICAL: shutting down for ${id}`);
+    }
+
+    state.powerMultiplier = powerMultiplier;
+}
+
+
 module.exports = {
     updateEngineState,
     updateFuelState,
     updateEngineTemp,
     updateGearShiftState,
     updateClutchState,
-    updateEngineRPM
+    updateEngineRPM,
+    updatePowerMultiplier
 };

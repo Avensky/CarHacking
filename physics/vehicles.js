@@ -137,6 +137,7 @@ function resetVehicle(vehicle, controlMap) {
             cooldownStartTime: null,
             shutdown: false,
             lastUpdate: performance.now(),
+            powerMultiplier: 1,
         };
 
         if (controlMap[id]) {

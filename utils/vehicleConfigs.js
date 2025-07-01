@@ -62,7 +62,7 @@ const carConfig = {
         overheat: 212,      // °F Begins Overheating Behavior
         critical: 230,      // °F Sritical, Sngine Shut Off
         heatRate: 0.036,    // Per Tick Heating // 0.036
-        coolRate: 0.018,    // Per Tick Cooling // 0.18
+        coolRate: 0.018,    // Per Tick Cooling // 0.018
     },
 }
 

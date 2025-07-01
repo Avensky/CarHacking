@@ -1,12 +1,12 @@
-// // physics/index.js
+// physics/index.js
 
-// const { createVehicle, resetVehicle } = require('./vehicles');
-// const updateVehicleControls = require('./controls');
-// const stepWorld = require('./stepWorld');
+const { createVehicle, resetVehicle } = require('./vehicles');
+const { updateVehicleControls } = require('./controls');
+const { stepWorld } = require('./stepworld');
 
-// module.exports = {
-//   createVehicle,
-//   resetVehicle,
-//   updateVehicleControls,
-//   stepWorld
-// };
+module.exports = {
+    createVehicle,
+    resetVehicle,
+    updateVehicleControls,
+    stepWorld
+};

@@ -106,6 +106,11 @@ export function App(): JSX.Element {
       getState().setScreen('game-screen');
     }
 
+    function handleCanData(data: any) {
+      console.log('[CAN]', data);
+      setCmdEvents(prev => [...prev.slice(-100), `[CAN] ${JSON.stringify(data)}`]);
+    }
+
     // socket.on('move', onMove);
     socket.on('connect', onConnect);
     socket.on('disconnect', onDisconnect);
@@ -113,8 +118,10 @@ export function App(): JSX.Element {
     socket.on('error', onError);
     socket.on('physicsUpdate', handlePhysicsUpdate)
     socket.on('spawnPlayer', handleSpawnPlayer)
+    socket.on('canData', handleCanData)
 
     return () => {
+      socket.off('canData', handleCanData);
       socket.off('spawnPlayer', handleSpawnPlayer);
       socket.off('physicsUpdate', handlePhysicsUpdate);
       socket.off('cmdData', onCmdEvent);
