@@ -86,7 +86,7 @@ function setupSocketIO(io) {
 
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: rpmBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -97,7 +97,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: speedBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -108,7 +108,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: gearBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -120,7 +120,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: fuelBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -132,7 +132,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: fuelBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -147,7 +147,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: blinkersBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -158,7 +158,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: engineOnBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -169,7 +169,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: headlightsBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
@@ -180,7 +180,7 @@ function setupSocketIO(io) {
         channel.send(msg);
         io.to(id).emit('canData', {
           canId: `0x${msg.id.toString(16).toUpperCase()}`,
-          data: buff.toString('hex'),
+          data: radioBuffer.toString('hex'),
           timestamp: Date.now()
         });
 
