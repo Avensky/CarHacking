@@ -9,7 +9,7 @@ let channel;
 if (process.env.NODE_ENV === "production") {
   const can = require("socketcan");
   channel = can.createRawChannel("vcan0", true);
-  channel.addListener("canData", msg => console.log("Received CAN:", msg));
+  channel.addListener("onMessage", msg => console.log("Received CAN:", msg));
   channel.start();
 }
 
