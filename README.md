@@ -607,17 +607,17 @@ sudo nano /etc/systemd/system/carhacking.service
 
 ## Copy Paste Exit
 ```t
-  [Unit]
-  Description=CarHacking Auto Startup Script
-  After=network.target
+[Unit]
+Description=CarHacking Auto Startup Script
+After=network.target
 
-  [Service]
-  Type=oneshot
-  ExecStart=/usr/local/bin/carhacking-startup.sh
-  RemainAfterExit=true
+[Service]
+Type=oneshot
+ExecStart=/usr/local/bin/carhacking-startup.sh
+RemainAfterExit=true
 
-  [Install]
-  WantedBy=multi-user.target
+[Install]
+WantedBy=multi-user.target
 
 ```
 
