@@ -110,9 +110,9 @@ export function App(): JSX.Element {
 
     function onCmdEvent(value: any) {
       // Can logs
-      // const formatted = formatCanFrame(value);
-      // console.log(formatted);
-      // setCmdEvents(prev => [...prev.slice(-100), formatted]);
+      const formatted = formatCanFrame(value);
+      console.log(formatted);
+      setCmdEvents(prev => [...prev.slice(-100), formatted]);
       // Normal logs
       setCmdEvents((prev) => [...prev.slice(-100), value]); // ⏪ max 100 logs
     }

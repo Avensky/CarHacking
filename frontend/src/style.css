@@ -5,7 +5,7 @@ body,
   margin: 0;
   padding: 0;
   width: 100%;
-  height: 100svh;
+  height: 100dvh;
   position: relative;
   overflow: hidden;
   background: #101010;
@@ -477,7 +477,7 @@ button,
 
 .menu-popup-content {
   width: 100dvw;
-  height: 100svh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -521,7 +521,7 @@ button,
   overflow: scroll;
 
   width: 100dvw;
-  height: 100svh;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -1069,7 +1069,7 @@ button {
 .ui-center {
   position: absolute;
   top: 0;
-  height: 100svh;
+  height: 100%;
   width: 50dvw;
   transform: translateX(50%);
   display: flex;
@@ -1084,7 +1084,7 @@ button {
   top: 0;
   display: flex;
   flex-direction: column;
-  height: 100svh;
+  height: 100%;
   width: 25dvw;
   justify-content: space-between;
   pointer-events: none;
@@ -1096,7 +1096,7 @@ button {
   right: 0;
   display: flex;
   flex-direction: column;
-  height: 100svh;
+  height: 100%;
   width: 25dvw;
   justify-content: space-between;
   align-items: end;
