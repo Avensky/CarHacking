@@ -35,6 +35,7 @@ function setupSocketIO(io) {
       blinkerRight: false,
       hazards: false,
       engineOn: false,
+      candump: false,
     }
 
     socket.on('spawnPlayer', (data) => {
@@ -77,40 +78,40 @@ function setupSocketIO(io) {
       io.to(id).emit('physicsUpdate', data);
 
       // Send Raw Can Data
-      if (typeof channel !== "undefined") {
+      if (typeof channel !== "undefined" && control.candump) {
         // RPM
         const rpmBuffer = Buffer.alloc(2);
         rpmBuffer.writeUInt16BE(Math.round(data.rpm));
         let msg = { id: 0x100, data: rpmBuffer }
         channel.send(msg);
 
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: rpmBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: rpmBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // Speed
         const speedBuffer = Buffer.alloc(2);
         speedBuffer.writeUInt16BE(Math.round(data.speed * 100));
         msg = { id: 0x101, data: speedBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: speedBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: speedBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // Gear
         const gearBuffer = Buffer.alloc(1);
         gearBuffer.writeUInt8(data.gear);
         msg = { id: 0x102, data: gearBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: gearBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: gearBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // Fuel
         const fuelPct = Math.min(Math.max(data.fuel * 255, 0), 255);
@@ -118,11 +119,11 @@ function setupSocketIO(io) {
         fuelBuffer.writeUInt8(Math.round(fuelPct));
         msg = { id: 0x103, data: fuelBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: fuelBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: fuelBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // Engine Temp
         const tempBuffer = Buffer.alloc(1);
@@ -130,11 +131,11 @@ function setupSocketIO(io) {
         tempBuffer.writeUInt8(tempScaled);
         msg = { id: 0x104, data: tempBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: fuelBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: fuelBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // ✅ Blinkers + Hazards combined
         const blinkerState =
@@ -145,46 +146,46 @@ function setupSocketIO(io) {
         blinkersBuffer.writeUInt8(blinkerState);
         msg = { id: 0x105, data: blinkersBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: blinkersBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: blinkersBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // ✅ EngineOn
         const engineOnBuffer = Buffer.alloc(1);
         engineOnBuffer.writeUInt8(controlMap[id]?.engineOn ? 1 : 0);
         msg = { id: 0x106, data: engineOnBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: engineOnBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: engineOnBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // ✅ Headlights
         const headlightsBuffer = Buffer.alloc(1);
         headlightsBuffer.writeUInt8(controlMap[id]?.headlights ? 1 : 0);
         msg = { id: 0x107, data: headlightsBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: headlightsBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: headlightsBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
         // ✅ Radio
         const radioBuffer = Buffer.alloc(1);
         radioBuffer.writeUInt8(controlMap[id]?.radio ? 1 : 0);
         msg = { id: 0x108, data: radioBuffer }
         channel.send(msg);
-        // io.to(id).emit('canData', {
-        //   canId: `0x${msg.id.toString(16).toUpperCase()}`,
-        //   data: radioBuffer.toString('hex'),
-        //   timestamp: Date.now()
-        // });
+        io.to(id).emit('canData', {
+          canId: `0x${msg.id.toString(16).toUpperCase()}`,
+          data: radioBuffer.toString('hex'),
+          timestamp: Date.now()
+        });
 
-        // console.log(`[CAN] RPM:${data.rpm} Speed:${data.speed.toFixed(2)} Gear:${data.gear} Fuel:${fuelPct} Blinkers:${blinkerState} EngineOn:${controlMap[id]?.engineOn ? 1 : 0} Headlights:${controlMap[id]?.headlights ? 1 : 0} Radio:${controlMap[id]?.radio ? 1 : 0}`);
+        console.log(`[CAN] RPM:${data.rpm} Speed:${data.speed.toFixed(2)} Gear:${data.gear} Fuel:${fuelPct} Blinkers:${blinkerState} EngineOn:${controlMap[id]?.engineOn ? 1 : 0} Headlights:${controlMap[id]?.headlights ? 1 : 0} Radio:${controlMap[id]?.radio ? 1 : 0}`);
       }
 
     });

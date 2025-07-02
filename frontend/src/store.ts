@@ -155,6 +155,7 @@ export const booleans = {
   shadows: true,
   stats: false,
   sound: true,
+  candump: false,
 }
 
 type Booleans = keyof typeof booleans

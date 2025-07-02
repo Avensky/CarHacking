@@ -88,7 +88,20 @@ export function App(): JSX.Element {
       setCmdEvents((previous: any) => [...previous, value]);
     }
 
+    function formatCanFrame(data: any) {
+      const timestamp = new Date(data.timestamp).toISOString();
+      const id = data.canId?.toUpperCase() ?? 'UNKNOWN';
+      const hexData = data.data?.toUpperCase() ?? '';
+      const bytes = hexData.match(/.{1,2}/g)?.join(' ') ?? '';
+      return `[${timestamp}] CAN ${id} [${hexData.length / 2}] ${bytes}`;
+    }
+
     function onCmdEvent(value: any) {
+      // Can logs
+      // const formatted = formatCanFrame(value);
+      // console.log(formatted);
+      // setCmdEvents(prev => [...prev.slice(-100), formatted]);
+      // Normal logs
       setCmdEvents((prev) => [...prev.slice(-100), value]); // ⏪ max 100 logs
     }
 

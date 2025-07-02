@@ -6,7 +6,6 @@ body,
   padding: 0;
   width: 100vw;
   height: 100svh;
-  /* height: 100vh; */
   position: fixed;
   overflow: hidden;
   background: #101010;
@@ -479,7 +478,7 @@ button,
 
 .menu-popup-content {
   width: 100dvw;
-  height: 100dvh;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -523,7 +522,7 @@ button,
   overflow: scroll;
 
   width: 100dvw;
-  height: 100dvh;
+  height: 100svh;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -982,28 +981,58 @@ button {
 }
 
 .cmd-control {
+  display: flex;
+  align-items: center;
+  justify-self: center;
   width: 25px;
   height: 25px;
   /* border-radius: 50%; */
-  background-size: 80% 80%;
+  background-size: 75% 75%;
   background-position: center;
   background-repeat: no-repeat;
-  background-color: #d6f0f7;
-  margin: 0dvh .25dvw;
-  border: 3px solid rgba(255, 255, 255, 0);
-  display: inline-block;
-  /* transition: background-color 0.2s, border-color 0.2s; */
-  opacity: 0.5;
-  filter: grayscale(40%);
+  background-color: transparent;
+  /* padding: .25dvh .25dvw; */
+  transition: background-color 0.2s, border-color 0.2s;
   transition: all 0.2s ease;
+
+}
+
+.cmd-control-wrapper {
+  margin: 0 .25dvw;
+  background-color: #d6f0f7;
+  display: inline-block;
+  opacity: 0.75;
 }
 
 .reload {
-  background-size: 110% 110%;
+  padding-left: 5px;
+  background-size: 91% 91%;
+}
+
+@keyframes rotateClockwise {
+  from {
+    transform: rotate(0deg);
+  }
+
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+.cmd-control.reload.rotate {
+  animation: rotateClockwise 0.5s linear;
 }
 
 .clear {
-  background-size: 190% 190%;
+  background-size: 170% 170%;
+}
+
+.log {
+  background-size: 90% 90%;
+}
+
+.stop {
+  background-size: 92% 92%;
 }
 
 .popup-left {
@@ -1041,7 +1070,7 @@ button {
 .ui-center {
   position: absolute;
   top: 0;
-  height: 100dvh;
+  height: 100svh;
   width: 50dvw;
   transform: translateX(50%);
   display: flex;
@@ -1056,7 +1085,7 @@ button {
   top: 0;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100svh;
   width: 25dvw;
   justify-content: space-between;
   pointer-events: none;
@@ -1068,7 +1097,7 @@ button {
   right: 0;
   display: flex;
   flex-direction: column;
-  height: 100dvh;
+  height: 100svh;
   width: 25dvw;
   justify-content: space-between;
   align-items: end;
