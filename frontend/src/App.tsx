@@ -67,6 +67,18 @@ export function App(): JSX.Element {
     { type: 'rtx', name: 'Night Life', component: Rtx },
     { type: 'timesquare', name: 'Time Square', component: TimesSquare },
   ];
+
+  // Compensate for browser resizing
+  useEffect(() => {
+    const updateHeight = () => {
+      document.documentElement.style.height = `${window.innerHeight}px`;
+      document.body.style.height = `${window.innerHeight}px`;
+    };
+    updateHeight();
+    window.addEventListener('resize', updateHeight);
+    return () => window.removeEventListener('resize', updateHeight);
+  }, []);
+
   useEffect(() => {
     window.scrollTo(0, 0);
   }, []);

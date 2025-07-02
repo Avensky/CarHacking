@@ -78,7 +78,7 @@ function setupSocketIO(io) {
       io.to(id).emit('physicsUpdate', data);
 
       // Send Raw Can Data
-      if (typeof channel !== "undefined" && control.candump) {
+      if (typeof channel !== "undefined" && controlMap[id].candump) {
         // RPM
         const rpmBuffer = Buffer.alloc(2);
         rpmBuffer.writeUInt16BE(Math.round(data.rpm));
